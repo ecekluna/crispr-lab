@@ -3,9 +3,9 @@
    ========================================================================== */
 var firebaseConfig = {
   apiKey: "AIzaSyBMounoTqxTCyc1TP5iLmv8nYdyN9KP7nE",
-  authDomain: "crispr-lab-a2110.firebaseapp.com",
-  projectId: "crispr-lab-a2110",
-  storageBucket: "crispr-lab-a2110.firebasestorage.app",
+  authDomain: "crispr-lab-ddb21.firebaseapp.com",
+  projectId: "crispr-lab-ddb21",
+  storageBucket: "crispr-lab-ddb21.firebasestorage.app",
   messagingSenderId: "275247865959",
   appId: "1:275247865959:web:cb25ad6a4178a7932cf4c2",
   measurementId: "G-CB9W19DW7Y"
