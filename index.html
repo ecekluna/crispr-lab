@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRISPR-Lab | İnteraktif Genom Düzenleme Platformu</title>
+    
+    <!-- Sekme İkonu (Favicon) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+    
+    <!-- Fontlar ve Stiller -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- EMAILJS SDK & INIT -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          if (typeof emailjs !== 'undefined') {
+              emailjs.init("Lze9S5-w7vthrqFY9");
+          }
+       })();
+    </script>
+
+    <!-- FIREBASE COMPAT SDKs (Global Kütüphaneler) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="soft-theme">
+
+    <!-- Arka Plan Parlama Efektleri (Soft Girl / Pastel Vibe) -->
+    <div class="glow-bg glow-pink"></div>
+    <div class="glow-bg glow-blue"></div>
+    <div class="glow-bg glow-green"></div>
+
+    <!-- Üst Navigasyon Barı -->
+    <header class="navbar glass-nav">
+        <div class="logo">
+            <span class="dna-icon">🧬</span> CRISPR<span class="highlight">LAB</span>
+        </div>
+        <nav class="nav-links">
+            <button id="navScenarioTabBtn" class="nav-tab-link" type="button">Öğrenme Modu 🎓</button>
+            <a href="#modlar" class="main-page-nav-link">Laboratuvar Modları</a>
+            <a href="#nasil-calisir" class="main-page-nav-link">Nasıl Çalışır?</a>
+            <a href="#rehber" class="main-page-nav-link">Biyoloji Rehberi</a>
+            <a href="#sss" class="main-page-nav-link">SSS</a>
+        </nav>
+
+        <!-- Oturum Kapalıyken Gösterilecek Giriş Butonu -->
+        <button id="mainAuthBtn" class="btn-soft-primary" type="button">Giriş Yap</button>
+
+        <!-- Oturum Açıldığında Gösterilecek Kullanıcı Kartı (User Chip) -->
+        <div id="navUserChip" class="nav-user-chip hidden">
+            <div class="chip-avatar-container">
+                <img id="navAvatarImg" src="" alt="Profil" class="chip-avatar-img hidden">
+                <span id="navAvatarInitials" class="chip-avatar-initials">TK</span>
+            </div>
+            <span id="navUserName" class="chip-user-name">Kullanıcı</span>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="badge-soft">✨ Yeni Nesil Biyoinformatik Simülatörü</div>
+        <h1 class="hero-title">
+            Karmaşık Genom Düzenlemeyi <br>
+            <span class="gradient-text-soft">İnteraktif Bir Deneyime</span> Dönüştürün.
+        </h1>
+        <p class="hero-description">
+            Ağır teorik makaleleri ve karmaşık dizilim notlarını bir kenara bırakın. 
+            Kendi gRNA molekülünüzü tasarlayın, PAM bölgelerini keşfedin ve kesim verimliliğini anlık olarak görün.
+        </p>
+        
+        <div class="hero-buttons">
+            <button id="heroScenarioBtn" class="btn-soft-primary" type="button">
+                Senaryolarla Öğren
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <a href="#modlar" class="btn-soft-secondary">Sistemi Keşfet</a>
+        </div>
+
+        <div class="stats-bar glass-card-soft">
+            <div class="stat-item">
+                <span class="stat-number color-pink">%99.8</span>
+                <span class="stat-label">Hassas Simülasyon</span>
+            </div>
+            <div class="divider"></div>
+            <div class="stat-item">
+                <span class="stat-number color-blue">Cas9 / gRNA</span>
+                <span class="stat-label">Anlık On/Off-Target</span>
+            </div>
+            <div class="divider"></div>
+            <div class="stat-item">
+                <span class="stat-number color-green">0 Kodlama</span>
+                <span class="stat-label">Görsel Bulmaca Arayüzü</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Biyoloji Rehberi & Biyoinformatik Kütüphanesi -->
+    <section id="rehber" class="guide-section">
+        <div class="section-header">
+            <span class="badge-soft">📖 Moleküler Sözlük</span>
+            <h2 class="section-title">Biyoloji & Biyoinformatik Rehberi</h2>
+            <p class="section-subtitle">Genom düzenleme, moleküler biyoloji ve biyoinformatik kavramlarını interaktif olarak keşfedin.</p>
+        </div>
+
+        <!-- Arama ve Filtreleme Barı -->
+        <div class="search-filter-wrapper glass-card-soft">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="guideSearchInput" placeholder="Kavram ara... (Örn: Adenin, Kodon, PAM, gRNA, Alignment, Cas12)">
+            </div>
+            <div class="category-tabs">
+                <button class="tab-btn active" data-category="all" type="button">Tümü</button>
+                <button class="tab-btn" data-category="dna" type="button">DNA & Genomik</button>
+                <button class="tab-btn" data-category="crispr" type="button">CRISPR & Cas Sistemleri</button>
+                <button class="tab-btn" data-category="repair" type="button">Onarım & Hücresel</button>
+                <button class="tab-btn" data-category="bioinfo" type="button">Biyoinformatik</button>
+            </div>
+        </div>
+
+        <!-- Bilgi Kartları Grid Yapısı -->
+        <div id="guideCardsGrid" class="guide-cards-grid">
+            <!-- Dinamik 15'erli Yüklenen Kartlar JS Tarafından Buraya Basılacak -->
+        </div>
+
+        <!-- Daha Fazla Göster Buton Alanı -->
+        <div class="load-more-wrapper">
+            <button id="loadMoreGuideBtn" class="btn-soft-primary load-more-btn" type="button">
+                <span>Daha Fazla Kavram Göster</span>
+                <span id="guideCounterBadge" class="counter-badge">15 / 150</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Nasıl Çalışır Section -->
+    <section id="nasil-calisir" class="how-it-works-section">
+        <div class="section-header">
+            <span class="badge-soft">⚙️ Moleküler Mekanizma</span>
+            <h2 class="section-title">CRISPR-Cas9 Nasıl Çalışır?</h2>
+            <p class="section-subtitle">Hedef genomun taranmasından hassas nükleaz kesimine: Dört adımda genetik kodun yeniden yazılması.</p>
+        </div>
+
+        <div class="workflow-container">
+            <!-- Adım 1 -->
+            <div class="step-card glass-card-soft">
+                <div class="step-number color-pink">01</div>
+                <div class="step-icon">🧬</div>
+                <h3 class="step-title">Genom Sentezi ve Analiz</h3>
+                <p class="step-desc">Düzenlenecek hedef DNA dizilimini yükleyin. Sistem, baz sırasını haritalandırarak potansiyel hedef bölgeleri anında izole eder.</p>
+            </div>
+
+            <!-- Akış Ok İkonu 1 -->
+            <div class="flow-arrow">➔</div>
+
+            <!-- Adım 2 -->
+            <div class="step-card glass-card-soft">
+                <div class="step-number color-blue">02</div>
+                <div class="step-icon">🎯</div>
+                <h3 class="step-title">gRNA & PAM Doğrulaması</h3>
+                <p class="step-desc">20 bazlık spesifik rehber RNA (sgRNA) sentezlenir. Cas9'un kenetlenmesi için kritik NGG PAM motifi milimetrik tespit edilir.</p>
+            </div>
+
+            <!-- Akış Ok İkonu 2 -->
+            <div class="flow-arrow">➔</div>
+
+            <!-- Adım 3 -->
+            <div class="step-card glass-card-soft">
+                <div class="step-number color-purple">03</div>
+                <div class="step-icon">✂️</div>
+                <h3 class="step-title">Hassas Moleküler Makas</h3>
+                <p class="step-desc">Cas9 endonükleaz enzimi, gRNA rehberliğinde hedefe kilitlenir ve DNA'nın çift zincirinde (DSB) pürüzsüz bir kesim gerçekleştirir.</p>
+            </div>
+
+            <!-- Akış Ok İkonu 3 -->
+            <div class="flow-arrow">➔</div>
+
+            <!-- Adım 4 -->
+            <div class="step-card glass-card-soft">
+                <div class="step-number color-green">04</div>
+                <div class="step-icon">🔬</div>
+                <h3 class="step-title">Yeniden Programlama</h3>
+                <p class="step-desc">Hücresel onarım yolları (NHEJ/HDR) tetiklenir. İstenmeyen geni susturun veya tamamen yeni bir fonksiyonel kod entegre edin.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mod Seçim Ekranı -->
+    <section id="modlar" class="modes-section">
+        <div class="section-header">
+            <span class="badge-soft">🎮 Oyunlaştırma</span>
+            <h2 class="section-title">Laboratuvar Modunu Seçin</h2>
+            <p class="section-subtitle">Deneyim seviyenize uygun simülasyon modunu seçerek hemen başlayın.</p>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card glass-card-soft">
+                <div class="card-icon">🎯</div>
+                <h3>Hikaye / Kampanya Modu</h3>
+                <p>Kolaydan zora doğru kurgulanmış seviyelerle adım adım gRNA tasarımı yapın.</p>
+                <button class="btn-soft-secondary full-width" type="button">Modu Başlat</button>
+            </div>
+
+            <div class="card glass-card-soft featured-card-soft">
+                <div class="card-badge badge-green">Önerilen</div>
+                <div class="card-icon">🧪</div>
+                <h3>Serbest Laboratuvar (Sandbox)</h3>
+                <p>Sınırsız özgürlük! Kendi özel DNA diziliminizi girin, gRNA tasarlayın.</p>
+                <button class="btn-soft-primary full-width" type="button">Laboratuvara Geç</button>
+            </div>
+
+            <div class="card glass-card-soft">
+                <div class="card-icon">📚</div>
+                <h3>Codex & Akademi</h3>
+                <p>PAM dizilimi (NGG), Seed Region ve Cas9 enzim mekanizmalarını öğrenin.</p>
+                <button class="btn-soft-secondary full-width" type="button">Rehberi Aç</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sıkça Sorulan Sorular (SSS / FAQ) Section -->
+    <section id="sss" class="faq-section">
+        <div class="section-header">
+            <span class="badge-soft">❓ Sıkça Sorulan Sorular</span>
+            <h2 class="section-title">Merak Edilen Konular</h2>
+            <p class="section-subtitle">CRISPR teknolojisi ve platformumuz hakkında merak edilenler.</p>
+        </div>
+
+        <div class="faq-container glass-card-soft">
+            <details class="faq-item">
+                <summary class="faq-question"><span>1. CRISPR-Cas9 nedir ve ne işe yarar?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p>CRISPR-Cas9, bilim insanlarının canlı organizmaların DNA dizilimlerini hassas bir şekilde değiştirmesine olanak tanıyan devrim niteliğinde bir gen düzenleme teknolojisidir.</p></div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question"><span>2. gRNA (Rehber RNA) nedir?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p>gRNA (Guide RNA), Cas9 enzimini DNA üzerindeki tam olarak kesilmesi istenen hedef bölgeye yönlendiren sentetik bir RNA molekülüdür.</p></div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question"><span>3. PAM (Protospacer Adjacent Motif) dizilimi ne anlama gelir?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p>PAM, Cas9 enziminin hedef DNA'yı tanıması ve bağlanması için hemen kesim bölgesinin yanında bulunması gereken kısa (SpCas9 için NGG) bir DNA dizisidir.</p></div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question"><span>4. On-Target ve Off-Target etki nedir?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p><b>On-Target:</b> gRNA'nın tam hedeflenen DNA bölgesine bağlanıp kesim yapmasıdır.<br><b>Off-Target:</b> gRNA'nın istenmeyen benzer başka bir DNA bölgesine bağlanarak kazara kesim yapması durumudur.</p></div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question"><span>5. Seed Region (Tohum Bölgesi) neden önemlidir?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p>gRNA'nın PAM bölgesine yakın olan 8-12 bazlık kısmıdır. Bu bölgedeki tek bir eşleşme hatası (mismatch) bile Cas9'un kesim yapmasını engelleyebilir.</p></div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question"><span>6. DNA kesildikten sonra hücre kendisini nasıl onarır?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p>Hücre esas olarak iki mekanizma kullanır: <b>NHEJ</b> (Hızlı ama hataya meyilli onarım, gen susturma için) ve <b>HDR</b> (Kalıp kullanarak hassas gen ekleme/düzeltme).</p></div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question"><span>7. Bu simülatör gerçek biyoinformatik verileri mi kullanıyor?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p>Evet! Simülasyon algoritmalarımız gerçek nükleotit dizilimlerini ve biyo-fiziksel eşleşme kurallarını temel alarak sonuç üretir.</p></div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question"><span>8. CRISPR teknolojisi hangi hastalıklarda kullanılır?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p>Orak hücre anemisi, beta talasemi, belirli kanser türleri ve genetik görme bozuklukları gibi bir çok alanda klinik tedavi çalışmaları yürütülmektedir.</p></div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question"><span>9. Hesabımı ve simülasyonlarımı kaydedebilir miyim?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p>Evet, Firebase entegrasyonumuz sayesinde ücretsiz hesap oluşturabilir ve tasarladığınız gRNA modellerini profilinize kaydedebilirsiniz.</p></div>
+            </details>
+
+            <details class="faq-item">
+                <summary class="faq-question"><span>10. Platform tamamen ücretsiz mi?</span> <span class="faq-icon">+</span></summary>
+                <div class="faq-answer"><p>Evet, CRISPR-Lab öğrenci, araştırmacı ve meraklıların kullanımı için tamamen ücretsiz bir eğitici platformdur.</p></div>
+            </details>
+        </div>
+    </section>
+
+    <!-- MÜSTAKİL SENARYOLAR SAYFASI (YENİ TAB / EKRAN) -->
+    <div id="scenarioTabPage" class="scenario-page-container" style="display: none;">
+        <div class="scenario-page-header">
+            <button id="backToMainBtn" class="btn-soft-outline" type="button">
+                ← Ana Laboratuvara Dön
+            </button>
+            <div class="scenario-page-title-group">
+                <span class="badge-soft">🎓 İnteraktif Biyoloji Kampüsü</span>
+                <h1>Senaryolarla Genomik Problemleri Çözün</h1>
+                <p>Gerçek klinik, tarımsal ve biyoteknolojik vakaları inceleyin, gRNA tasarlayın ve görevleri tamamlayarak rozetleri kazanın.</p>
+            </div>
+        </div>
+
+        <!-- 10 Senaryonun Kartlar Halinde Dinamik Yükleneceği Alan -->
+        <div id="scenarioListGrid" class="scenario-list-grid"></div>
+
+        <!-- Aktif Senaryo Detay ve Başlatma Alanı -->
+        <div id="activeScenarioRunner" class="scenario-runner-card glass-card-soft hidden">
+            <button id="closeScenarioRunnerBtn" class="close-btn" type="button">&times;</button>
+            <div id="scenarioRunnerContent"></div>
+        </div>
+    </div>
+
+    <!-- GİRİŞ, KAYIT VE OTP MODALI -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content glass-card-soft">
+            <span id="closeModalBtn" class="close-btn">&times;</span>
+
+            <!-- 1. GİRİŞ YAP FORMU (VARSAYILAN AÇILIŞ EKRANI) -->
+            <div id="loginStep" class="auth-step">
+                <h2 class="modal-title">Giriş Yap</h2>
+                <p class="modal-subtitle">Tekrar hoş geldiniz! Hesabınıza giriş yapın.</p>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">E-Posta Adresi</label>
+                        <input type="email" id="loginEmail" placeholder="ornek@email.com" autocomplete="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Şifre</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" class="btn-soft-primary full-width">Giriş Yap</button>
+                    
+                    <p class="auth-switch-text">
+                        Hesabınız yok mu? <a href="#" id="switchToRegister">Hemen Kayıt Ol</a>
+                    </p>
+                </form>
+            </div>
+
+            <!-- 2. KAYIT OL FORMU -->
+            <div id="registerStep" class="auth-step hidden">
+                <h2 class="modal-title">Kayıt Ol</h2>
+                <p class="modal-subtitle">CRISPR-Lab dünyasına katılın ve genom tasarlayın.</p>
+                
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="fullName">İsim Soyisim</label>
+                        <input type="text" id="fullName" placeholder="Örn: Taha Kalkan" autocomplete="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-Posta Adresi</label>
+                        <input type="email" id="email" placeholder="ornek@email.com" autocomplete="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Şifre</label>
+                        <input type="password" id="password" placeholder="••••••••" autocomplete="new-password" required>
+                    </div>
+                    <button type="submit" class="btn-soft-primary full-width">Kayıt Ol ve Kod Gönder</button>
+                    
+                    <p class="auth-switch-text">
+                        Zaten hesabınız var mı? <a href="#" id="switchToLogin">Giriş Yap</a>
+                    </p>
+                </form>
+            </div>
+
+            <!-- 3. E-POSTA DOĞRULAMA (OTP) FORMU -->
+            <div id="otpStep" class="auth-step hidden">
+                <div class="icon-header">📩</div>
+                <h2 class="modal-title">E-Postanızı Doğrulayın</h2>
+                <p class="modal-subtitle">
+                    <strong id="userEmailTarget">ornek@email.com</strong> adresine gönderilen 6 haneli kodu girin.
+                </p>
+
+                <form id="otpForm">
+                    <div class="form-group">
+                        <label for="otpCode">Doğrulama Kodu (OTP)</label>
+                        <input type="text" id="otpCode" placeholder="123456" maxlength="6" class="otp-input" autocomplete="one-time-code" required>
+                    </div>
+                    <button type="submit" class="btn-soft-primary full-width">Kodu Onayla ve Başla</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- HESABIM MODALI -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-content glass-card-soft profile-card">
+            <span id="closeProfileBtn" class="close-btn">&times;</span>
+
+            <div class="profile-header">
+                <h2 class="modal-title">Hesap Yönetimi</h2>
+                <p class="modal-subtitle">Kişisel bilgilerinizi ve güvenlik ayarlarınızı yönetin.</p>
+            </div>
+
+            <div class="profile-avatar-wrapper">
+                <div class="avatar-container">
+                    <img id="avatarPreview" src="" alt="Profil Fotoğrafı" class="avatar-img hidden">
+                    <div id="avatarInitials" class="avatar-initials">TK</div>
+                </div>
+                <div class="avatar-btn-group">
+                    <label for="avatarInput" class="avatar-upload-btn">
+                        <span>📷 Fotoğraf Değiştir</span>
+                    </label>
+                    <button type="button" id="removeAvatarBtn" class="avatar-remove-btn hidden">
+                        🗑️ Fotoğrafı Kaldır
+                    </button>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*" class="hidden">
+            </div>
+
+            <form id="profileDetailsForm">
+                <div class="form-section">
+                    <h3 class="form-section-title">Kişisel Bilgiler</h3>
+                    
+                    <div class="form-group">
+                        <label for="profileFullName">İsim Soyisim</label>
+                        <input type="text" id="profileFullName" placeholder="Ad Soyad" autocomplete="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profileEmail">E-Posta Adresi (Değiştirilemez)</label>
+                        <input type="email" id="profileEmail" disabled class="disabled-input">
+                    </div>
+                </div>
+
+                <hr class="form-divider">
+
+                <div class="form-section">
+                    <h3 class="form-section-title">Güvenlik & Şifre Değiştir</h3>
+                    
+                    <div class="form-group">
+                        <label for="currentPassword">Mevcut Şifre</label>
+                        <input type="password" id="currentPassword" placeholder="••••••••" autocomplete="current-password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">Yeni Şifre</label>
+                        <input type="password" id="newPassword" placeholder="Yeni şifreniz (En az 6 karakter)" autocomplete="new-password">
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button type="submit" class="btn-soft-primary full-width">Değişiklikleri Kaydet</button>
+                    <button type="button" id="logoutBtn" class="btn-soft-outline">Çıkış Yap</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Bağlantısı -->
+    <script src="script.js"></script>
+</body>
+</html>
