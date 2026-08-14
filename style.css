@@ -1086,3 +1086,211 @@ body.soft-theme {
     cursor: pointer !important;
     z-index: 1000001 !important;
 }
+
+/* ==========================================
+   MOLEKÜLER SÖZLÜK & REHBER PREMIUM TASARIMI
+   ========================================== */
+
+.guide-section {
+    padding: 80px 24px;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* Arama ve Filtreleme Alanı */
+.search-filter-wrapper {
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0 16px;
+    transition: all 0.25s ease;
+}
+
+.search-box:focus-within {
+    border-color: rgba(56, 189, 248, 0.6);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 14px 12px;
+    background: transparent;
+    border: none;
+    color: #f8fafc;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+}
+
+.search-box input::placeholder {
+    color: #64748b;
+}
+
+.category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.category-tabs .tab-btn {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    color: #94a3b8;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.category-tabs .tab-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.category-tabs .tab-btn.active {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(129, 140, 248, 0.15));
+    border-color: rgba(56, 189, 248, 0.5);
+    color: #38bdf8;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+}
+
+/* Kart Grid Dizilimi */
+.guide-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 22px;
+    margin-bottom: 40px;
+}
+
+/* Modern Kart Mimarisi */
+.guide-card-modern {
+    position: relative;
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.7));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.guide-card-modern:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.45);
+}
+
+/* Üst Vurgu Çizgisi */
+.card-accent-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.guide-card-modern:hover .card-accent-bar {
+    opacity: 1;
+}
+
+/* Kategori Renk Tanımları (Vurgular ve Etiketler) */
+.cat-dna .card-accent-bar { background: linear-gradient(90deg, #38bdf8, transparent); }
+.cat-dna .guide-category-tag { color: #38bdf8; background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.25); }
+
+.cat-crispr .card-accent-bar { background: linear-gradient(90deg, #f472b6, transparent); }
+.cat-crispr .guide-category-tag { color: #f472b6; background: rgba(244, 114, 182, 0.08); border-color: rgba(244, 114, 182, 0.25); }
+
+.cat-repair .card-accent-bar { background: linear-gradient(90deg, #34d399, transparent); }
+.cat-repair .guide-category-tag { color: #34d399; background: rgba(52, 211, 153, 0.08); border-color: rgba(52, 211, 153, 0.25); }
+
+.cat-bioinfo .card-accent-bar { background: linear-gradient(90deg, #a78bfa, transparent); }
+.cat-bioinfo .guide-category-tag { color: #a78bfa; background: rgba(167, 139, 250, 0.08); border-color: rgba(167, 139, 250, 0.25); }
+
+/* Kart İç Başlığı ve Numaralandırma */
+.guide-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.guide-category-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid;
+    text-transform: uppercase;
+}
+
+.guide-index-tag {
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.guide-term-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0 0 10px 0;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+}
+
+.guide-term-desc {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* Daha Fazla Göster Butonu */
+.load-more-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.load-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 28px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 12px;
+}
+
+.counter-badge {
+    background: rgba(15, 23, 42, 0.5);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    color: #93c5fd;
+}

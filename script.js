@@ -209,46 +209,46 @@ async function handleRegister(e) {
         return;
     }
 
-    var otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // 6 Haneli Sayısal OTP
+    var generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
     state.pendingRegistration = { fullName: fullName, email: email, password: password };
-    state.generatedOTP = otpCode;
+    state.generatedOTP = generatedCode;
     state.otpExpiresAt = Date.now() + 5 * 60 * 1000;
 
     var emailTarget = document.getElementById("userEmailTarget");
     if (emailTarget) emailTarget.textContent = email;
 
-    console.log("🔐 Üretilen OTP Kodu:", otpCode);
+    console.log("🔐 Üretilen OTP Kodu:", generatedCode);
 
-    // EmailJS Gönderimi
+    // EmailJS Gönderim Bloğu
     var emailClient = window.emailjs || (typeof emailjs !== "undefined" ? emailjs : null);
 
     if (emailClient) {
         var templateParams = {
             to_email: email,
             email: email,
-            recipient: email,
             to_name: fullName,
             name: fullName,
-            otp_code: otpCode,
-            code: otpCode,
-            message: "CRISPR-Lab Doğrulama Kodunuz: " + otpCode
+            otp_code: generatedCode,
+            message: "CRISPR-Lab Doğrulama Kodunuz: " + generatedCode
         };
 
         emailClient.send(
             "service_l8xxa6h",
-            "template_uw41cif", // <-- Gerçek Template ID entegre edildi
+            "template_uw41cif",
             templateParams,
             "Lze9S5-w7vthrqFY9"
         ).then(function(response) {
             console.log("✓ E-posta Başarıyla Gönderildi:", response.status, response.text);
-            alert("Doğrulama kodu " + email + " adresine başarıyla gönderildi!");
+            alert("Doğrulama kodu " + email + " adresine gönderildi!");
         }).catch(function(err) {
-            console.error("EmailJS Gönderim Hatası:", err);
+            console.error("EmailJS Gönderim Hatası Detayı:", err);
             var errText = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
-            alert("E-posta gönderilemedi (" + errText + "). Test Kodunuz: " + otpCode);
+            alert("E-posta gönderilemedi (" + errText + "). Test Kodunuz: " + generatedCode);
         });
     } else {
-        alert("Test Doğrulama Kodunuz: " + otpCode);
+        alert("Test Doğrulama Kodunuz: " + generatedCode);
     }
 
     if (typeof switchAuthStep === "function") switchAuthStep("otp");
@@ -933,29 +933,32 @@ function renderGuideCards() {
     const visibleItems = filtered.slice(0, state.guideVisibleCount);
 
     grid.innerHTML = visibleItems.map(item => {
-        let badgeClass = "badge-dna";
-        let badgeText = "DNA & Genomik";
+        let badgeLabel = "GENOMİK";
+        let categoryClass = "cat-dna";
 
         if (item.category === "crispr") {
-            badgeClass = "badge-crispr";
-            badgeText = "CRISPR-Cas";
+            badgeLabel = "CRISPR-CAS";
+            categoryClass = "cat-crispr";
         } else if (item.category === "repair") {
-            badgeClass = "badge-repair";
-            badgeText = "Onarım";
+            badgeLabel = "ONARIM";
+            categoryClass = "cat-repair";
         } else if (item.category === "bioinfo") {
-            badgeClass = "badge-bioinfo";
-            badgeText = "Biyoinformatik";
+            badgeLabel = "BİYOİNFORMATİK";
+            categoryClass = "cat-bioinfo";
         }
 
+        const formattedId = item.id < 10 ? `00${item.id}` : item.id < 100 ? `0${item.id}` : `${item.id}`;
+
         return `
-            <div class="guide-card glass-card-soft" data-id="${item.id}">
+            <article class="guide-card-modern ${categoryClass}" data-id="${item.id}">
+                <div class="card-accent-bar"></div>
                 <div class="guide-card-header">
-                    <span class="guide-badge ${badgeClass}">${badgeText}</span>
-                    <span class="guide-id">#${item.id < 10 ? '0' + item.id : item.id}</span>
+                    <span class="guide-category-tag">${badgeLabel}</span>
+                    <span class="guide-index-tag">LOC.${formattedId}</span>
                 </div>
-                <h3 class="guide-card-title">${item.term}</h3>
-                <p class="guide-card-desc">${item.desc}</p>
-            </div>
+                <h3 class="guide-term-title">${item.term}</h3>
+                <p class="guide-term-desc">${item.desc}</p>
+            </article>
         `;
     }).join("");
 
@@ -1239,13 +1242,13 @@ function generateSixDigitOtp() {
 async function handleRegister(e) {
     if (e) e.preventDefault();
 
-    const fullNameInput = document.getElementById("fullName");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
+    var fullNameInput = document.getElementById("fullName");
+    var emailInput = document.getElementById("email");
+    var passwordInput = document.getElementById("password");
 
-    const fullName = fullNameInput ? fullNameInput.value.trim() : "";
-    const email = emailInput ? emailInput.value.trim() : "";
-    const password = passwordInput ? passwordInput.value : "";
+    var fullName = fullNameInput ? fullNameInput.value.trim() : "";
+    var email = emailInput ? emailInput.value.trim() : "";
+    var password = passwordInput ? passwordInput.value : "";
 
     if (!fullName || !email || !password) {
         alert("Lütfen tüm alanları eksiksiz doldurun.");
@@ -1253,37 +1256,55 @@ async function handleRegister(e) {
     }
 
     if (password.length < 6) {
-        alert("Şifreniz en az 6 karakter olmalıdır.");
+        alert("Şifre en az 6 karakter olmalıdır.");
         return;
     }
 
-    const otpCode = generateSixDigitOtp();
-    state.pendingRegistration = { fullName, email, password };
-    state.generatedOTP = otpCode;
+    // 1. Rastgele 6 Haneli Sayısal OTP Üretimi
+    var generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    state.pendingRegistration = { fullName: fullName, email: email, password: password };
+    state.generatedOTP = generatedCode;
     state.otpExpiresAt = Date.now() + 5 * 60 * 1000;
 
-    const targetEmailSpan = document.getElementById("userEmailTarget");
-    if (targetEmailSpan) targetEmailSpan.textContent = email;
+    var emailTarget = document.getElementById("userEmailTarget");
+    if (emailTarget) emailTarget.textContent = email;
 
-    console.log(`[GÜVENLİK / DEBUG] Üretilen OTP Kodu: ${otpCode}`);
+    console.log("🔐 Üretilen OTP Kodu:", generatedCode);
 
-    if (typeof emailjs !== "undefined") {
-        try {
-            await emailjs.send("service_l8xxa6h", "template_otp", {
-                to_email: email,
-                to_name: fullName,
-                otp_code: otpCode
-            });
-            alert(`Doğrulama kodu ${email} adresine gönderildi!`);
-        } catch (err) {
-            console.warn("EmailJS Gönderim Uyarısı:", err);
-            alert(`Doğrulama kodu oluşturuldu! Test Kodu: ${otpCode}`);
-        }
+    // 2. EmailJS Gönderimi (Güncel Template ID: template_uw41cif)
+    var emailClient = window.emailjs || (typeof emailjs !== "undefined" ? emailjs : null);
+
+    if (emailClient) {
+        var templateParams = {
+            to_email: email,
+            email: email,
+            recipient: email,
+            to_name: fullName,
+            name: fullName,
+            otp_code: generatedCode,
+            code: generatedCode,
+            message: "CRISPR-Lab Doğrulama Kodunuz: " + generatedCode
+        };
+
+        emailClient.send(
+            "service_l8xxa6h",
+            "template_uw41cif",
+            templateParams,
+            "Lze9S5-w7vthrqFY9"
+        ).then(function(response) {
+            console.log("✓ E-posta Başarıyla Gönderildi:", response.status, response.text);
+            alert("Doğrulama kodu " + email + " adresine başarıyla gönderildi!");
+        }).catch(function(err) {
+            console.error("EmailJS Gönderim Hatası Detayı:", err);
+            var errText = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
+            alert("E-posta gönderilemedi (" + errText + "). Test Kodunuz: " + generatedCode);
+        });
     } else {
-        alert(`Demo Modu: Doğrulama Kodunuz -> ${otpCode}`);
+        alert("Test Doğrulama Kodunuz: " + generatedCode);
     }
 
-    switchAuthStep("otp");
+    if (typeof switchAuthStep === "function") switchAuthStep("otp");
 }
 
 /**
