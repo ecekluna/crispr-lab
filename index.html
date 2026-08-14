@@ -14,15 +14,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     
-    <!-- EMAILJS SDK & INIT -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){
-          if (typeof emailjs !== 'undefined') {
-              emailjs.init("Lze9S5-w7vthrqFY9");
-          }
-       })();
-    </script>
+<!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      // Tanımlanan EmailJS Public Key
+      emailjs.init("service_l8xxa6h");
+   })();
+</script>
+
+<!-- Script Dosyası -->
+<script type="module" src="script.js"></script>
 
     <!-- FIREBASE COMPAT SDKs (Global Kütüphaneler) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>

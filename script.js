@@ -1,38 +1,128 @@
-/* ==========================================================================
-   1. FIREBASE COMPAT & EMAILJS CONFIGURATION
-   ========================================================================== */
-var firebaseConfig = {
-  apiKey: "AIzaSyBMounoTqxTCyc1TP5iLmv8nYdyN9KP7nE",
-  authDomain: "crispr-lab-ddb21.firebaseapp.com",
-  projectId: "crispr-lab-ddb21",
-  storageBucket: "crispr-lab-ddb21.firebasestorage.app",
-  messagingSenderId: "275247865959",
-  appId: "1:275247865959:web:cb25ad6a4178a7932cf4c2",
-  measurementId: "G-CB9W19DW7Y"
+// Firebase SDK Modülleri
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { 
+    getFirestore, 
+    doc, 
+    setDoc, 
+    serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// 1. Firebase Proje Yapılandırması (crispr-lab-ddb21)
+const firebaseConfig = {
+    apiKey: "AIzaSy...", // Firebase Console -> Project Settings -> General alanındaki apiKey değerini ekleyin
+    authDomain: "crispr-lab-ddb21.firebaseapp.com",
+    projectId: "crispr-lab-ddb21",
+    storageBucket: "crispr-lab-ddb21.appspot.com",
+    messagingSenderId: "crispr-lab-sender",
+    appId: "crispr-lab-app-id"
 };
 
-if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+// 2. Servisleri Başlatma
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// 3. Tanımlanan EmailJS Değişkenleri
+const EMAILJS_SERVICE_ID = "service_l8xxa6h";
+const EMAILJS_TEMPLATE_ID = "template_uw41cif";
+
+// 4. Kayıt (Register) ve Veritabanı + E-posta Gönderim Fonksiyonu
+async function handleRegister(event) {
+    event.preventDefault(); // Sayfanın yenilenmesini önler
+
+    const emailInput = document.getElementById("registerEmail") || document.getElementById("email");
+    const passwordInput = document.getElementById("registerPassword") || document.getElementById("password");
+    const usernameInput = document.getElementById("registerUsername") || document.getElementById("username");
+
+    const email = emailInput ? emailInput.value : "";
+    const password = passwordInput ? passwordInput.value : "";
+    const username = usernameInput ? usernameInput.value : "Kullanıcı";
+
+    if (!email || !password) {
+        alert("Lütfen e-posta ve şifre alanlarını doldurun.");
+        return;
+    }
+
+    try {
+        console.log("1/3: Firebase Auth kaydı başlatılıyor...");
+
+        // A. Firebase Authentication ile Kullanıcı Açma
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log("✓ Auth Başarılı! UID:", user.uid);
+
+        // B. Cloud Firestore'a Kullanıcı Bilgilerini Kaydetme
+        console.log("2/3: Firestore veritabanına yazılıyor...");
+        await setDoc(doc(db, "users", user.uid), {
+            uid: user.uid,
+            username: username,
+            email: email,
+            role: "user",
+            createdAt: serverTimestamp()
+        });
+        console.log("✓ Firestore Kaydı Başarılı!");
+
+        // C. EmailJS ile Karşılama E-postası Gönderme
+        console.log("3/3: EmailJS ile e-posta gönderiliyor...");
+        const templateParams = {
+            to_name: username,
+            to_email: email,
+            message: "CRISPR-Lab platformuna başarıyla kayıt oldunuz!"
+        };
+
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        console.log("✓ Hoş geldin e-postası başarıyla gönderildi!");
+
+        alert("Kayıt başarıyla tamamlandı! Giriş yapabilirsiniz.");
+
+    } catch (error) {
+        console.error("İşlem Hatası:", error.code, error.message);
+        alert("Kayıt oluşturulurken bir hata oluştu: " + error.message);
+    }
 }
 
-var auth = typeof firebase !== 'undefined' ? firebase.auth() : null;
-var db = typeof firebase !== 'undefined' ? firebase.firestore() : null;
+// 5. Giriş (Login) Fonksiyonu
+async function handleLogin(event) {
+    event.preventDefault();
 
-var emailJsConfig = {
-  serviceId: "service_l8xxa6h",
-  templateId: "template_uw41cif",
-  publicKey: "Lze9S5-w7vthrqFY9"
-};
+    const emailInput = document.getElementById("loginEmail") || document.getElementById("email");
+    const passwordInput = document.getElementById("loginPassword") || document.getElementById("password");
 
-var state = {
-    currentUser: null,
-    pendingRegistration: null,
-    generatedOTP: null,
-    guideItemsPerPage: 15,
-    guideCurrentVisibleCount: 15,
-    activeGuideCategory: 'all',
-    guideSearchQuery: ''
-};
+    const email = emailInput ? emailInput.value : "";
+    const password = passwordInput ? passwordInput.value : "";
+
+    try {
+        console.log("Giriş yapılıyor...");
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        console.log("✓ Giriş Başarılı:", user.email);
+        alert("Başarıyla giriş yapıldı!");
+
+    } catch (error) {
+        console.error("Giriş Hatası:", error.code, error.message);
+        alert("Giriş başarısız: " + error.message);
+    }
+}
+
+// 6. Form Event Listener Bağlama
+document.addEventListener("DOMContentLoaded", () => {
+    const registerForm = document.getElementById("registerForm") || document.querySelector("form.register-form");
+    const loginForm = document.getElementById("loginForm") || document.querySelector("form.login-form");
+
+    if (registerForm) {
+        registerForm.addEventListener("submit", handleRegister);
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener("submit", handleLogin);
+    }
+});
 
 /* ==========================================================================
    2. 150 KAVRAMLIK DEV BİYOLOJİ & BİYOİNFORMATİK VERİTABANI
