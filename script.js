@@ -1,4 +1,4 @@
-// --- FIREBASE YAPILANDIRMASI (crispr-lab-ddb21) ---
+// --- FIREBASE YAPILANDIRMASI & BAŞLATMA ---
 const firebaseConfig = {
   apiKey: "AIzaSyBu2hX7Q7VnSH4brq-_HWnFtgrPiR5A-cE",
   authDomain: "crispr-lab-ddb21.firebaseapp.com",
@@ -9,7 +9,7 @@ const firebaseConfig = {
   measurementId: "G-H2Q5Z532TQ"
 };
 
-// --- FIREBASE BAŞLATMA ---
+// Değişkenleri tek bir noktada global olarak tanımlıyoruz
 var app;
 var auth;
 var db;
@@ -27,10 +27,6 @@ try {
 } catch (e) {
   console.error("Firebase başlatma hatası:", e);
 }
-// 2. Servisleri Başlatma
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 // 3. Tanımlanan EmailJS Değişkenleri
 const EMAILJS_SERVICE_ID = "service_l8xxa6h";
