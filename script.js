@@ -191,42 +191,72 @@ function handleLogin(e) {
 async function handleRegister(e) {
     if (e) e.preventDefault();
 
-// EmailJS Gönderimi (Doğrudan Global window.emailjs Çağrısı)
+    var fullNameInput = document.getElementById("fullName");
+    var emailInput = document.getElementById("email");
+    var passwordInput = document.getElementById("password");
+
+    var fullName = fullNameInput ? fullNameInput.value.trim() : "";
+    var email = emailInput ? emailInput.value.trim() : "";
+    var password = passwordInput ? passwordInput.value : "";
+
+    if (!fullName || !email || !password) {
+        alert("Lütfen tüm alanları doldurun.");
+        return;
+    }
+
+    if (password.length < 6) {
+        alert("Şifre en az 6 karakter olmalıdır.");
+        return;
+    }
+
+    var otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    state.pendingRegistration = { fullName: fullName, email: email, password: password };
+    state.generatedOTP = otpCode;
+    state.otpExpiresAt = Date.now() + 5 * 60 * 1000;
+
+    var emailTarget = document.getElementById("userEmailTarget");
+    if (emailTarget) emailTarget.textContent = email;
+
+    console.log("------------------------------------------");
+    console.log("🔐 Üretilen OTP Kodu:", otpCode);
+    console.log("------------------------------------------");
+
+    // EmailJS Gönderimi
     var emailClient = window.emailjs || (typeof emailjs !== "undefined" ? emailjs : null);
 
     if (emailClient) {
-        console.log("📨 E-posta gönderimi başlatılıyor...");
-        
+        var templateParams = {
+            to_email: email,
+            email: email,
+            recipient: email,
+            to_name: fullName,
+            name: fullName,
+            otp_code: otpCode,
+            code: otpCode,
+            message: "CRISPR-Lab Doğrulama Kodunuz: " + otpCode
+        };
+
         emailClient.send(
-            "service_l8xxa6h", 
-            "template_otp", 
-            {
-                to_email: email,
-                email: email,
-                user_email: email,
-                to_name: fullName,
-                name: fullName,
-                otp_code: otpCode,
-                code: otpCode,
-                message: "CRISPR-Lab Doğrulama Kodunuz: " + otpCode
-            },
+            "service_l8xxa6h",
+            "template_otp",
+            templateParams,
             "Lze9S5-w7vthrqFY9"
         ).then(function(response) {
             console.log("✓ E-posta başarıyla gönderildi:", response.status, response.text);
             alert("Doğrulama kodu " + email + " adresine başarıyla gönderildi!");
         }).catch(function(err) {
-            console.error("EmailJS Sunucu Hatası:", err);
-            var errorMsg = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
-            alert("E-posta gönderilemedi (" + errorMsg + "). Test Kodunuz: " + otpCode);
+            console.error("EmailJS Gönderim Hatası:", err);
+            var errText = (err && err.text) ? err.text : JSON.stringify(err);
+            alert("E-posta gönderilemedi (" + errText + "). Test Kodunuz: " + otpCode);
         });
     } else {
-        console.warn("⚠️ EmailJS SDK henüz yüklenemedi!");
-        alert("E-posta servisi yüklenemedi. Test Doğrulama Kodunuz: " + otpCode);
+        alert("Test Doğrulama Kodunuz: " + otpCode);
     }
 
-    if (typeof switchAuthStep === "function") switchAuthStep("otp");
+    if (typeof window.switchAuthStep === "function") {
+        window.switchAuthStep("otp");
+    }
 }
-
     console.log("🔐 Üretilen OTP Kodu:", otpCode);
 
 // EmailJS Gönderimi (Çoklu Değişken Destekli & Hata Loglamalı)
