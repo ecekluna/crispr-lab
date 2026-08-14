@@ -1,18 +1,3 @@
-// Firebase SDK Modülleri
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-    getAuth, 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { 
-    getFirestore, 
-    doc, 
-    setDoc, 
-    serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-// 1. Firebase Proje Yapılandırması (crispr-lab-ddb21)
 // --- FIREBASE YAPILANDIRMASI (crispr-lab-ddb21) ---
 const firebaseConfig = {
   apiKey: "AIzaSyBu2hX7Q7VnSH4brq-_HWnFtgrPiR5A-cE",
