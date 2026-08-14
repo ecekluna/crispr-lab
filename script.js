@@ -150,13 +150,14 @@ function updateUserInitials(fullName) {
 // FORM SUBMIT HANDLERS
 // ==========================================
 
-async function handleLogin(e) {
+function handleLogin(e) {
     if (e) e.preventDefault();
-    
-    const emailInput = document.getElementById("loginEmail");
-    const passwordInput = document.getElementById("loginPassword");
-    const email = emailInput ? emailInput.value.trim() : "";
-    const password = passwordInput ? passwordInput.value : "";
+
+    var emailInput = document.getElementById("loginEmail");
+    var passwordInput = document.getElementById("loginPassword");
+
+    var email = emailInput ? emailInput.value.trim() : "";
+    var password = passwordInput ? passwordInput.value : "";
 
     if (!email || !password) {
         alert("Lütfen e-posta ve şifrenizi girin.");
@@ -165,65 +166,98 @@ async function handleLogin(e) {
 
     if (!auth) {
         alert("Giriş Yapıldı (Demo Modu)!");
-        updateNavbarUserUI({ uid: "demo-uid", displayName: email.split('@')[0], email: email });
-        window.closeAuthModal();
+        if (typeof updateUserInitials === "function") updateUserInitials(email.split('@')[0]);
+        if (typeof updateNavbarUserUI === "function") updateNavbarUserUI({ displayName: email.split('@')[0], email: email });
+        if (typeof closeAuthModal === "function") closeAuthModal();
         return;
     }
 
-    try {
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        alert("Başarıyla giriş yapıldı!");
-        window.closeAuthModal();
-    } catch (error) {
-        console.error("Giriş Hatası:", error);
-        alert("Giriş yapılamadı: " + error.message);
-    }
+    auth.signInWithEmailAndPassword(email, password)
+        .then(function(userCredential) {
+            alert("Başarıyla giriş yapıldı!");
+            if (typeof updateNavbarUserUI === "function") updateNavbarUserUI(userCredential.user);
+            if (typeof closeAuthModal === "function") closeAuthModal();
+        })
+        .catch(function(error) {
+            console.error("Giriş Hatası:", error);
+            if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
+                alert("E-posta adresi veya şifre hatalı!");
+            } else {
+                alert("Giriş yapılamadı: " + error.message);
+            }
+        });
 }
 
 async function handleRegister(e) {
     if (e) e.preventDefault();
 
-    const fullName = document.getElementById("fullName")?.value.trim() || "";
-    const email = document.getElementById("email")?.value.trim() || "";
-    const password = document.getElementById("password")?.value || "";
+// EmailJS Gönderimi (Doğrudan Global window.emailjs Çağrısı)
+    var emailClient = window.emailjs || (typeof emailjs !== "undefined" ? emailjs : null);
 
-    if (!fullName || !email || !password) {
-        alert("Lütfen tüm alanları doldurun.");
-        return;
-    }
-
-    if (password.length < 6) {
-        alert("Şifre en az 6 karakter olmalıdır.");
-        return;
-    }
-
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    state.pendingRegistration = { fullName, email, password };
-    state.generatedOTP = otpCode;
-    state.otpExpiresAt = Date.now() + 5 * 60 * 1000;
-
-    const userEmailTarget = document.getElementById("userEmailTarget");
-    if (userEmailTarget) userEmailTarget.textContent = email;
-
-    console.log("[OTP KODU]:", otpCode);
-
-    if (typeof emailjs !== "undefined") {
-        try {
-            await emailjs.send("service_l8xxa6h", "template_otp", {
+    if (emailClient) {
+        console.log("📨 E-posta gönderimi başlatılıyor...");
+        
+        emailClient.send(
+            "service_l8xxa6h", 
+            "template_otp", 
+            {
                 to_email: email,
+                email: email,
+                user_email: email,
                 to_name: fullName,
-                otp_code: otpCode
-            });
-            alert("Doğrulama kodu e-postanıza gönderildi!");
-        } catch (err) {
-            alert(`Doğrulama Kodu: ${otpCode}`);
-        }
+                name: fullName,
+                otp_code: otpCode,
+                code: otpCode,
+                message: "CRISPR-Lab Doğrulama Kodunuz: " + otpCode
+            },
+            "Lze9S5-w7vthrqFY9"
+        ).then(function(response) {
+            console.log("✓ E-posta başarıyla gönderildi:", response.status, response.text);
+            alert("Doğrulama kodu " + email + " adresine başarıyla gönderildi!");
+        }).catch(function(err) {
+            console.error("EmailJS Sunucu Hatası:", err);
+            var errorMsg = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
+            alert("E-posta gönderilemedi (" + errorMsg + "). Test Kodunuz: " + otpCode);
+        });
     } else {
-        alert(`Demo Modu: Doğrulama Kodunuz -> ${otpCode}`);
+        console.warn("⚠️ EmailJS SDK henüz yüklenemedi!");
+        alert("E-posta servisi yüklenemedi. Test Doğrulama Kodunuz: " + otpCode);
     }
 
-    window.switchAuthStep("otp");
+    if (typeof switchAuthStep === "function") switchAuthStep("otp");
 }
+
+    console.log("🔐 Üretilen OTP Kodu:", otpCode);
+
+// EmailJS Gönderimi (Çoklu Değişken Destekli & Hata Loglamalı)
+    if (typeof emailjs !== "undefined") {
+        emailjs.send(
+            "service_l8xxa6h", 
+            "template_otp", 
+            {
+                to_email: email,
+                email: email,
+                user_email: email,
+                to_name: fullName,
+                name: fullName,
+                otp_code: otpCode,
+                code: otpCode,
+                message: "CRISPR-Lab Doğrulama Kodunuz: " + otpCode
+            },
+            "Lze9S5-w7vthrqFY9"
+        ).then(function(response) {
+            console.log("✓ E-posta başarıyla gönderildi:", response.status, response.text);
+            alert("Doğrulama kodu " + email + " adresine başarıyla gönderildi!");
+        }).catch(function(err) {
+            console.error("EmailJS Gönderim Hatası Detayı:", err);
+            var errorMsg = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
+            alert("E-posta gönderilemedi (" + errorMsg + "). Test Kodunuz: " + otpCode);
+        });
+    } else {
+        alert("Doğrulama Kodunuz: " + otpCode);
+    }
+
+    if (typeof switchAuthStep === "function") switchAuthStep("otp");
 
 async function handleOTPVerification(e) {
     if (e) e.preventDefault();
