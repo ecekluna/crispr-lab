@@ -1054,3 +1054,35 @@ body.soft-theme {
         margin: -10px 0;
     }
 }
+/* CRISPR-Lab Modal ve Katman Güvencesi */
+.modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(15, 23, 42, 0.75) !important;
+    backdrop-filter: blur(8px) !important;
+    display: none;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 999999 !important;
+    pointer-events: auto !important;
+}
+
+.modal-content {
+    position: relative !important;
+    z-index: 1000000 !important;
+    max-width: 440px !important;
+    width: 90% !important;
+    pointer-events: auto !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.close-btn {
+    cursor: pointer !important;
+    z-index: 1000001 !important;
+}
