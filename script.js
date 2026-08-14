@@ -200,7 +200,7 @@ async function handleRegister(e) {
     var password = passwordInput ? passwordInput.value : "";
 
     if (!fullName || !email || !password) {
-        alert("Lütfen tüm alanları doldurun.");
+        alert("Lütfen tüm alanları eksiksiz doldurun.");
         return;
     }
 
@@ -217,9 +217,7 @@ async function handleRegister(e) {
     var emailTarget = document.getElementById("userEmailTarget");
     if (emailTarget) emailTarget.textContent = email;
 
-    console.log("------------------------------------------");
     console.log("🔐 Üretilen OTP Kodu:", otpCode);
-    console.log("------------------------------------------");
 
     // EmailJS Gönderimi
     var emailClient = window.emailjs || (typeof emailjs !== "undefined" ? emailjs : null);
@@ -238,24 +236,22 @@ async function handleRegister(e) {
 
         emailClient.send(
             "service_l8xxa6h",
-            "template_otp",
+            "template_uw41cif", // <-- Gerçek Template ID entegre edildi
             templateParams,
             "Lze9S5-w7vthrqFY9"
         ).then(function(response) {
-            console.log("✓ E-posta başarıyla gönderildi:", response.status, response.text);
+            console.log("✓ E-posta Başarıyla Gönderildi:", response.status, response.text);
             alert("Doğrulama kodu " + email + " adresine başarıyla gönderildi!");
         }).catch(function(err) {
             console.error("EmailJS Gönderim Hatası:", err);
-            var errText = (err && err.text) ? err.text : JSON.stringify(err);
+            var errText = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
             alert("E-posta gönderilemedi (" + errText + "). Test Kodunuz: " + otpCode);
         });
     } else {
         alert("Test Doğrulama Kodunuz: " + otpCode);
     }
 
-    if (typeof window.switchAuthStep === "function") {
-        window.switchAuthStep("otp");
-    }
+    if (typeof switchAuthStep === "function") switchAuthStep("otp");
 }
     console.log("🔐 Üretilen OTP Kodu:", otpCode);
 
