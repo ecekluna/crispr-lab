@@ -1,4 +1,3 @@
-// --- FIREBASE YAPILANDIRMASI & BAŞLATMA ---
 const firebaseConfig = {
   apiKey: "AIzaSyBu2hX7Q7VnSH4brq-_HWnFtgrPiR5A-cE",
   authDomain: "crispr-lab-ddb21.firebaseapp.com",
@@ -9,171 +8,26 @@ const firebaseConfig = {
   measurementId: "G-H2Q5Z532TQ"
 };
 
-// Değişkenleri tek bir noktada global olarak tanımlıyoruz
-var app;
-var auth;
-var db;
-
+var app, auth, db;
 try {
   if (typeof firebase !== "undefined") {
-    if (!firebase.apps.length) {
-      app = firebase.initializeApp(firebaseConfig);
-    } else {
-      app = firebase.app();
-    }
+    app = !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
     auth = firebase.auth();
     db = firebase.firestore();
   }
 } catch (e) {
-  console.error("Firebase başlatma hatası:", e);
+  console.error("Firebase başlatılamadı:", e);
 }
 
-// 3. Tanımlanan EmailJS Değişkenleri
-const EMAILJS_SERVICE_ID = "service_l8xxa6h";
-const EMAILJS_TEMPLATE_ID = "template_uw41cif";
-
-// 4. Kayıt (Register) ve Veritabanı + E-posta Gönderim Fonksiyonu
-async function handleRegister(event) {
-    event.preventDefault(); // Sayfanın yenilenmesini önler
-
-    const emailInput = document.getElementById("registerEmail") || document.getElementById("email");
-    const passwordInput = document.getElementById("registerPassword") || document.getElementById("password");
-    const usernameInput = document.getElementById("registerUsername") || document.getElementById("username");
-
-    const email = emailInput ? emailInput.value : "";
-    const password = passwordInput ? passwordInput.value : "";
-    const username = usernameInput ? usernameInput.value : "Kullanıcı";
-
-    if (!email || !password) {
-        alert("Lütfen e-posta ve şifre alanlarını doldurun.");
-        return;
-    }
-
-    try {
-        console.log("1/3: Firebase Auth kaydı başlatılıyor...");
-
-        // A. Firebase Authentication ile Kullanıcı Açma
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        console.log("✓ Auth Başarılı! UID:", user.uid);
-
-        // B. Cloud Firestore'a Kullanıcı Bilgilerini Kaydetme
-        console.log("2/3: Firestore veritabanına yazılıyor...");
-        await setDoc(doc(db, "users", user.uid), {
-            uid: user.uid,
-            username: username,
-            email: email,
-            role: "user",
-            createdAt: serverTimestamp()
-        });
-        console.log("✓ Firestore Kaydı Başarılı!");
-
-        // C. EmailJS ile Karşılama E-postası Gönderme
-        console.log("3/3: EmailJS ile e-posta gönderiliyor...");
-        const templateParams = {
-            to_name: username,
-            to_email: email,
-            message: "CRISPR-Lab platformuna başarıyla kayıt oldunuz!"
-        };
-
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-        console.log("✓ Hoş geldin e-postası başarıyla gönderildi!");
-
-        alert("Kayıt başarıyla tamamlandı! Giriş yapabilirsiniz.");
-
-    } catch (error) {
-        console.error("İşlem Hatası:", error.code, error.message);
-        alert("Kayıt oluşturulurken bir hata oluştu: " + error.message);
-    }
-}
-
-// Giriş Fonksiyonu
-async function handleLogin(event) {
-    if (event) event.preventDefault(); // Sayfa yenilenmesini kesin olarak engeller
-
-    const emailInput = document.getElementById("loginEmail");
-    const passwordInput = document.getElementById("loginPassword");
-
-    const email = emailInput ? emailInput.value.trim() : "";
-    const password = passwordInput ? passwordInput.value : "";
-
-    if (!email || !password) {
-        alert("Lütfen e-posta ve şifre alanlarını doldurun.");
-        return;
-    }
-
-    try {
-        console.log("Giriş yapılıyor...", email);
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        console.log("✓ Giriş Başarılı:", user.email);
-        alert("Giriş başarılı! Hoş geldiniz.");
-
-        // Modalı Kapatma
-        const authModal = document.getElementById("authModal");
-        if (authModal) {
-            authModal.style.display = "none";
-        }
-
-    } catch (error) {
-        console.error("Giriş Hatası Detayı:", error.code, error.message);
-        if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-            alert("E-posta veya şifre hatalı!");
-        } else if (error.code === 'auth/invalid-email') {
-            alert("Geçersiz bir e-posta formatı girdiniz.");
-        } else {
-            alert("Giriş yapılamadı: " + error.message);
-        }
-    }
-}
-
-// Olay Dinleyicileri (Event Listeners)
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Kayıt Formu
-    const registerForm = document.getElementById("registerForm");
-    if (registerForm) {
-        registerForm.addEventListener("submit", handleRegister);
-    }
-
-    // 2. Giriş Formu
-    const loginForm = document.getElementById("loginForm");
-    if (loginForm) {
-        loginForm.addEventListener("submit", handleLogin);
-    }
-
-    // 3. Modal Kapatma
-    const closeModalBtn = document.getElementById("closeModalBtn");
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener("click", () => {
-            const authModal = document.getElementById("authModal");
-            if (authModal) authModal.style.display = "none";
-        });
-    }
-});
-
-// Olay Dinleyicileri (Hem Form Hem Buton Tıklaması İçin)
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Form submit dinleyicisi
-    const loginForm = document.getElementById("loginForm") || document.querySelector("form.login-form");
-    if (loginForm) {
-        loginForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            executeLogin();
-        });
-    }
-
-    // 2. Doğrudan buton tıklama dinleyicisi (Formsuz kullanım varsa)
-    const loginBtn = document.getElementById("loginBtn") || document.querySelector(".login-btn");
-    if (loginBtn) {
-        loginBtn.addEventListener("click", (e) => {
-            if (!loginForm) {
-                e.preventDefault();
-                executeLogin();
-            }
-        });
-    }
-});
+var state = {
+    currentUser: null,
+    pendingRegistration: null,
+    generatedOTP: null,
+    guideItemsPerPage: 15,
+    guideCurrentVisibleCount: 15,
+    activeGuideCategory: 'all',
+    guideSearchQuery: ''
+};
 
 /* ==========================================================================
    2. 150 KAVRAMLIK DEV BİYOLOJİ & BİYOİNFORMATİK VERİTABANI
@@ -584,7 +438,7 @@ function setupFirebaseListener() {
     auth.onAuthStateChanged(function(user) {
         if (user) {
             state.currentUser = user;
-            if (typeof updateNavbarUserUI === "function") updateNavbarUserUI(user);
+            updateNavbarUserUI(user);
 
             var profileFullName = document.getElementById("profileFullName");
             var profileEmail = document.getElementById("profileEmail");
@@ -595,29 +449,6 @@ function setupFirebaseListener() {
             var displayName = user.displayName || "Kullanıcı";
             if (profileFullName) profileFullName.value = displayName;
             if (profileEmail) profileEmail.value = user.email || "";
-
-            if (typeof db !== "undefined" && db) {
-                db.collection("users").doc(user.uid).get().then(function(docSnap) {
-                    if (docSnap.exists) {
-                        var data = docSnap.data();
-                        if (data && data.fullName) {
-                            if (profileFullName) profileFullName.value = data.fullName;
-                            if (typeof updateUserInitials === "function") updateUserInitials(data.fullName);
-                            if (typeof updateNavbarUserUI === "function") {
-                                updateNavbarUserUI({ uid: user.uid, displayName: data.fullName, photoURL: user.photoURL });
-                            }
-                        }
-                    }
-                }).catch(function(err) {
-                    console.error("Profil verisi çekilemedi:", err);
-                });
-            }
-        } else {
-            state.currentUser = null;
-            if (typeof updateNavbarUserUI === "function") updateNavbarUserUI(null);
-        }
-    });
-}
 
             updateUserInitials(displayName);
 
@@ -636,6 +467,103 @@ function setupFirebaseListener() {
                 if (removeAvatarBtn) removeAvatarBtn.classList.add("hidden");
             }
 
+            if (db) {
+                db.collection("users").doc(user.uid).get().then(function(docSnap) {
+                    if (docSnap.exists) {
+                        var data = docSnap.data();
+                        if (data.fullName) {
+                            if (profileFullName) profileFullName.value = data.fullName;
+                            updateUserInitials(data.fullName);
+                            updateNavbarUserUI({ uid: user.uid, displayName: data.fullName, photoURL: user.photoURL });
+                        }
+                    }
+                }).catch(function(err) {});
+            }
+        } else {
+            state.currentUser = null;
+            updateNavbarUserUI(null);
+        }
+    });
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    var email = document.getElementById("loginEmail").value.trim();
+    var password = document.getElementById("loginPassword").value;
+
+    if (!auth) {
+        alert("Giriş Yapıldı (Demo Modu)!");
+        updateUserInitials(email.split('@')[0]);
+        closeAuthModal();
+        return;
+    }
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then(function() {
+            alert("Başarıyla giriş yapıldı.");
+            closeAuthModal();
+        })
+        .catch(function(error) {
+            alert("Giriş hatası: " + error.message);
+        });
+}
+
+function handleRegisterInitiate(e) {
+    e.preventDefault();
+    var fullName = document.getElementById("fullName").value.trim();
+    var email = document.getElementById("email").value.trim();
+    var password = document.getElementById("password").value;
+
+    if (password.length < 6) {
+        alert("Şifre en az 6 karakter olmalıdır.");
+        return;
+    }
+
+    var generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+    state.generatedOTP = generatedCode;
+    state.pendingRegistration = { fullName: fullName, email: email, password: password };
+
+// EmailJS Şablon Değişkenleri (Panelinizdeki değişken isimleriyle birebir aynı olmalı)
+    var templateParams = {
+        to_name: fullName,
+        to_email: email, // Panelde {{to_email}} yazmalı
+        email: email,    // Eğer panelde {{email}} yazdıysanız bu çalışır
+        passcode: generatedCode, // Panelde {{passcode}} yazmalı
+        code: generatedCode      // Eğer panelde {{code}} yazdıysanız bu çalışır
+    };
+
+    console.log("EmailJS Gönderimi Başlatılıyor...", templateParams);
+
+    if (typeof emailjs !== 'undefined') {
+        emailjs.send(
+            emailJsConfig.serviceId,
+            emailJsConfig.templateId,
+            templateParams,
+            emailJsConfig.publicKey
+        ).then(function(response) {
+            console.log("EmailJS Başarılı:", response.status, response.text);
+            document.getElementById("registerStep").classList.add("hidden");
+            document.getElementById("otpStep").classList.remove("hidden");
+            document.getElementById("userEmailTarget").textContent = email;
+            alert("Doğrulama kodu e-posta adresinize gönderildi! (Spam/İstenmeyen kutusunu kontrol etmeyi unutmayın)");
+        }, function(error) {
+            console.error("EmailJS Gönderim Hatası Detayı:", error);
+            alert("E-posta gönderilemedi! Hata Detayı: " + JSON.stringify(error) + "\n\n(Test Kodunuz: " + generatedCode + ")");
+            
+            // Hata alsa da devam edebilmen için OTP ekranını açar:
+            document.getElementById("registerStep").classList.add("hidden");
+            document.getElementById("otpStep").classList.remove("hidden");
+            document.getElementById("userEmailTarget").textContent = email;
+        });
+    } else {
+        alert("EmailJS kütüphanesi yüklenemedi! Test Kodunuz: " + generatedCode);
+        document.getElementById("registerStep").classList.add("hidden");
+        document.getElementById("otpStep").classList.remove("hidden");
+        document.getElementById("userEmailTarget").textContent = email;
+    }
+}
+
+
 function handleOTPVerification(e) {
     e.preventDefault();
     var enteredOTP = document.getElementById("otpCode").value.trim();
@@ -649,79 +577,179 @@ function handleOTPVerification(e) {
 
     if (!auth) {
         alert("Kayıt tamamlandı!");
-        updateUserInitials(registration.fullName);
+        if (registration && registration.fullName) {
+            updateUserInitials(registration.fullName);
+        }
         closeAuthModal();
         return;
     }
 
-    auth.createUserWithEmailAndPassword(registration.email, registration.password)
-        .then(function(userCredential) {
-            var user = userCredential.user;
-            user.updateProfile({ displayName: registration.fullName });
-
-            if (db) {
-                db.collection("users").doc(user.uid).set({
-                    uid: user.uid,
-                    fullName: registration.fullName,
-                    email: registration.email,
-                    createdAt: new Date().toISOString()
-                });
-            }
-
-            alert("Hesabınız başarıyla oluşturuldu.");
-            closeAuthModal();
-        })
-        .catch(function(error) {
-            alert("Kayıt hatası: " + error.message);
-        });
-}
-
+    // PROFİL VE ŞİFRE GÜNCELLEME FONKSİYONU
 function handleProfileUpdate(e) {
-    e.preventDefault();
-    var newFullName = document.getElementById("profileFullName").value.trim();
-    var newPassword = document.getElementById("newPassword").value;
+    if (e) e.preventDefault();
 
-    if (!state.currentUser && !auth) {
-        updateUserInitials(newFullName);
-        alert("Profil bilgileriniz güncellendi.");
-        closeProfileModal();
+    var fullNameInput = document.getElementById("profileFullName");
+    var currentPasswordInput = document.getElementById("currentPassword");
+    var newPasswordInput = document.getElementById("newPassword");
+
+    var newFullName = fullNameInput ? fullNameInput.value.trim() : "";
+    var currentPassword = currentPasswordInput ? currentPasswordInput.value : "";
+    var newPassword = newPasswordInput ? newPasswordInput.value : "";
+
+    if (!newFullName) {
+        alert("Lütfen isim soyisim alanını boş bırakmayın.");
         return;
     }
 
-    var user = state.currentUser;
-    if (!user) return;
+    if (!auth || !auth.currentUser) {
+        // Demo modu veya yerel durum güncellemesi
+        alert("Profil güncellendi (Demo Modu)!");
+        if (typeof updateUserInitials === "function") updateUserInitials(newFullName);
+        if (typeof updateNavbarUserUI === "function") {
+            updateNavbarUserUI({ uid: "demo", displayName: newFullName });
+        }
+        if (typeof closeProfileModal === "function") closeProfileModal();
+        return;
+    }
 
-    user.updateProfile({ displayName: newFullName })
-        .then(function() {
-            updateUserInitials(newFullName);
-            if (db) {
-                db.collection("users").doc(user.uid).set({ fullName: newFullName }, { merge: true });
+    var user = auth.currentUser;
+
+    // 1. Profil İsmini Güncelle
+    user.updateProfile({
+        displayName: newFullName
+    }).then(function() {
+        if (typeof db !== "undefined" && db) {
+            return db.collection("users").doc(user.uid).update({
+                fullName: newFullName
+            });
+        }
+    }).then(function() {
+        if (typeof updateUserInitials === "function") updateUserInitials(newFullName);
+        if (typeof updateNavbarUserUI === "function") {
+            updateNavbarUserUI(user);
+        }
+
+        // 2. Yeni Şifre Girilmişse Şifreyi Güncelle
+        if (newPassword) {
+            if (newPassword.length < 6) {
+                alert("İsim güncellendi ancak yeni şifre en az 6 karakter olmalıdır.");
+                return;
             }
+            return user.updatePassword(newPassword).then(function() {
+                alert("Profil ve şifre başarıyla güncellendi!");
+                if (currentPasswordInput) currentPasswordInput.value = "";
+                if (newPasswordInput) newPasswordInput.value = "";
+                if (typeof closeProfileModal === "function") closeProfileModal();
+            });
+        } else {
+            alert("Profil bilgileri başarıyla güncellendi!");
+            if (typeof closeProfileModal === "function") closeProfileModal();
+        }
+    }).catch(function(error) {
+        console.error("Profil güncelleme hatası:", error);
+        if (error.code === "auth/requires-recent-login") {
+            alert("Güvenlik nedeniyle şifre değiştirmek için lütfen tekrar giriş yapın.");
+        } else {
+            alert("Güncelleme yapılamadı: " + error.message);
+        }
+    });
+}
 
-            if (newPassword) {
-                if (newPassword.length < 6) {
-                    alert("Yeni şifreniz en az 6 karakter olmalıdır.");
-                    return;
+    // Firebase Auth ile Kullanıcı Kaydını Tamamlama
+    auth.createUserWithEmailAndPassword(registration.email, registration.password)
+        .then(function(userCredential) {
+            var user = userCredential.user;
+            return user.updateProfile({
+                displayName: registration.fullName
+            }).then(function() {
+                if (typeof db !== "undefined" && db) {
+                    return db.collection("users").doc(user.uid).set({
+                        fullName: registration.fullName,
+                        email: registration.email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
                 }
-
-                user.updatePassword(newPassword).then(function() {
-                    alert("Profil bilgileriniz ve şifreniz güncellendi!");
-                    document.getElementById("currentPassword").value = "";
-                    document.getElementById("newPassword").value = "";
-                    closeProfileModal();
-                }).catch(function(err) {
-                    alert("Şifre güncellenemedi. Lütfen yeniden giriş yapıp deneyin.");
-                });
-            } else {
-                alert("Profil bilgileriniz güncellendi.");
-                closeProfileModal();
-            }
+            });
         })
-        .catch(function(err) {
-            alert("Güncelleme hatası: " + err.message);
+        .then(function() {
+            alert("Kayıt başarıyla tamamlandı!");
+            closeAuthModal();
+        })
+        .catch(function(error) {
+            console.error("Kayıt Hatası:", error);
+            alert("Kayıt yapılamadı: " + error.message);
         });
 }
 
+function setupFirebaseListener() {
+    if (!auth) return;
+
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            state.currentUser = user;
+            if (typeof updateNavbarUserUI === "function") updateNavbarUserUI(user);
+
+            var profileFullName = document.getElementById("profileFullName");
+            var profileEmail = document.getElementById("profileEmail");
+            var currentName = user.displayName || (user.email ? user.email.split('@')[0] : "Kullanıcı");
+
+            if (profileFullName) profileFullName.value = currentName;
+            if (profileEmail) profileEmail.value = user.email || "";
+
+            if (typeof updateUserInitials === "function") updateUserInitials(currentName);
+
+            if (typeof db !== "undefined" && db) {
+                db.collection("users").doc(user.uid).get().then(function(docSnap) {
+                    if (docSnap && docSnap.exists) {
+                        var data = docSnap.data();
+                        if (data && data.fullName) {
+                            if (profileFullName) profileFullName.value = data.fullName;
+                            if (typeof updateUserInitials === "function") updateUserInitials(data.fullName);
+                            if (typeof updateNavbarUserUI === "function") {
+                                updateNavbarUserUI({ uid: user.uid, displayName: data.fullName, photoURL: user.photoURL });
+                            }
+                        }
+                    }
+                }).catch(function(err) {});
+            }
+        } else {
+            state.currentUser = null;
+            if (typeof updateNavbarUserUI === "function") updateNavbarUserUI(null);
+        }
+    });
+}
+
+function handleLogin(e) {
+    if (e) e.preventDefault();
+    
+    var emailInput = document.getElementById("loginEmail");
+    var passwordInput = document.getElementById("loginPassword");
+
+    var email = emailInput ? emailInput.value.trim() : "";
+    var password = passwordInput ? passwordInput.value : "";
+
+    if (!email || !password) {
+        alert("Lütfen e-posta ve şifrenizi girin.");
+        return;
+    }
+
+    if (!auth) {
+        alert("Giriş Yapıldı (Demo Modu)!");
+        if (typeof updateUserInitials === "function") updateUserInitials(email.split('@')[0]);
+        if (typeof closeAuthModal === "function") closeAuthModal();
+        return;
+    }
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then(function(userCredential) {
+            alert("Başarıyla giriş yapıldı.");
+            if (typeof closeAuthModal === "function") closeAuthModal();
+        })
+        .catch(function(error) {
+            console.error("Giriş Hatası:", error);
+            alert("Giriş yapılamadı: " + error.message);
+        });
+}
 function handleLogout() {
     if (auth) {
         auth.signOut();
