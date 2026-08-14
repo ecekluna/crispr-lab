@@ -396,17 +396,80 @@ function initEvents() {
     const backToMainBtn = document.getElementById("backToMainBtn");
     const scenarioTabPage = document.getElementById("scenarioTabPage");
 
-    function showScenarios() {
-        if (scenarioTabPage) {
-            scenarioTabPage.style.display = "block";
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+   // ==========================================
+// SAYFA DEĞİŞTİRİCİ: ANA SAYFA <-> SENARYOLAR
+// ==========================================
+
+function showScenarios() {
+    // 1. Ana sayfadaki tüm bölümleri gizle
+    const mainSections = document.querySelectorAll('.hero, #rehber, #nasil-calisir, #modlar, #sss');
+    mainSections.forEach(section => {
+        section.style.display = 'none';
+    });
+
+    // 2. Senaryolar sayfasını görünür yap
+    const scenarioPage = document.getElementById('scenarioTabPage');
+    if (scenarioPage) {
+        scenarioPage.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    function hideScenarios() {
-        if (scenarioTabPage) {
-            scenarioTabPage.style.display = "none";
-        }
+
+    // 3. Senaryo kartlarını yükle (eğer daha önce yüklenmediyse)
+    if (typeof renderScenarioCards === 'function') {
+        renderScenarioCards();
     }
+}
+
+function hideScenarios() {
+    // 1. Senaryolar sayfasını gizle
+    const scenarioPage = document.getElementById('scenarioTabPage');
+    if (scenarioPage) {
+        scenarioPage.style.display = 'none';
+    }
+
+    // 2. Ana sayfa bölümlerini tekrar görünür yap
+    const mainSections = document.querySelectorAll('.hero, #rehber, #nasil-calisir, #modlar, #sss');
+    mainSections.forEach(section => {
+        section.style.display = '';
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Buton Olay Dinleyicilerini Bağlama
+function bindScenarioEvents() {
+    const navScenarioBtn = document.getElementById('navScenarioTabBtn');
+    const heroScenarioBtn = document.getElementById('heroScenarioBtn');
+    const backToMainBtn = document.getElementById('backToMainBtn');
+
+    if (navScenarioBtn) {
+        navScenarioBtn.onclick = function(e) {
+            e.preventDefault();
+            showScenarios();
+        };
+    }
+
+    if (heroScenarioBtn) {
+        heroScenarioBtn.onclick = function(e) {
+            e.preventDefault();
+            showScenarios();
+        };
+    }
+
+    if (backToMainBtn) {
+        backToMainBtn.onclick = function(e) {
+            e.preventDefault();
+            hideScenarios();
+        };
+    }
+}
+
+// Başlatıcı içine ekleyin
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindScenarioEvents);
+} else {
+    bindScenarioEvents();
+}
 
     if (navScenarioTabBtn) navScenarioTabBtn.onclick = showScenarios;
     if (heroScenarioBtn) heroScenarioBtn.onclick = showScenarios;
