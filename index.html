@@ -14,37 +14,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     
-<!-- EmailJS SDK -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script type="text/javascript">
-   (function(){
-      // Tanımlanan EmailJS Public Key
-      emailjs.init("service_l8xxa6h");
-   })();
-</script>
+    <!-- Firebase SDK CDN (Compat Sürümü) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-<!-- Script Dosyası -->
-<script type="module" src="script.js"></script>
-
-  <!-- Firebase SDK CDN (Compat Sürümü - Tüm fonksiyonlarla tam uyumlu) -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<!-- EmailJS SDK -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script type="text/javascript">
-  (function(){
-    emailjs.init("service_l8xxa6h");
-  })();
-</script>
-
-<!-- Ana Script Dosyanız -->
-<script src="script.js"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("service_l8xxa6h");
+       })();
+    </script>
 </head>
 <body class="soft-theme">
 
-    <!-- Arka Plan Parlama Efektleri (Soft Girl / Pastel Vibe) -->
+    <!-- Arka Plan Parlama Efektleri -->
     <div class="glow-bg glow-pink"></div>
     <div class="glow-bg glow-blue"></div>
     <div class="glow-bg glow-green"></div>
@@ -137,9 +122,7 @@
         </div>
 
         <!-- Bilgi Kartları Grid Yapısı -->
-        <div id="guideCardsGrid" class="guide-cards-grid">
-            <!-- Dinamik 15'erli Yüklenen Kartlar JS Tarafından Buraya Basılacak -->
-        </div>
+        <div id="guideCardsGrid" class="guide-cards-grid"></div>
 
         <!-- Daha Fazla Göster Buton Alanı -->
         <div class="load-more-wrapper">
@@ -159,7 +142,6 @@
         </div>
 
         <div class="workflow-container">
-            <!-- Adım 1 -->
             <div class="step-card glass-card-soft">
                 <div class="step-number color-pink">01</div>
                 <div class="step-icon">🧬</div>
@@ -167,10 +149,8 @@
                 <p class="step-desc">Düzenlenecek hedef DNA dizilimini yükleyin. Sistem, baz sırasını haritalandırarak potansiyel hedef bölgeleri anında izole eder.</p>
             </div>
 
-            <!-- Akış Ok İkonu 1 -->
             <div class="flow-arrow">➔</div>
 
-            <!-- Adım 2 -->
             <div class="step-card glass-card-soft">
                 <div class="step-number color-blue">02</div>
                 <div class="step-icon">🎯</div>
@@ -178,10 +158,8 @@
                 <p class="step-desc">20 bazlık spesifik rehber RNA (sgRNA) sentezlenir. Cas9'un kenetlenmesi için kritik NGG PAM motifi milimetrik tespit edilir.</p>
             </div>
 
-            <!-- Akış Ok İkonu 2 -->
             <div class="flow-arrow">➔</div>
 
-            <!-- Adım 3 -->
             <div class="step-card glass-card-soft">
                 <div class="step-number color-purple">03</div>
                 <div class="step-icon">✂️</div>
@@ -189,10 +167,8 @@
                 <p class="step-desc">Cas9 endonükleaz enzimi, gRNA rehberliğinde hedefe kilitlenir ve DNA'nın çift zincirinde (DSB) pürüzsüz bir kesim gerçekleştirir.</p>
             </div>
 
-            <!-- Akış Ok İkonu 3 -->
             <div class="flow-arrow">➔</div>
 
-            <!-- Adım 4 -->
             <div class="step-card glass-card-soft">
                 <div class="step-number color-green">04</div>
                 <div class="step-icon">🔬</div>
@@ -281,7 +257,7 @@
 
             <details class="faq-item">
                 <summary class="faq-question"><span>8. CRISPR teknolojisi hangi hastalıklarda kullanılır?</span> <span class="faq-icon">+</span></summary>
-                <div class="faq-answer"><p>Orak hücre anemisi, beta talasemi, belirli kanser türleri ve genetik görme bozuklukları gibi bir çok alanda klinik tedavi çalışmaları yürütülmektedir.</p></div>
+                <div class="faq-answer"><p>Orak hücre anemisi, beta talasemi, belirli kanser türleri ve genetik görme bozuklukları gibi birçok alanda klinik tedavi çalışmaları yürütülmektedir.</p></div>
             </details>
 
             <details class="faq-item">
@@ -296,7 +272,7 @@
         </div>
     </section>
 
-    <!-- MÜSTAKİL SENARYOLAR SAYFASI (YENİ TAB / EKRAN) -->
+    <!-- MÜSTAKİL SENARYOLAR SAYFASI -->
     <div id="scenarioTabPage" class="scenario-page-container" style="display: none;">
         <div class="scenario-page-header">
             <button id="backToMainBtn" class="btn-soft-outline" type="button">
@@ -309,44 +285,40 @@
             </div>
         </div>
 
-        <!-- 10 Senaryonun Kartlar Halinde Dinamik Yükleneceği Alan -->
         <div id="scenarioListGrid" class="scenario-list-grid"></div>
 
-        <!-- Aktif Senaryo Detay ve Başlatma Alanı -->
         <div id="activeScenarioRunner" class="scenario-runner-card glass-card-soft hidden">
             <button id="closeScenarioRunnerBtn" class="close-btn" type="button">&times;</button>
             <div id="scenarioRunnerContent"></div>
         </div>
     </div>
 
-<!-- GİRİŞ, KAYIT VE OTP MODALI -->
-<div id="authModal" class="modal-overlay">
-    <div class="modal-content glass-card-soft">
-        <span id="closeModalBtn" class="close-btn">&times;</span>
+    <!-- GİRİŞ, KAYIT VE OTP MODALI (TEK VE TAM KAPSAYICI) -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content glass-card-soft">
+            <span id="closeModalBtn" class="close-btn">&times;</span>
 
-        <!-- 1. GİRİŞ YAP FORMU (VARSAYILAN AÇILIŞ EKRANI) -->
-        <div id="loginStep" class="auth-step">
-            <h2 class="modal-title">Giriş Yap</h2>
-            <p class="modal-subtitle">Tekrar hoş geldiniz! Hesabınıza giriş yapın.</p>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">E-Posta Adresi</label>
-                    <input type="email" id="loginEmail" placeholder="ornek@email.com" autocomplete="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Şifre</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
-                </div>
-                <button type="submit" id="loginSubmitBtn" class="btn-soft-primary full-width">Giriş Yap</button>
+            <!-- 1. GİRİŞ YAP FORMU -->
+            <div id="loginStep" class="auth-step">
+                <h2 class="modal-title">Giriş Yap</h2>
+                <p class="modal-subtitle">Tekrar hoş geldiniz! Hesabınıza giriş yapın.</p>
                 
-                <p class="auth-switch-text">
-                    Hesabınız yok mu? <a href="#" id="switchToRegister">Hemen Kayıt Ol</a>
-                </p>
-            </form>
-        </div>
-    </div>
-</div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">E-Posta Adresi</label>
+                        <input type="email" id="loginEmail" placeholder="ornek@email.com" autocomplete="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Şifre</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" id="loginSubmitBtn" class="btn-soft-primary full-width">Giriş Yap</button>
+                    
+                    <p class="auth-switch-text">
+                        Hesabınız yok mu? <a href="#" id="switchToRegister">Hemen Kayıt Ol</a>
+                    </p>
+                </form>
+            </div>
 
             <!-- 2. KAYIT OL FORMU -->
             <div id="registerStep" class="auth-step hidden">
@@ -390,7 +362,6 @@
                     <button type="submit" class="btn-soft-primary full-width">Kodu Onayla ve Başla</button>
                 </form>
             </div>
-
         </div>
     </div>
 
@@ -459,8 +430,7 @@
         </div>
     </div>
 
-    <!-- Script Bağlantısı -->
-    <!-- type="module" EKLENDİĞİNDEN EMİN OL -->
-<script type="module" src="script.js"></script>
+    <!-- Ana JavaScript Dosyası (Sadece tek ve en altta) -->
+    <script src="script.js"></script>
 </body>
 </html>
