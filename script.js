@@ -13,15 +13,35 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // 1. Firebase Proje Yapılandırması (crispr-lab-ddb21)
+// --- FIREBASE YAPILANDIRMASI (crispr-lab-ddb21) ---
 const firebaseConfig = {
-    apiKey: "AIzaSy...", // Firebase Console -> Project Settings -> General alanındaki apiKey değerini ekleyin
-    authDomain: "crispr-lab-ddb21.firebaseapp.com",
-    projectId: "crispr-lab-ddb21",
-    storageBucket: "crispr-lab-ddb21.appspot.com",
-    messagingSenderId: "crispr-lab-sender",
-    appId: "crispr-lab-app-id"
+  apiKey: "AIzaSyBu2hX7Q7VnSH4brq-_HWnFtgrPiR5A-cE",
+  authDomain: "crispr-lab-ddb21.firebaseapp.com",
+  projectId: "crispr-lab-ddb21",
+  storageBucket: "crispr-lab-ddb21.firebasestorage.app",
+  messagingSenderId: "1064623340355",
+  appId: "1:1064623340355:web:f280ccae2b6527d6048df6",
+  measurementId: "G-H2Q5Z532TQ"
 };
 
+// --- FIREBASE BAŞLATMA ---
+var app;
+var auth;
+var db;
+
+try {
+  if (typeof firebase !== "undefined") {
+    if (!firebase.apps.length) {
+      app = firebase.initializeApp(firebaseConfig);
+    } else {
+      app = firebase.app();
+    }
+    auth = firebase.auth();
+    db = firebase.firestore();
+  }
+} catch (e) {
+  console.error("Firebase başlatma hatası:", e);
+}
 // 2. Servisleri Başlatma
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -129,12 +149,19 @@ async function handleLogin(event) {
 
 // Olay Dinleyicileri (Event Listeners)
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Kayıt Formu
+    const registerForm = document.getElementById("registerForm");
+    if (registerForm) {
+        registerForm.addEventListener("submit", handleRegister);
+    }
+
+    // 2. Giriş Formu
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
         loginForm.addEventListener("submit", handleLogin);
     }
 
-    // Modal Kapatma Butonu
+    // 3. Modal Kapatma
     const closeModalBtn = document.getElementById("closeModalBtn");
     if (closeModalBtn) {
         closeModalBtn.addEventListener("click", () => {
@@ -576,7 +603,7 @@ function setupFirebaseListener() {
     auth.onAuthStateChanged(function(user) {
         if (user) {
             state.currentUser = user;
-            updateNavbarUserUI(user);
+            if (typeof updateNavbarUserUI === "function") updateNavbarUserUI(user);
 
             var profileFullName = document.getElementById("profileFullName");
             var profileEmail = document.getElementById("profileEmail");
@@ -587,6 +614,29 @@ function setupFirebaseListener() {
             var displayName = user.displayName || "Kullanıcı";
             if (profileFullName) profileFullName.value = displayName;
             if (profileEmail) profileEmail.value = user.email || "";
+
+            if (typeof db !== "undefined" && db) {
+                db.collection("users").doc(user.uid).get().then(function(docSnap) {
+                    if (docSnap.exists) {
+                        var data = docSnap.data();
+                        if (data && data.fullName) {
+                            if (profileFullName) profileFullName.value = data.fullName;
+                            if (typeof updateUserInitials === "function") updateUserInitials(data.fullName);
+                            if (typeof updateNavbarUserUI === "function") {
+                                updateNavbarUserUI({ uid: user.uid, displayName: data.fullName, photoURL: user.photoURL });
+                            }
+                        }
+                    }
+                }).catch(function(err) {
+                    console.error("Profil verisi çekilemedi:", err);
+                });
+            }
+        } else {
+            state.currentUser = null;
+            if (typeof updateNavbarUserUI === "function") updateNavbarUserUI(null);
+        }
+    });
+}
 
             updateUserInitials(displayName);
 
@@ -604,102 +654,6 @@ function setupFirebaseListener() {
                 if (avatarInitials) avatarInitials.classList.remove("hidden");
                 if (removeAvatarBtn) removeAvatarBtn.classList.add("hidden");
             }
-
-            if (db) {
-                db.collection("users").doc(user.uid).get().then(function(docSnap) {
-                    if (docSnap.exists) {
-                        var data = docSnap.data();
-                        if (data.fullName) {
-                            if (profileFullName) profileFullName.value = data.fullName;
-                            updateUserInitials(data.fullName);
-                            updateNavbarUserUI({ uid: user.uid, displayName: data.fullName, photoURL: user.photoURL });
-                        }
-                    }
-                }).catch(function(err) {});
-            }
-        } else {
-            state.currentUser = null;
-            updateNavbarUserUI(null);
-        }
-    });
-}
-
-function handleLogin(e) {
-    e.preventDefault();
-    var email = document.getElementById("loginEmail").value.trim();
-    var password = document.getElementById("loginPassword").value;
-
-    if (!auth) {
-        alert("Giriş Yapıldı (Demo Modu)!");
-        updateUserInitials(email.split('@')[0]);
-        closeAuthModal();
-        return;
-    }
-
-    auth.signInWithEmailAndPassword(email, password)
-        .then(function() {
-            alert("Başarıyla giriş yapıldı.");
-            closeAuthModal();
-        })
-        .catch(function(error) {
-            alert("Giriş hatası: " + error.message);
-        });
-}
-
-function handleRegisterInitiate(e) {
-    e.preventDefault();
-    var fullName = document.getElementById("fullName").value.trim();
-    var email = document.getElementById("email").value.trim();
-    var password = document.getElementById("password").value;
-
-    if (password.length < 6) {
-        alert("Şifre en az 6 karakter olmalıdır.");
-        return;
-    }
-
-    var generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-    state.generatedOTP = generatedCode;
-    state.pendingRegistration = { fullName: fullName, email: email, password: password };
-
-// EmailJS Şablon Değişkenleri (Panelinizdeki değişken isimleriyle birebir aynı olmalı)
-    var templateParams = {
-        to_name: fullName,
-        to_email: email, // Panelde {{to_email}} yazmalı
-        email: email,    // Eğer panelde {{email}} yazdıysanız bu çalışır
-        passcode: generatedCode, // Panelde {{passcode}} yazmalı
-        code: generatedCode      // Eğer panelde {{code}} yazdıysanız bu çalışır
-    };
-
-    console.log("EmailJS Gönderimi Başlatılıyor...", templateParams);
-
-    if (typeof emailjs !== 'undefined') {
-        emailjs.send(
-            emailJsConfig.serviceId,
-            emailJsConfig.templateId,
-            templateParams,
-            emailJsConfig.publicKey
-        ).then(function(response) {
-            console.log("EmailJS Başarılı:", response.status, response.text);
-            document.getElementById("registerStep").classList.add("hidden");
-            document.getElementById("otpStep").classList.remove("hidden");
-            document.getElementById("userEmailTarget").textContent = email;
-            alert("Doğrulama kodu e-posta adresinize gönderildi! (Spam/İstenmeyen kutusunu kontrol etmeyi unutmayın)");
-        }, function(error) {
-            console.error("EmailJS Gönderim Hatası Detayı:", error);
-            alert("E-posta gönderilemedi! Hata Detayı: " + JSON.stringify(error) + "\n\n(Test Kodunuz: " + generatedCode + ")");
-            
-            // Hata alsa da devam edebilmen için OTP ekranını açar:
-            document.getElementById("registerStep").classList.add("hidden");
-            document.getElementById("otpStep").classList.remove("hidden");
-            document.getElementById("userEmailTarget").textContent = email;
-        });
-    } else {
-        alert("EmailJS kütüphanesi yüklenemedi! Test Kodunuz: " + generatedCode);
-        document.getElementById("registerStep").classList.add("hidden");
-        document.getElementById("otpStep").classList.remove("hidden");
-        document.getElementById("userEmailTarget").textContent = email;
-    }
-}
 
 function handleOTPVerification(e) {
     e.preventDefault();

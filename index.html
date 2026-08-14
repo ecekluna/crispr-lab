@@ -26,10 +26,21 @@
 <!-- Script Dosyası -->
 <script type="module" src="script.js"></script>
 
-    <!-- FIREBASE COMPAT SDKs (Global Kütüphaneler) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase SDK CDN (Compat Sürümü - Tüm fonksiyonlarla tam uyumlu) -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+  (function(){
+    emailjs.init("service_l8xxa6h");
+  })();
+</script>
+
+<!-- Ana Script Dosyanız -->
+<script src="script.js"></script>
 </head>
 <body class="soft-theme">
 
