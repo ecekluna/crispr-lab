@@ -86,41 +86,84 @@ async function handleRegister(event) {
     }
 }
 
-// 5. Giriş (Login) Fonksiyonu
+// Giriş Fonksiyonu
 async function handleLogin(event) {
-    event.preventDefault();
+    if (event) event.preventDefault(); // Sayfa yenilenmesini kesin olarak engeller
 
-    const emailInput = document.getElementById("loginEmail") || document.getElementById("email");
-    const passwordInput = document.getElementById("loginPassword") || document.getElementById("password");
+    const emailInput = document.getElementById("loginEmail");
+    const passwordInput = document.getElementById("loginPassword");
 
-    const email = emailInput ? emailInput.value : "";
+    const email = emailInput ? emailInput.value.trim() : "";
     const password = passwordInput ? passwordInput.value : "";
 
+    if (!email || !password) {
+        alert("Lütfen e-posta ve şifre alanlarını doldurun.");
+        return;
+    }
+
     try {
-        console.log("Giriş yapılıyor...");
+        console.log("Giriş yapılıyor...", email);
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
         console.log("✓ Giriş Başarılı:", user.email);
-        alert("Başarıyla giriş yapıldı!");
+        alert("Giriş başarılı! Hoş geldiniz.");
+
+        // Modalı Kapatma
+        const authModal = document.getElementById("authModal");
+        if (authModal) {
+            authModal.style.display = "none";
+        }
 
     } catch (error) {
-        console.error("Giriş Hatası:", error.code, error.message);
-        alert("Giriş başarısız: " + error.message);
+        console.error("Giriş Hatası Detayı:", error.code, error.message);
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+            alert("E-posta veya şifre hatalı!");
+        } else if (error.code === 'auth/invalid-email') {
+            alert("Geçersiz bir e-posta formatı girdiniz.");
+        } else {
+            alert("Giriş yapılamadı: " + error.message);
+        }
     }
 }
 
-// 6. Form Event Listener Bağlama
+// Olay Dinleyicileri (Event Listeners)
 document.addEventListener("DOMContentLoaded", () => {
-    const registerForm = document.getElementById("registerForm") || document.querySelector("form.register-form");
-    const loginForm = document.getElementById("loginForm") || document.querySelector("form.login-form");
-
-    if (registerForm) {
-        registerForm.addEventListener("submit", handleRegister);
-    }
-
+    const loginForm = document.getElementById("loginForm");
     if (loginForm) {
         loginForm.addEventListener("submit", handleLogin);
+    }
+
+    // Modal Kapatma Butonu
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", () => {
+            const authModal = document.getElementById("authModal");
+            if (authModal) authModal.style.display = "none";
+        });
+    }
+});
+
+// Olay Dinleyicileri (Hem Form Hem Buton Tıklaması İçin)
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Form submit dinleyicisi
+    const loginForm = document.getElementById("loginForm") || document.querySelector("form.login-form");
+    if (loginForm) {
+        loginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            executeLogin();
+        });
+    }
+
+    // 2. Doğrudan buton tıklama dinleyicisi (Formsuz kullanım varsa)
+    const loginBtn = document.getElementById("loginBtn") || document.querySelector(".login-btn");
+    if (loginBtn) {
+        loginBtn.addEventListener("click", (e) => {
+            if (!loginForm) {
+                e.preventDefault();
+                executeLogin();
+            }
+        });
     }
 });
 
