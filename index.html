@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRISPR-Lab Studio | Genomik Araştırma İstasyonu</title>
+    <title>CRISPR-Lab Studio | Hesaplamalı Genomik & Kılavuz RNA Tasarım İstasyonu</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -18,29 +18,32 @@
     <!-- EmailJS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
-<body class="clean-studio-body">
+<body class="navy-theme-body">
 
-    <!-- ÜST NAVİGASYON BARI -->
+    <!-- 1. ÜST KURUMSAL NAVİGASYON -->
     <header class="app-navbar">
         <div class="navbar-container">
             <div class="nav-brand-wrap">
                 <a href="#" class="brand-anchor" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
-                    <div class="brand-square">🧬</div>
-                    <span class="brand-name">CRISPR<strong>LAB</strong></span>
+                    <div class="brand-badge-square">CL</div>
+                    <div class="brand-text-block">
+                        <span class="brand-name">CRISPR<span class="brand-blue-accent">LAB</span></span>
+                        <span class="brand-subtext">GENOME STUDIO // v4.8</span>
+                    </div>
                 </a>
             </div>
 
             <nav class="nav-links-wrap">
-                <a href="#tanitim" class="nav-link" onclick="scrollToSection(event, 'tanitim')">Misyon & Amaç</a>
-                <a href="lab.html" target="_blank" class="nav-link">Genom Laboratuvarı</a>
-                <a href="campaign.html" target="_blank" class="nav-link">Kariyer Modu</a>
+                <a href="#tanitim" class="nav-link" onclick="scrollToSection(event, 'tanitim')">Platform Genel Bakış</a>
+                <a href="lab.html" target="_blank" class="nav-link">Genom Laboratuvarı ↗</a>
+                <a href="campaign.html" target="_blank" class="nav-link">Kariyer Parkuru ↗</a>
                 <a href="javascript:void(0)" id="navScenarioTabBtn" class="nav-link">Klinik Vakalar</a>
                 <a href="#rehber" class="nav-link" onclick="scrollToSection(event, 'rehber')">Kütüphane (150)</a>
-                <a href="#sss" class="nav-link" onclick="scrollToSection(event, 'sss')">S.S.S.</a>
+                <a href="#sss" class="nav-link" onclick="scrollToSection(event, 'sss')">Teknik S.S.S. (10)</a>
             </nav>
 
             <div class="nav-auth-wrap">
-                <button type="button" id="mainAuthBtn" class="btn-auth-action" onclick="openAuthModal('login')">
+                <button type="button" id="mainAuthBtn" class="btn-primary-navy" onclick="openAuthModal('login')">
                     Araştırmacı Girişi
                 </button>
 
@@ -57,133 +60,146 @@
 
     <main class="page-container">
 
-        <!-- 1. AÇILIŞ MANİFESTOSU: CRISPR-LAB NEDİR & NE İŞE YARAR? -->
-        <section class="purpose-spotlight-block" id="tanitim">
-            <div class="editorial-kicker">HESAPLAMALI GENOM MÜHENDİSLİĞİ İSTASYONU</div>
-            
-            <h1 class="editorial-headline">
-                Moleküler Hedeflemeyi, Kinetik Hesaplamaları ve Hücresel Onarımı Simüle Edin.
-            </h1>
+        <!-- 2. ANA SAYFA: AMACI, FONKSİYONLARI VE ETKİSİNİ ANLATAN GENİŞ VİTRİN -->
+        <section class="platform-manifesto-card" id="tanitim">
+            <div class="manifesto-top-bar">
+                <span class="system-chip">HESAPLAMALI MOLEKÜLER GENOMİK İSTASYONU</span>
+                <span class="system-meta-id">SPCAS9_WILDTYPE // NGG_PAM_RULE</span>
+            </div>
 
-            <p class="editorial-lead">
-                <strong>CRISPR-Lab</strong>, ıslak laboratuvar (wet-lab) deneyleri öncesinde SpCas9 nükleazının hedef lokuslara bağlanma kinetiğini, PAM kısıtlarını, tohum bölgesi (seed) duyarlılığını ve hücresel çift zincir kırığı (DSB) onarım yollarını modelleyen akademik bir simülasyon ortamıdır.
-            </p>
-
-            <!-- 3 Temel Sütun -->
-            <div class="purpose-columns-grid">
-                <div class="purpose-box">
-                    <span class="purpose-num">01 / ANALİZ</span>
-                    <h3 class="purpose-title">Hedef & PAM Taraması</h3>
-                    <p class="purpose-desc">
-                        20 farklı insan geni üzerinde 5'-NGG-3' PAM motiflerini tarayarak kılavuz RNA (sgRNA) için 20 bazlık homoloji dizisini izole eder.
+            <div class="manifesto-content-grid">
+                <div class="manifesto-lead-col">
+                    <h1 class="manifesto-title">
+                        Kılavuz RNA Tasarımını, Kesim Kinetiğini ve <span class="text-gradient-blue">Hücresel Onarımı</span> In Silico Modelleme.
+                    </h1>
+                    <p class="manifesto-desc">
+                        CRISPR-Lab; ıslak laboratuvar (wet-lab) deneyleri öncesinde SpCas9 endonükleazının insan genomundaki 20 klinik lokusa bağlanma termodinamiğini hesaplayan, PAM kısıtlarını tarayan ve DSB sonrası hücrede devreye giren tamir yolaklarını simüle eden biyoinformatik araştırma arayüzüdür.
                     </p>
+
+                    <div class="manifesto-cta-row">
+                        <a href="lab.html" target="_blank" class="btn-primary-blue">
+                            Genom Konsoluna Gir [ 20 Lokus ] ➔
+                        </a>
+                        <a href="campaign.html" target="_blank" class="btn-secondary-white">
+                            Kariyer Modu [ 5 Aşama ] ➔
+                        </a>
+                    </div>
                 </div>
 
-                <div class="purpose-box">
-                    <span class="purpose-num">02 / TERMODİNAMİK</span>
-                    <h3 class="purpose-title">Biyofiziksel Kinetik</h3>
-                    <p class="purpose-desc">
-                        GC oranını (%40-60 aralığı), erime sıcaklığını (Tm) ve tohum bölgesi kısıtlarını hesaplayarak off-target riskini puanlar.
-                    </p>
-                </div>
+                <div class="manifesto-spec-col">
+                    <div class="spec-tile">
+                        <span class="tile-kicker">01 // HEDEFLEME MOTORU</span>
+                        <strong class="tile-headline">5'-NGG-3' PAM & 20 nt Homoloji</strong>
+                        <p class="tile-body">Sense ve antisense iplikler üzerinde protospacer lokuslarını saptar ve tohum bölgesi kısıtlarını denetler.</p>
+                    </div>
 
-                <div class="purpose-box">
-                    <span class="purpose-num">03 / ONARIM</span>
-                    <h3 class="purpose-title">DSB & Onarım Yolları</h3>
-                    <p class="purpose-desc">
-                        Oluşan kesim sonrası NHEJ (Gen Nakavtı) ve HDR (Donör ssODN ile hassas ekleme) hücresel mekanizmalarını görselleştirir.
-                    </p>
+                    <div class="spec-tile">
+                        <span class="tile-kicker">02 // TERMODİNAMİK METRİKLER</span>
+                        <strong class="tile-headline">%40-60 GC & Tm Derecesi</strong>
+                        <p class="tile-body">RNA-DNA hibritleşme kararlılığını matematiksel formüllerle anlık hesaplayarak off-target riskini puanlar.</p>
+                    </div>
+
+                    <div class="spec-tile">
+                        <span class="tile-kicker">03 // ONARIM ANALİZİ</span>
+                        <strong class="tile-headline">NHEJ (İndel) vs. HDR (ssODN)</strong>
+                        <p class="tile-body">Çift zincir kırığı (DSB) sonrası oluşacak gen nakavtı veya şablonlu gen tamiri mekanizmasını simüle eder.</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Alt Aksiyon & Metrikler -->
-            <div class="purpose-bottom-strip">
-                <div class="purpose-cta-group">
-                    <a href="lab.html" target="_blank" class="btn-solid-dark">
-                        Genom Laboratuvarını Aç ➔
-                    </a>
-                    <a href="campaign.html" target="_blank" class="btn-outline-clean">
-                        Kariyer Moduna Başla 🧪
-                    </a>
+            <!-- Sayısal İstatistik Şeridi -->
+            <div class="manifesto-metrics-footer">
+                <div class="metric-node">
+                    <span class="m-kicker">KATALOG GENOMU</span>
+                    <strong class="m-val">20 Lokus</strong>
+                    <span class="m-sub">TP53, BRCA1, EGFR, DMD, HTT...</span>
                 </div>
-
-                <div class="purpose-metrics-row">
-                    <div class="metric-item">
-                        <span class="lbl">KATALOG</span>
-                        <strong class="val">20 Lokus</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span class="lbl">STANDART</span>
-                        <strong class="val">SpCas9</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span class="lbl">BİLGİ BANKASI</span>
-                        <strong class="val">150 Terim</strong>
-                    </div>
+                <div class="metric-node">
+                    <span class="m-kicker">KLİNİK VAKALAR</span>
+                    <strong class="m-val">10 Senaryo</strong>
+                    <span class="m-sub">Hemoglobinopati, Onkoloji, Enfeksiyon</span>
+                </div>
+                <div class="metric-node">
+                    <span class="m-kicker">BİLGİ BANKASI</span>
+                    <strong class="m-val">150 Kavram</strong>
+                    <span class="m-sub">DNA, CRISPR, Onarım & Biyoinformatik</span>
+                </div>
+                <div class="metric-node">
+                    <span class="m-kicker">KARİYER SEVİYELERİ</span>
+                    <strong class="m-val">5 Kademe</strong>
+                    <span class="m-sub">Stajyerden Direktörlüğe</span>
                 </div>
             </div>
         </section>
 
-        <!-- 2. HIZLI TEST İSTASYONU -->
-        <section class="clean-content-panel" id="nasil-calisir">
-            <div class="panel-header-clean">
+        <!-- 3. HIZLI SEKANSLAMA DOĞRULAYICI (TEST KONSOLU) -->
+        <section class="card-white-panel" id="nasil-calisir">
+            <div class="panel-header-strip">
                 <div>
-                    <h2 class="panel-main-title">Hızlı gRNA & PAM Doğrulayıcı</h2>
-                    <p class="panel-sub-title">Herhangi bir hedef dizilimi manuel olarak test edin ve SpCas9 reaksiyonunu inceleyin</p>
+                    <h2 class="panel-heading">Hızlı gRNA & PAM Uyumluluk Değerlendiricisi</h2>
+                    <p class="panel-subheading">Hedef 20 bazlık sekansı ve 3 bazlık PAM motifini girerek moleküler kesim reaksiyonunu test edin</p>
                 </div>
-                <span class="counter-chip">KONTROL PANELİ</span>
+                <span class="system-code-tag">TEST_SUITE_SpCas9</span>
             </div>
 
-            <div class="evaluator-inline-grid">
-                <div class="form-group-clean flex-3">
-                    <label for="sampleGrnaInput">20 Bazlık Sentetik sgRNA Sekansı (RNA / Urasil formatında):</label>
-                    <input type="text" id="sampleGrnaInput" class="clean-input" placeholder="Örn: CCUGAGGAGAAGUCUGCCGU" maxlength="20">
+            <div class="evaluator-grid-row">
+                <div class="input-cell flex-3">
+                    <label for="sampleGrnaInput">20 Bazlık Sentetik sgRNA Sekansı (RNA / Urasil Formatında):</label>
+                    <input type="text" id="sampleGrnaInput" class="navy-input-field" placeholder="Örn: CCUGAGGAGAAGUCUGCCGU" maxlength="20">
                 </div>
-                <div class="form-group-clean flex-1">
+                <div class="input-cell flex-1">
                     <label for="samplePamInput">PAM Motifi (3nt):</label>
-                    <input type="text" id="samplePamInput" class="clean-input" placeholder="Örn: TGG" maxlength="3">
+                    <input type="text" id="samplePamInput" class="navy-input-field" placeholder="Örn: TGG" maxlength="3">
                 </div>
-                <button type="button" id="btnTestSimulation" class="btn-trigger-reaction">
-                    ⚡ Moleküler Uyumu Test Et
+                <button type="button" id="btnTestSimulation" class="btn-evaluator-submit">
+                    Kesim Reaksiyonunu Doğrula ➔
                 </button>
             </div>
             <div id="labFeedbackBox" class="lab-feedback-box hidden"></div>
         </section>
 
-        <!-- 3. KLİNİK SENARYOLAR (SAYFA İÇİ MODÜL) -->
-        <section id="scenarioTabPage" class="clean-content-panel" style="display: none;">
-            <div class="panel-header-clean">
+        <!-- 4. KLİNİK SENARYOLAR (SAYFA İÇİ GEÇİŞLİ MODÜL) -->
+        <section id="scenarioTabPage" class="card-white-panel" style="display: none;">
+            <div class="panel-header-strip space-between">
                 <div>
-                    <h2 class="panel-main-title">Klinik Vaka Senaryoları</h2>
-                    <p class="panel-sub-title">10 farklı genetik patolojide kılavuz RNA tasarımı yapın</p>
+                    <h2 class="panel-heading">Klinik Vaka Senaryoları & Genom Düzenleme</h2>
+                    <p class="panel-subheading">10 farklı genetik patolojide kılavuz RNA tasarımı yapın ve moleküler rozetler kazanın</p>
                 </div>
-                <button type="button" id="backToMainBtn" class="btn-outline-clean" style="padding: 6px 12px; font-size: 0.78rem;">
+                <button type="button" id="backToMainBtn" class="btn-return-link">
                     ← Ana Ekrana Dön
                 </button>
             </div>
 
-            <div id="scenarioListGrid" class="dictionary-grid">
-                <!-- JS Doldurur -->
+            <div id="activeScenarioRunner" class="active-runner-panel hidden">
+                <div class="runner-top-bar">
+                    <span class="runner-badge">AKTİF VAKA ÇALIŞMA ALANI</span>
+                    <button type="button" id="closeScenarioRunnerBtn" class="btn-icon">✕ Kapat</button>
+                </div>
+                <div id="scenarioRunnerContent"></div>
+            </div>
+
+            <div id="scenarioListGrid" class="scenarios-grid-layout">
+                <!-- 10 Senaryo JS Tarafından Yüklenir -->
             </div>
         </section>
 
-        <!-- 4. 150 TERİMLİK BİYOLOJİ & BİYOİNFORMATİK KÜTÜPHANESİ -->
-        <section class="clean-content-panel" id="rehber">
-            <div class="panel-header-clean">
+        <!-- 5. 150 TERİMLİK BİYOLOJİ & BİYOİNFORMATİK KÜTÜPHANESİ -->
+        <section class="card-white-panel" id="rehber">
+            <div class="panel-header-strip space-between">
                 <div>
-                    <h2 class="panel-main-title">Genomik & Biyoinformatik Kütüphanesi</h2>
-                    <p class="panel-sub-title">CRISPR-Cas mekanizmaları, DNA hasar onarımı ve hesaplamalı biyoloji terimleri</p>
+                    <h2 class="panel-heading">Moleküler Biyoloji & Biyoinformatik Kütüphanesi</h2>
+                    <p class="panel-subheading">CRISPR-Cas mekanizmaları, DNA hasar onarımı ve hesaplamalı biyoloji terim arşivi</p>
                 </div>
-                <span id="guideCounterBadge" class="counter-chip">15 / 150 KAVRAM</span>
+                <span id="guideCounterBadge" class="system-code-tag">15 / 150 KAVRAM</span>
             </div>
 
-            <div class="dict-filter-toolbar">
-                <div class="dict-search-wrap">
-                    <span class="search-ico">🔍</span>
-                    <input type="text" id="guideSearchInput" placeholder="Kavram veya açıklamalarda arayın (Örn: Doench, NHEJ, PAM, Cas12a)...">
+            <div class="library-filter-strip">
+                <div class="search-field-box">
+                    <span class="search-symbol">🔍</span>
+                    <input type="text" id="guideSearchInput" placeholder="Kavram veya açıklama ara (Örn: Doench, NHEJ, PAM, Cas12a, RuvC, BLAST)...">
                 </div>
 
-                <div class="category-tabs-strip category-tabs">
+                <div class="category-tabs-row category-tabs">
                     <button type="button" class="tab-chip active" data-category="all">TÜMÜ (150)</button>
                     <button type="button" class="tab-chip" data-category="dna">DNA & GENOMİK</button>
                     <button type="button" class="tab-chip" data-category="crispr">CRISPR-CAS</button>
@@ -192,121 +208,146 @@
                 </div>
             </div>
 
-            <div id="guideCardsGrid" class="dictionary-grid">
-                <!-- JS Doldurur -->
+            <div id="guideCardsGrid" class="library-cards-grid">
+                <!-- 150 Kavram JS Tarafından Doldurulur -->
             </div>
 
             <div class="load-more-center">
                 <button type="button" id="loadMoreGuideBtn" class="btn-load-more">
-                    Daha Fazla Terim Listele (+15)
+                    Daha Fazla Terim Yükle (+15) ➔
                 </button>
             </div>
         </section>
 
-        <!-- 5. 8 MADDELİ DETAYLI S.S.S. -->
-        <section class="clean-content-panel" id="sss">
-            <div class="panel-header-clean">
+        <!-- 6. GENİŞLETİLMİŞ 10 SORULUK TEKNİK S.S.S. BÖLÜMÜ -->
+        <section class="card-white-panel" id="sss">
+            <div class="panel-header-strip">
                 <div>
-                    <h2 class="panel-main-title">Sıkça Sorulan Sorular & Dokümantasyon</h2>
-                    <p class="panel-sub-title">CRISPR-Cas9 çalışma mekaniği ve biyoinformatik parametreleri</p>
+                    <h2 class="panel-heading">Sıkça Sorulan Sorular & Teknik Dokümantasyon</h2>
+                    <p class="panel-subheading">CRISPR-Cas9 çalışma mekaniği, PAM kısıtları ve hesaplamalı biyoloji parametreleri</p>
                 </div>
+                <span class="system-code-tag">10 MADDE</span>
             </div>
 
-            <div class="faq-accordion-list">
-                <details class="faq-card">
+            <div class="faq-stack-list">
+                
+                <details class="faq-row">
                     <summary>
                         <span class="faq-index">01</span>
-                        <span class="faq-title">SpCas9 için 5'-NGG-3' PAM motifi neden vazgeçilmez bir biyolojik kilittir?</span>
-                        <span class="faq-icon">▾</span>
+                        <span class="faq-q-text">SpCas9 için 5'-NGG-3' PAM motifi neden vazgeçilmez bir moleküler kilittir?</span>
+                        <span class="faq-indicator">↓</span>
                     </summary>
-                    <div class="faq-body">
-                        PAM (Protospacer Adjacent Motif), Cas9 nükleazının hedef DNA çift sarmalını çözebilmesi için bağlandığı 3 nükleotidlik ilk temas bölgesidir. Enzim, PAM sekansı görmediği lokuslarda gRNA dizisi hedefle %100 eşleşse dahi DNA'yı kesemez. Bu mekanizma bakterilerin kendi CRISPR hafıza dizilerini parçalamasını engeller.
+                    <div class="faq-a-body">
+                        PAM (Protospacer Adjacent Motif), Cas9 nükleazının hedef DNA çift sarmalını açabilmesi için temas kurduğu 3 nükleotidlik ilk bağlanma bölgesidir. Enzim, PAM sekansı görmediği lokuslarda gRNA dizisi hedefle %100 eşleşse dahi DNA'yı kesemez. Bu mekanizma bakterilerin kendi CRISPR hafıza sekanslarını parçalamasını engeller.
                     </div>
                 </details>
 
-                <details class="faq-card">
+                <details class="faq-row">
                     <summary>
                         <span class="faq-index">02</span>
-                        <span class="faq-title">gRNA tasarımında %40 ile %60 GC oranı neden kritik kabul edilir?</span>
-                        <span class="faq-icon">▾</span>
+                        <span class="faq-q-text">gRNA tasarımında %40 ile %60 GC oranı neden zorunlu bir kriterdir?</span>
+                        <span class="faq-indicator">↓</span>
                     </summary>
-                    <div class="faq-body">
-                        Guanin (G) ve Sitozin (C) bazları üçlü hidrojen bağı oluşturur. %40'ın altındaki GC oranları zayıf bağlanma sebebiyle düşük kesim verimine; %60'ın üzerindeki GC oranları ise RNA molekülünün kendi üzerine katlanmasına (hairpin) ve genomun diğer yüksek-GC bölgelerine yanlış bağlanarak hedef dışı (off-target) hasar vermesine yol açar.
+                    <div class="faq-a-body">
+                        Guanin (G) ve Sitozin (C) bazları üçlü hidrojen bağı oluşturur. %40'ın altındaki GC oranları zayıf bağlanma sebebiyle düşük kesim verimine; %60'ın üzerindeki GC oranları ise RNA molekülünün kendi üzerine katlanarak ikincil yapı (hairpin) kurmasına ve genomun diğer yüksek-GC bölgelerine non-spesifik bağlanarak hedef dışı (off-target) hasar vermesine yol açar.
                     </div>
                 </details>
 
-                <details class="faq-card">
+                <details class="faq-row">
                     <summary>
                         <span class="faq-index">03</span>
-                        <span class="faq-title">Tohum Bölgesi (Seed Region) kısıtlaması nedir ve kesim verimini nasıl etkiler?</span>
-                        <span class="faq-icon">▾</span>
+                        <span class="faq-q-text">Tohum Bölgesi (Seed Region) kısıtlaması nedir ve off-target etkisini nasıl belirler?</span>
+                        <span class="faq-indicator">↓</span>
                     </summary>
-                    <div class="faq-body">
-                        Seed Region, gRNA'nın PAM motifine bitişik 3' ucundaki 8-12 bazlık çekirdek bölgedir. Cas9 enziminin katalitik RuvC ve HNH domainlerinin aktifleşebilmesi için bu bölgenin hedef DNA ile pürüzsüz eşleşmesi şarttır. Tohum bölgesindeki tek bir baz uyumsuzluğu dahi kesimi tamamen durdurur.
+                    <div class="faq-a-body">
+                        Seed Region, gRNA'nın PAM motifine komşu olan 3' ucundaki 8-12 nükleotidlik kritik segmenttir. Cas9'un katalitik HNH ve RuvC domainlerinin aktifleşebilmesi için bu bölgenin hedef DNA ile tam ve pürüzsüz eşleşmesi şarttır. Tohum bölgesindeki tek bir baz uyumsuzluğu dahi kesimi tamamen durdurur.
                     </div>
                 </details>
 
-                <details class="faq-card">
+                <details class="faq-row">
                     <summary>
                         <span class="faq-index">04</span>
-                        <span class="faq-title">NHEJ ve HDR onarım yollarının genom mühendisliğindeki farkı nedir?</span>
-                        <span class="faq-icon">▾</span>
+                        <span class="faq-q-text">NHEJ ve HDR onarım mekanizmaları arasındaki fark nedir?</span>
+                        <span class="faq-indicator">↓</span>
                     </summary>
-                    <div class="faq-body">
-                        Cas9 kesimi sonrası oluşan çift zincir kırığı (DSB) hücre tarafından iki yolla tamir edilir:
+                    <div class="faq-a-body">
+                        Cas9 kesimi sonrası oluşan çift zincir kırığı (DSB) hücre tarafından iki ana yolla onarılır:
                         <ul>
-                            <li><strong>NHEJ (Homolog Olmayan Uç Birleştirme):</strong> Dışarıdan şablon gerektirmez. Ku70/Ku80 kompleksleriyle hızlıca uçlar birleştirilirken delesyon/insersiyon (indel) mutasyonları oluşur ve gen susturulur (Knock-out).</li>
-                            <li><strong>HDR (Homoloji Yönlendirmeli Onarım):</strong> Dışarıdan verilen tek zincirli donör DNA (ssODN) rehberliğinde hasarlı bölge hatasız onarılır veya yeni genetik bilgi eklenir (Knock-in).</li>
+                            <li><strong>NHEJ (Homolog Olmayan Uç Birleştirme):</strong> Dışarıdan şablon gerektirmez. Ku70/Ku80 ve DNA-PKcs ile hızlı onarılırken rastgele delesyon/insersiyon (indel) mutasyonları oluşur ve gen susturulur (Knock-out).</li>
+                            <li><strong>HDR (Homoloji Yönlendirmeli Onarım):</strong> Hücreye dışarıdan verilen tek zincirli donör DNA (ssODN) rehberliğinde hasarlı bölge hatasız onarılır veya yeni genetik bilgi eklenir (Knock-in).</li>
                         </ul>
                     </div>
                 </details>
 
-                <details class="faq-card">
+                <details class="faq-row">
                     <summary>
                         <span class="faq-index">05</span>
-                        <span class="faq-title">Doench Skoru (Rule Set 2) ve Hsu-Zhang Algoritmaları neyi modeller?</span>
-                        <span class="faq-icon">▾</span>
+                        <span class="faq-q-text">Doench Skoru (Rule Set 2) ve Hsu-Zhang Algoritmaları neyi modeller?</span>
+                        <span class="faq-indicator">↓</span>
                     </summary>
-                    <div class="faq-body">
+                    <div class="faq-a-body">
                         <strong>Doench Skoru (Rule Set 2):</strong> Kılavuz RNA'nın hedeflenen lokustaki gerçek kesim verimliliğini (on-target activity) tahmin eden makine öğrenmesi modelidir.
                         <strong>Hsu-Zhang Skoru:</strong> PAM yakınlığı ve uyumsuzluk pozisyonlarını analiz ederek genom genelindeki istenmeyen off-target kesim olasılığını hesaplar.
                     </div>
                 </details>
 
-                <details class="faq-card">
+                <details class="faq-row">
                     <summary>
                         <span class="faq-index">06</span>
-                        <span class="faq-title">SpCas9, SaCas9 ve Cas12a (Cpf1) arasındaki temel farklar nelerdir?</span>
-                        <span class="faq-icon">▾</span>
+                        <span class="faq-q-text">SpCas9, SaCas9 ve Cas12a (Cpf1) arasındaki temel farklar nelerdir?</span>
+                        <span class="faq-indicator">↓</span>
                     </summary>
-                    <div class="faq-body">
+                    <div class="faq-a-body">
                         <strong>SpCas9:</strong> En yaygın standarttır; 5'-NGG-3' PAM tanır ve küt uçlu (blunt end) kesim yapar.
                         <strong>SaCas9:</strong> Staphylococcus aureus kökenli daha küçük bir proteindir; viral AAV vektörlerine sığabilir (PAM: 5'-NNGRRT-3').
                         <strong>Cas12a:</strong> T-zengini PAM (5'-TTTV-3') tanır, tracrRNA gerektirmez ve 5-nt yapışkan uçlu (staggered) kesim üretir.
                     </div>
                 </details>
 
-                <details class="faq-card">
+                <details class="faq-row">
                     <summary>
                         <span class="faq-index">07</span>
-                        <span class="faq-title">sgRNA üretiminde Poli-T (Pol-III Terminatör) iptali neden önemlidir?</span>
-                        <span class="faq-icon">▾</span>
+                        <span class="faq-q-text">sgRNA üretiminde Poli-T (Pol-III Terminatör) iptali neden önemlidir?</span>
+                        <span class="faq-indicator">↓</span>
                     </summary>
-                    <div class="faq-body">
-                        U6 ve H1 promotörleri altında ifade edilen sgRNA yapılarında arka arkaya gelen 4 veya daha fazla Timin (TTTT) dizilimi, RNA Polimeraz III enzimi için erken sonlandırma (terminator) sinyali oluşturur. Bu sebeple tasarlanan 20 bazlık protospacer içerisinde TTTT veya UUUU blokları bulunmamalıdır.
+                    <div class="faq-a-body">
+                        U6 ve H1 promotörleri altında ifade edilen sgRNA yapılarında arka arkaya gelen 4 veya daha fazla Timin (TTTT) dizilimi, RNA Polimeraz III enzimi için erken sonlandırma (terminator) sinyali oluşturur. Bu sebeple tasarlanan 20 bazlık protospacer içerisinde `TTTT` veya `UUUU` blokları bulunmamalıdır.
                     </div>
                 </details>
 
-                <details class="faq-card">
+                <details class="faq-row">
                     <summary>
                         <span class="faq-index">08</span>
                         <span class="faq-title">Baz Düzenleme (Base Editing) ve Prime Editing neden DSB kırığı oluşturmaz?</span>
-                        <span class="faq-icon">▾</span>
+                        <span class="faq-indicator">↓</span>
                     </summary>
-                    <div class="faq-body">
-                        Katalitik olarak kesim yeteneği köreltilmiş dCas9 veya Nickase (Cas9n) enzimleri kullanılarak sitidin veya adenin deaminaz enzimleri hedefe taşınır. Çift zincir kırığı (DSB) oluşturulmadığı için hücre kontrolsüz delesyon, translokasyon veya kromotripsis riskine girmeden tek baz dönüşümleri (C->T veya A->G) gerçekleştirilir.
+                    <div class="faq-a-body">
+                        Katalitik olarak kesim yeteneği köreltilmiş dCas9 veya Nickase (Cas9n) enzimleri kullanılarak deaminaz enzimleri hedefe taşınır. Çift zincir kırığı (DSB) oluşturulmadığı için hücre kontrolsüz delesyon veya kromotripsis riskine girmeden tek baz dönüşümleri (C->T veya A->G) gerçekleştirilir.
                     </div>
                 </details>
+
+                <details class="faq-row">
+                    <summary>
+                        <span class="faq-index">09</span>
+                        <span class="faq-title">Erime Sıcaklığı (Tm) değeri gRNA bağlanma kararlılığını nasıl etkiler?</span>
+                        <span class="faq-indicator">↓</span>
+                    </summary>
+                    <div class="faq-a-body">
+                        Erime Sıcaklığı (Tm), gRNA-DNA dupleksinin %50'sinin ayrıldığı termal denge noktasıdır. CRISPR deneylerinde optimal hibridizasyon için Tm değerinin 55°C ile 68°C arasında olması hedeflenir. Çok düşük Tm zayıf bağlanmaya, aşırı yüksek Tm ise hedef dışı ayrışmanın gecikmesine sebep olur.
+                    </div>
+                </details>
+
+                <details class="faq-row">
+                    <summary>
+                        <span class="faq-index">10</span>
+                        <span class="faq-title">RNP (Ribonükleoprotein) kompleksi teslimatının plazmite göre avantajı nedir?</span>
+                        <span class="faq-indicator">↓</span>
+                    </summary>
+                    <div class="faq-a-body">
+                        RNP yaklaşımında Cas9 proteini ve sentetik gRNA in vitro ortamda kompleksleştirilip hücreye doğrudan verilir. Hücre içinde plazmit gibi kalıcı DNA ekspresyonu yapmadığı için saatler içinde proteazlarca parçalanır; bu da hedef dışı kesim riskini ve immünojenik reaksiyonları minimize eder.
+                    </div>
+                </details>
+
             </div>
         </section>
 
@@ -316,11 +357,11 @@
     <footer class="app-footer">
         <div class="footer-container">
             <div class="footer-brand-side">
-                <span class="footer-logo">🔬 CRISPR<strong>LAB</strong></span>
-                <span class="footer-caption">Hesaplamalı Genom Mühendisliği & gRNA Simülatörü</span>
+                <span class="footer-logo">CRISPR<span class="brand-blue-accent">LAB</span></span>
+                <span class="footer-desc">Hesaplamalı Moleküler Genomik & gRNA Simülasyon İstasyonu</span>
             </div>
             <div class="footer-copy">
-                © 2026 CRISPR-Lab Studio. Biyoinformatik Eğitim Platformu.
+                © 2026 CRISPR-Lab Studio. Biyoinformatik ve Moleküler Biyoloji Platformu.
             </div>
         </div>
     </footer>
@@ -337,15 +378,15 @@
 
                 <form id="loginForm" class="modal-form" onsubmit="handleLogin(event)">
                     <div class="form-field">
-                        <label for="loginEmail">E-Posta Adresi:</label>
+                        <label for="loginEmail">Kurumsal / Kişisel E-Posta:</label>
                         <input type="email" id="loginEmail" required placeholder="ad.soyad@kurum.edu.tr">
                     </div>
                     <div class="form-field">
                         <label for="loginPassword">Şifre:</label>
                         <input type="password" id="loginPassword" required placeholder="••••••••">
                     </div>
-                    <button type="submit" id="loginSubmitBtn" class="btn-modal-action">
-                        Giriş Yap
+                    <button type="submit" id="loginSubmitBtn" class="btn-navy-submit">
+                        Giriş Yap ➔
                     </button>
                 </form>
 
@@ -357,7 +398,7 @@
             <!-- Kayıt -->
             <div id="registerSection" style="display: none;">
                 <h3 class="modal-head">Yeni Araştırmacı Kaydı</h3>
-                <p class="modal-sub">CRISPR-Lab Studio hesabınızı oluşturun</p>
+                <p class="modal-sub">CRISPR-Lab Studio ortamına katılın</p>
 
                 <form id="registerForm" class="modal-form" onsubmit="handleRegister(event)">
                     <div class="form-field">
@@ -387,8 +428,8 @@
                         </ul>
                     </div>
 
-                    <button type="submit" id="registerSubmitBtn" class="btn-modal-action">
-                        Doğrulama Kodu Gönder
+                    <button type="submit" id="registerSubmitBtn" class="btn-navy-submit">
+                        Doğrulama Kodu Gönder ➔
                     </button>
                 </form>
 
@@ -407,8 +448,8 @@
                         <label for="otpCode">6 Haneli Kod:</label>
                         <input type="text" id="otpCode" required placeholder="123456" maxlength="6" class="code-font text-center" style="font-size: 1.3rem; letter-spacing: 4px;">
                     </div>
-                    <button type="submit" id="otpSubmitBtn" class="btn-modal-action">
-                        Doğrula ve Tamamla
+                    <button type="submit" id="otpSubmitBtn" class="btn-navy-submit">
+                        Doğrula ve Tamamla ➔
                     </button>
                 </form>
 
@@ -419,7 +460,7 @@
         </div>
     </div>
 
-    <!-- HESAP MODAL -->
+    <!-- HESAP YÖNETİM MODAL -->
     <div id="accountModal" class="modal-backdrop" style="display: none;">
         <div class="modal-card advanced-profile-card">
             <button type="button" class="modal-close-btn" onclick="closeAccountModal()">✕</button>
@@ -479,7 +520,7 @@
                     <input type="text" id="accountFullName" placeholder="Dr. Ad Soyad">
                 </div>
 
-                <button type="button" id="btnUpdateProfile" class="btn-modal-action" onclick="handleUpdateProfile()">
+                <button type="button" id="btnUpdateProfile" class="btn-navy-submit" onclick="handleUpdateProfile()">
                     Değişiklikleri Kaydet
                 </button>
             </div>
@@ -498,7 +539,7 @@
                         <label for="profNewPasswordConfirm">Yeni Şifre (Tekrar):</label>
                         <input type="password" id="profNewPasswordConfirm" required placeholder="••••••••">
                     </div>
-                    <button type="submit" id="btnUpdatePassword" class="btn-modal-action">
+                    <button type="submit" id="btnUpdatePassword" class="btn-navy-submit">
                         Şifreyi Güncelle
                     </button>
                 </form>
