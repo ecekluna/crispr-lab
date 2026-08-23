@@ -2402,3 +2402,233 @@ document.addEventListener("DOMContentLoaded", function() {
         initLabWorkspace();
     }
 });
+// ============================================================================
+// EĞİTİM MODU VERİ SETİ (5 AŞAMA - SIFIR EMOJİ - MOLEKÜLER STANDART)
+// ============================================================================
+const TRAINING_MODULES_DATABASE = [
+    {
+        id: "train-01",
+        levelNum: 1,
+        title: "Bölüm 1: Stajyer Araştırmacı",
+        targetGene: "HBB (Hemoglobin Alt Birimi)",
+        badge: "PAM Avcısı",
+        difficulty: "Başlangıç",
+        description: "SpCas9 enziminin bağlanması için 5'-NGG-3' PAM motifini bulun ve bu motifin 5' yönündeki 20 bazlık protospacer dizisini izole edin.",
+        targetDna: "ATGGTGCACCTGACTCCTGAGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAAC",
+        optimalGrna: "CCUGAGGAGAAGUCUGCCGU",
+        correctPam: "TGG",
+        hint: "5'-NGG-3' PAM motifini bulun ve 5' yönündeki 20 bazı seçin."
+    },
+    {
+        id: "train-02",
+        levelNum: 2,
+        title: "Bölüm 2: Moleküler Biyolog",
+        targetGene: "CFTR (Kistik Fibrozis Lokusu)",
+        badge: "Transkripsiyon Uzmanı",
+        difficulty: "Orta",
+        description: "İzole edilen DNA sekansını transkribe ederek Urasil (U) baz dönüşümlü sentetik tekli kılavuz RNA (sgRNA) molekülünü sentezleyin.",
+        targetDna: "ACTTCACTTCTAATGATGATTATGGGAGAACTGGAGCCTTCAGAGGGTTAAAATTCAACC",
+        optimalGrna: "UAAUGAUGAUUAUGGGAGAA",
+        correctPam: "CGG",
+        hint: "Timin (T) bazları yerine Urasil (U) kullanarak gRNA sekansını oluşturun."
+    },
+    {
+        id: "train-03",
+        levelNum: 3,
+        title: "Bölüm 3: Kıdemli Genetikçi",
+        targetGene: "CCR5 (HIV Koreseptörü)",
+        badge: "Seed Hassasiyeti",
+        difficulty: "İleri",
+        description: "PAM'a bitişik Seed Region üzerindeki olası baz uyumsuzluklarını eleyin, on-target verimini artırıp off-target kesim riskini sıfırlayın.",
+        targetDna: "CCAGAAGAGCTGAGACATCCGTTCCCCTACAAGAAACTCTCCCCGGGTGGAACAAGATGG",
+        optimalGrna: "CUGAGACAUCCGUUCCCCUA",
+        correctPam: "AGG",
+        hint: "Seed bölgesindeki (son 8-12 nt) eşleşmenin tam olduğundan emin olun."
+    },
+    {
+        id: "train-04",
+        levelNum: 4,
+        title: "Bölüm 4: Baş Araştırmacı (NHEJ Onarımı)",
+        targetGene: "PCSK9 (Kolesterol Regülasyonu)",
+        badge: "Gen Susturucu",
+        difficulty: "Uzman",
+        description: "PCSK9 ekzonunda SpCas9 ile çift zincir kırığı (DSB) oluşturun ve NHEJ yoluyla hedef geni nakavt (Knock-out) edin.",
+        targetDna: "AGGCGCAGACCGGCCAGGCCCAGGCCCTCCTGGTGGGCATCGTGGGTGCCCTGCTACTGG",
+        optimalGrna: "CAGACCGGCCAGGCCCAGGC",
+        correctPam: "CGG",
+        hint: "Hedef ekzonda indel oluşturacak en yüksek skorlu protospacer dizisini saptayın."
+    },
+    {
+        id: "train-05",
+        levelNum: 5,
+        title: "Bölüm 5: Laboratuvar Direktörü (HDR Onarımı)",
+        targetGene: "HBB (Orak Hücre Anemisi Nokta Mutasyonu)",
+        badge: "Genom Mimarı",
+        difficulty: "Uzman",
+        description: "Hatalı GAG -> GTG mutasyonunu düzeltmek için ssODN donör şablonu tasarlayın ve homoloji yönlendirmeli onarım ile gen fonksiyonunu geri kazandırın.",
+        targetDna: "ATGGTGCACCTGACTCCTGTGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAAC",
+        optimalGrna: "CCUGUGGAGAAGUCUGCCGU",
+        correctPam: "TGG",
+        hint: "Donör şablonun mutasyon bölgesine kusursuz entegrasyonu için şablon kollarını belirleyin."
+    }
+];
+
+function renderTrainingCards() {
+    const grid = document.getElementById("trainingMatrixGrid");
+    if (!grid) return;
+
+    // Kullanıcı ilerleme seviyesini al (Varsayılan: 1)
+    let currentLevel = 1;
+    if (window.state && window.state.currentUser && window.state.currentUser.level) {
+        currentLevel = window.state.currentUser.level;
+    }
+
+    grid.innerHTML = TRAINING_MODULES_DATABASE.map(mod => {
+        const isCompleted = (window.state && window.state.completedScenarios && window.state.completedScenarios.includes(mod.id)) || (currentLevel > mod.levelNum);
+        const isUnlocked = mod.levelNum <= currentLevel;
+
+        let diffClass = "diff-baslangic";
+        if (mod.difficulty === "Orta") diffClass = "diff-orta";
+        if (mod.difficulty === "İleri") diffClass = "diff-ileri";
+        if (mod.difficulty === "Uzman") diffClass = "diff-uzman";
+
+        let statusBadge = `<span class="status-chip status-locked">[ KİLİTLİ ]</span>`;
+        if (isCompleted) {
+            statusBadge = `<span class="status-chip status-completed">[ TAMAMLANDI ]</span>`;
+        } else if (isUnlocked) {
+            statusBadge = `<span class="status-chip status-unlocked">[ AÇIK ]</span>`;
+        }
+
+        return `
+            <div class="case-card ${isCompleted ? 'completed' : ''}">
+                <div class="case-top-row">
+                    <span class="dict-cat-tag">KADEME 0${mod.levelNum}</span>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <span class="case-difficulty-tag ${diffClass}">${mod.difficulty}</span>
+                        ${statusBadge}
+                    </div>
+                </div>
+                <h3 class="case-title">${mod.title}</h3>
+                <div style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--sapphire-blue); font-weight: 700; margin-bottom: 6px;">
+                    Hedef Gen: ${mod.targetGene}
+                </div>
+                <p class="case-desc">${mod.description}</p>
+                <div class="case-badge-preview">
+                    <span class="badge-label">Kazanılacak Rozet:</span>
+                    <strong class="badge-name">${mod.badge}</strong>
+                </div>
+                <button type="button" class="btn-case-action ${isCompleted ? 'done' : ''}" 
+                        ${!isUnlocked ? 'disabled style="opacity:0.5; cursor:not-allowed; background:#8993a4;"' : ''} 
+                        onclick="startTrainingLevel('${mod.id}')">
+                    ${isCompleted ? 'Modülü Tekrar İncele ➔' : (isUnlocked ? 'Eğitimi Başlat ➔' : 'Önceki Kademeyi Tamamlayın')}
+                </button>
+            </div>
+        `;
+    }).join("");
+
+    // Sayaçları güncelle
+    const countDisp = document.getElementById("trainingProgressCount");
+    const badgeDisp = document.getElementById("trainingBadgeCount");
+    if (countDisp) countDisp.textContent = `${Math.min(5, currentLevel - 1)} / 5`;
+    if (badgeDisp) badgeDisp.textContent = `${Math.min(5, currentLevel - 1)}`;
+}
+
+function startTrainingLevel(modId) {
+    const mod = TRAINING_MODULES_DATABASE.find(m => m.id === modId);
+    if (!mod) return;
+
+    if (window.state) window.state.activeScenarioId = modId;
+    const runner = document.getElementById("activeTrainingRunner");
+    const content = document.getElementById("trainingRunnerContent");
+    if (!runner || !content) return;
+
+    runner.classList.remove("hidden");
+    runner.scrollIntoView({ behavior: "smooth" });
+
+    content.innerHTML = `
+        <div style="margin-bottom: 16px;">
+            <span class="system-code-tag">KADEME 0${mod.levelNum} // ${mod.targetGene}</span>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--navy-dark); margin: 6px 0 4px;">${mod.title}</h2>
+            <p style="font-size: 0.88rem; color: var(--text-secondary);">${mod.description}</p>
+        </div>
+
+        <div class="lab-dna-viewport-box" style="margin-bottom: 16px;">
+            <span style="font-size: 0.72rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">
+                HEDEF GENOM SEKANSI (5' ➔ 3'):
+            </span>
+            <div style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 800; color: var(--sapphire-blue); word-break: break-all; letter-spacing: 1px;">
+                ${mod.targetDna}
+            </div>
+            <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; display: block;">
+                Bilgi: ${mod.hint}
+            </span>
+        </div>
+
+        <div class="evaluator-grid-row" style="margin-bottom: 14px;">
+            <div class="input-cell flex-3">
+                <label for="trainGrnaInput">20 Bazlık Sentetik sgRNA Sekansı (RNA / Urasil Formatında):</label>
+                <input type="text" id="trainGrnaInput" class="navy-input-field" placeholder="Örn: ${mod.optimalGrna.substring(0, 10)}..." maxlength="20">
+            </div>
+            <div class="input-cell flex-1">
+                <label for="trainPamInput">PAM Motifi (3nt):</label>
+                <input type="text" id="trainPamInput" class="navy-input-field" placeholder="Örn: NGG" maxlength="3">
+            </div>
+            <button type="button" class="btn-evaluator-submit" onclick="evaluateTrainingModule('${mod.id}')">
+                Kademeyi Doğrula ➔
+            </button>
+        </div>
+
+        <div id="trainingResultBox" class="lab-feedback-box hidden"></div>
+    `;
+
+    document.getElementById("closeTrainingRunnerBtn")?.addEventListener("click", () => {
+        runner.classList.add("hidden");
+    });
+}
+
+function evaluateTrainingModule(modId) {
+    const mod = TRAINING_MODULES_DATABASE.find(m => m.id === modId);
+    if (!mod) return;
+
+    const grnaInput = document.getElementById("trainGrnaInput")?.value.toUpperCase().trim().replace(/T/g, "U");
+    const pamInput = document.getElementById("trainPamInput")?.value.toUpperCase().trim();
+    const resultBox = document.getElementById("trainingResultBox");
+    if (!resultBox) return;
+
+    resultBox.classList.remove("hidden");
+
+    if (!grnaInput || !pamInput) {
+        resultBox.className = "lab-feedback-box error";
+        resultBox.textContent = "Lütfen hem 20 bazlık gRNA dizisini hem de 3 bazlık PAM motifini girin.";
+        return;
+    }
+
+    const isGrnaCorrect = (grnaInput === mod.optimalGrna);
+    const isPamCorrect = (pamInput === mod.correctPam || pamInput.endsWith("GG"));
+
+    if (isGrnaCorrect && isPamCorrect) {
+        if (window.state) {
+            if (!window.state.completedScenarios) window.state.completedScenarios = [];
+            if (!window.state.completedScenarios.includes(mod.id)) {
+                window.state.completedScenarios.push(mod.id);
+            }
+            if (!window.state.currentUser) window.state.currentUser = { level: 1 };
+            if (window.state.currentUser.level <= mod.levelNum) {
+                window.state.currentUser.level = mod.levelNum + 1;
+            }
+        }
+        resultBox.className = "lab-feedback-box success";
+        resultBox.innerHTML = `
+            <strong>[KADEME DOĞRULANDI // REAKSİYON BAŞARILI]</strong><br>
+            SpCas9 hedef sekansa bağlandı ve kesimi gerçekleştirdi.<br>
+            Kazanılan Rozet: <strong>${mod.badge}</strong>
+        `;
+        renderTrainingCards();
+    } else {
+        resultBox.className = "lab-feedback-box error";
+        resultBox.innerHTML = `
+            <strong>[SEKANS UYUMSUZLUĞU]</strong><br>
+            Girilen gRNA veya PAM motifi hedef lokustaki aktif kesim bölgesiyle eşleşmedi. İpucunu kontrol edin.
+        `;
+    }
+}
