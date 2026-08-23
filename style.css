@@ -2313,3 +2313,106 @@ body.navy-theme-body {
         overflow-x: hidden !important;
     }
 }
+/* ==========================================================================
+   MOBİL TAŞMA & KÜTÜPHANE / NAVBAR KESİN ÇÖZÜM
+   ========================================================================== */
+
+html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+*, *:before, *:after {
+    box-sizing: border-box !important;
+}
+
+.page-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px !important;
+    margin: 0 auto !important;
+}
+
+/* Mobilde Navbar Görünümü */
+@media (max-width: 768px) {
+    .app-navbar {
+        display: block !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 9999 !important;
+        background: #091e42 !important;
+        padding: 10px 12px !important;
+        width: 100% !important;
+    }
+
+    .navbar-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .nav-brand-wrap {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    .nav-links-wrap {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        width: 100% !important;
+        gap: 6px !important;
+        padding-bottom: 4px !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .nav-links-wrap .nav-link {
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+        font-size: 0.78rem !important;
+        padding: 5px 10px !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-radius: 4px !important;
+        color: #ffffff !important;
+    }
+
+    /* Kütüphane Izgarası Tek Kolon */
+    .library-cards-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+    }
+
+    .dict-card, .guide-card {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Kategori Butonları */
+    .category-tabs-row {
+        display: flex !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+        gap: 6px !important;
+        padding-bottom: 6px !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .category-tabs-row .tab-chip {
+        flex-shrink: 0 !important;
+    }
+
+    .card-white-panel {
+        padding: 14px !important;
+    }
+}
