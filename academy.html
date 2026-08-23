@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRISPR-Lab | Moleküler Genom Dokümantasyon & Akademi İstasyonu</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .academy-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            align-items: start;
+            margin-top: 20px;
+        }
+        .academy-nav-panel {
+            background: #ffffff;
+            border: 1.5px solid var(--border-light);
+            border-radius: 8px;
+            padding: 16px;
+            position: sticky;
+            top: 80px;
+        }
+        .academy-menu-btn {
+            width: 100%;
+            text-align: left;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            background: transparent;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .academy-menu-btn:hover {
+            background: var(--bg-subtle);
+            color: var(--sapphire-blue);
+        }
+        .academy-menu-btn.active {
+            background: var(--sapphire-blue-soft);
+            color: var(--sapphire-blue);
+            border-color: #b3d4ff;
+        }
+        .academy-article-card {
+            background: #ffffff;
+            border: 1.5px solid var(--border-light);
+            border-radius: 8px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+        .academy-tag {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--sapphire-blue);
+            background: var(--sapphire-blue-soft);
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .formula-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-medium);
+            border-radius: 6px;
+            padding: 14px 18px;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            color: var(--navy-dark);
+            margin: 14px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nuclease-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84rem;
+            margin: 16px 0;
+        }
+        .nuclease-table th {
+            background: var(--bg-subtle);
+            color: var(--navy-dark);
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 2px solid var(--border-medium);
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+        }
+        .nuclease-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+        @media (max-width: 900px) {
+            .academy-layout { grid-template-columns: 1fr; }
+            .academy-nav-panel { position: static; }
+        }
+    </style>
+</head>
+<body class="navy-theme-body">
+
+    <!-- ÜST NAVİGASYON BARI -->
+    <header class="app-navbar">
+        <div class="navbar-container">
+            <div class="nav-brand-wrap">
+                <a href="index.html" class="brand-anchor">
+                    <div class="brand-badge-square">CL</div>
+                    <div class="brand-text-block">
+                        <span class="brand-name">CRISPR<span class="brand-blue-accent">LAB</span></span>
+                        <span class="brand-subtext">GENOM AKADEMİSİ // DOKÜMANTASYON</span>
+                    </div>
+                </a>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="system-code-tag">6 TEMEL KATEGORİ</span>
+                <button type="button" class="btn-primary-navy" onclick="window.close(); window.location.href='index.html';">
+                    [ ✕ Sekmeyi Kapat ]
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-container" style="max-width: 1280px;">
+        
+        <!-- Üst Başlık Şeridi -->
+        <section class="card-white-panel">
+            <div class="panel-header-strip">
+                <div>
+                    <span class="system-chip">MOLEKÜLER BİYOLOJİ & HESAPLAMALI GENOMİK</span>
+                    <h1 class="panel-heading" style="font-size: 1.45rem; margin-top: 4px;">CRISPR-Cas Biyolojisi & Genom Mühendisliği Dokümantasyonu</h1>
+                    <p class="panel-subheading">Bakteriyel adaptif bağışıklıktan modern baz ve prime düzenleyicilere kadar kapsamlı teorik ve pratik mühendislik prensipleri.</p>
+                </div>
+            </div>
+
+            <!-- Akademi İki Kolonlu Düzen -->
+            <div class="academy-layout">
+                
+                <!-- Sol Menü (Kategori Listesi) -->
+                <nav class="academy-nav-panel">
+                    <span style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800; color: var(--text-faint); margin-bottom: 8px; display: block;">
+                        DOKÜMANTASYON MODÜLLERİ
+                    </span>
+                    <button type="button" class="academy-menu-btn active" onclick="switchAcademyTopic('mod-01')">
+                        <span>01. Bakteriyel İmmünoloji</span>
+                        <span>➔</span>
+                    </button>
+                    <button type="button" class="academy-menu-btn" onclick="switchAcademyTopic('mod-02')">
+                        <span>02. Cas9 & Nükleaz Ailesi</span>
+                        <span>➔</span>
+                    </button>
+                    <button type="button" class="academy-menu-btn" onclick="switchAcademyTopic('mod-03')">
+                        <span>03. gRNA & PAM Kriterleri</span>
+                        <span>➔</span>
+                    </button>
+                    <button type="button" class="academy-menu-btn" onclick="switchAcademyTopic('mod-04')">
+                        <span>04. Hücresel Onarım (NHEJ / HDR)</span>
+                        <span>➔</span>
+                    </button>
+                    <button type="button" class="academy-menu-btn" onclick="switchAcademyTopic('mod-05')">
+                        <span>05. Yeni Nesil (Base / Prime)</span>
+                        <span>➔</span>
+                    </button>
+                    <button type="button" class="academy-menu-btn" onclick="switchAcademyTopic('mod-06')">
+                        <span>06. Off-Target & Biyoinformatik</span>
+                        <span>➔</span>
+                    </button>
+                </nav>
+
+                <!-- Sağ İçerik Alanı -->
+                <div class="academy-content-stream">
+
+                    <!-- MODÜL 1 -->
+                    <article id="mod-01" class="academy-article-card">
+                        <span class="academy-tag">MODÜL 01 // EVRİMSEL BİYOLOJİ</span>
+                        <h2 style="font-size: 1.25rem; color: var(--navy-dark); font-weight: 800; margin-bottom: 12px;">CRISPR Biyolojisinin Temeli: Bakteriyel Adaptif Bağışıklık</h2>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+                            CRISPR (Clustered Regularly Interspaced Short Palindromic Repeats), prokaryotik organizmaların (bakteriler ve arkeler) bakteriyofajlara ve plazmit istilalarına karşı geliştirdiği kazanılmış bağışıklık sistemidir. Bu mekanizma 3 ana fazda yürütülür:
+                        </p>
+                        <ul style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin: 12px 0 12px 20px;">
+                            <li><strong>1. Adaptasyon (Edinim):</strong> İstilacı faj DNA'sı Cas1-Cas2 protein kompleksi tarafından parçalanır ve CRISPR dizisi içerisindeki iki palindromik tekrar arasına "protospacer" (spacer) olarak entegre edilir.</li>
+                            <li><strong>2. Biyogenez (İfade):</strong> CRISPR lokusu tek bir uzun pre-crRNA olarak transkribe edilir ve tracrRNA ile RNase III aracılığıyla küçük crRNA birimlerine işlenir.</li>
+                            <li><strong>3. İnterferans (Hedefleme):</strong> crRNA-tracrRNA ikilisi Cas nükleazını hedefe yönlendirir ve faj genomunu çift zincir kırığıyla (DSB) yok eder.</li>
+                        </ul>
+                    </article>
+
+                    <!-- MODÜL 2 -->
+                    <article id="mod-02" class="academy-article-card">
+                        <span class="academy-tag">MODÜL 02 // ENZİMOLOJİ</span>
+                        <h2 style="font-size: 1.25rem; color: var(--navy-dark); font-weight: 800; margin-bottom: 12px;">SpCas9 Mimarisi ve Nükleaz Çeşitleri</h2>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+                            <em>Streptococcus pyogenes</em> kökenli Tip II Cas9 (SpCas9), 1368 amino asitten oluşan çok alanlı bir endonükleazdır. Hedef DNA çift zincirini kesmek için iki bağımsız katalitik alan barındırır:
+                        </p>
+                        <div class="formula-card">
+                            <span><strong>RuvC Alanı:</strong> Non-target ipliği keser (PAM içeren)</span>
+                            <span><strong>HNH Alanı:</strong> Target ipliği keser (gRNA eşleşen)</span>
+                        </div>
+                        <table class="nuclease-table">
+                            <thead>
+                                <tr>
+                                    <th>ENZİM</th>
+                                    <th>PAM MOTİFİ</th>
+                                    <th>KESİM TİPİ</th>
+                                    <th>BOYUT</th>
+                                    <th>KLİNİK KULLANIM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>SpCas9</strong></td>
+                                    <td>5'-NGG-3'</td>
+                                    <td>Küt Uç (Blunt)</td>
+                                    <td>4.1 kb (1368 aa)</td>
+                                    <td>Standart Nakavt / HDR</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SaCas9</strong></td>
+                                    <td>5'-NNGRRT-3'</td>
+                                    <td>Küt Uç (Blunt)</td>
+                                    <td>3.1 kb (1053 aa)</td>
+                                    <td>AAV Viral Teslimat</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cas12a (Cpf1)</strong></td>
+                                    <td>5'-TTTV-3'</td>
+                                    <td>Yapışkan Uç (5nt Staggered)</td>
+                                    <td>3.9 kb (1300 aa)</td>
+                                    <td>T-Zengini Promotörler</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cas13</strong></td>
+                                    <td>PFS Yok (RNA)</td>
+                                    <td>Tek Zincir RNA Kesimi</td>
+                                    <td>3.4 kb (1150 aa)</td>
+                                    <td>RNA Susturma & Teşhis (SHERLOCK)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </article>
+
+                    <!-- MODÜL 3 -->
+                    <article id="mod-03" class="academy-article-card">
+                        <span class="academy-tag">MODÜL 03 // BİYOİNFORMATİK DİZAYN</span>
+                        <h2 style="font-size: 1.25rem; color: var(--navy-dark); font-weight: 800; margin-bottom: 12px;">gRNA Tasarımı, Tohum Bölgesi (Seed) ve PAM Kısıtları</h2>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+                            Sentetik tekli kılavuz RNA (sgRNA), doğal crRNA ve tracrRNA moleküllerinin yapay bir tetraloop ile birleştirilmiş halidir (yaklaşık 100 nükleotit).
+                        </p>
+                        <div class="formula-card">
+                            <span><strong>sgRNA Mimarisi:</strong> 5'- [20 nt Protospacer] - [tracrRNA İskeleti (~80 nt)] -3'</span>
+                        </div>
+                        <ul style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin: 12px 0 12px 20px;">
+                            <li><strong>PAM Tanıma:</strong> Cas9 ilk olarak 5'-NGG-3' motifine fiziksel olarak tutunur. PAM yoksa hedefleme gerçekleşmez.</li>
+                            <li><strong>Tohum Bölgesi (Seed Region):</strong> PAM motifinin hemen 5' bitişiğindeki 8-12 nükleotidlik bölgedir. Bu segmentteki tek bir baz uyumsuzluğu kesim kinetiğini durdurur.</li>
+                            <li><strong>GC İçerik Kriteri:</strong> Protospacer bölgesinde %40 - %60 GC dengesi ideal hibritleşmeyi sağlar. %40 altı zayıf bağlanır, %60 üstü ikincil yapı (hairpin) kurarak inaktive olur.</li>
+                            <li><strong>Poli-T İptali:</strong> U6/H1 promotörlerinde transkripsiyonun erken sonlanmasını önlemek için ardışık 4 veya daha fazla T (TTTT) dizisinden kaçınılmalıdır.</li>
+                        </ul>
+                    </article>
+
+                    <!-- MODÜL 4 -->
+                    <article id="mod-04" class="academy-article-card">
+                        <span class="academy-tag">MODÜL 04 // HÜCRESEL YANIT</span>
+                        <h2 style="font-size: 1.25rem; color: var(--navy-dark); font-weight: 800; margin-bottom: 12px;">Çift Zincir Kırığı Sonrası Onarım: NHEJ vs. HDR</h2>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+                            SpCas9 DNA üzerinde PAM'ın 3 baz 5' yukarısında küt uçlu bir DSB oluşturduktan sonra hücre iki temel DNA hasar yanıt yolağından birini devreye sokar:
+                        </p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px;">
+                            <div style="background: var(--bg-subtle); padding: 16px; border-radius: 6px; border-left: 3px solid var(--sapphire-blue);">
+                                <strong style="color: var(--navy-dark); font-size: 0.9rem;">NHEJ (Non-Homologous End Joining)</strong>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; line-height: 1.5;">
+                                    Hücre döngüsünün tüm evrelerinde aktiftir. Şablon kullanmaz; kırık uçları doğrudan birleştirirken rastgele insersiyon/delesyon (indel) mutasyonları yapar. <strong>Gen Susturma (Knock-out)</strong> için kullanılır.
+                                </p>
+                            </div>
+                            <div style="background: var(--bg-subtle); padding: 16px; border-radius: 6px; border-left: 3px solid var(--bio-green);">
+                                <strong style="color: var(--navy-dark); font-size: 0.9rem;">HDR (Homology-Directed Repair)</strong>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; line-height: 1.5;">
+                                    Sadece S ve G2 evrelerinde aktiftir. Dışarıdan sağlanan çift zincirli donör DNA veya tek zincirli oligonükleotit (ssODN) şablonuyla hatasız sekans tamiri veya <strong>Gen Ekleme (Knock-in)</strong> sağlar.
+                                </p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- MODÜL 5 -->
+                    <article id="mod-05" class="academy-article-card">
+                        <span class="academy-tag">MODÜL 05 // HASSAS GENOMİK</span>
+                        <h2 style="font-size: 1.25rem; color: var(--navy-dark); font-weight: 800; margin-bottom: 12px;">Yeni Nesil Hassas Düzenleme: Base Editing & Prime Editing</h2>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+                            Çift zincir kırıklarının (DSB) yol açtığı kontrolsüz delesyon, translokasyon ve p53 yanıtı gibi riskleri ortadan kaldırmak amacıyla nükleolitik kesim yapmayan yeni nesil sistemler geliştirilmiştir:
+                        </p>
+                        <ul style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin: 12px 0 12px 20px;">
+                            <li><strong>Sitozin Baz Düzenleyiciler (CBE):</strong> dCas9 veya Cas9-Nickase enziminin sitidin deaminaz ile füzyonudur. C•G baz çiftini T•A baz çiftine dönüştürür.</li>
+                            <li><strong>Adenin Baz Düzenleyiciler (ABE):</strong> Evrimleştirilmiş TadA deaminaz enzimi ile A•T baz çiftini G•C baz çiftine dönüştürür. İnsan patojenik nokta mutasyonlarının %50'den fazlasını onarabilir.</li>
+                            <li><strong>Prime Editing:</strong> Cas9-Nickase (H840A) enzimi ile modifiye Ters Transkriptaz (RT) füzyonudur. Özel pegRNA şablonu kullanarak DSB oluşturmadan istenilen tüm 12 baz dönüşümünü, küçük insersiyon ve delesyonları gerçekleştirir.</li>
+                        </ul>
+                    </article>
+
+                    <!-- MODÜL 6 -->
+                    <article id="mod-06" class="academy-article-card">
+                        <span class="academy-tag">MODÜL 06 // HESAPLAMALI ANALİZ</span>
+                        <h2 style="font-size: 1.25rem; color: var(--navy-dark); font-weight: 800; margin-bottom: 12px;">Off-Target Modellemesi ve Skorlama Algoritmaları</h2>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+                            Biyoinformatik algoritmalar gRNA dizilerinin genomdaki non-spesifik bağlanma olasılıklarını termodinamik ve makine öğrenimi modelleriyle hesaplar:
+                        </p>
+                        <div class="formula-card">
+                            <span><strong>Doench Azimuth Skoru (On-Target):</strong> 0 - 100 arası kesim verimliliği tahmini</span>
+                            <span><strong>Hsu-Zhang Skoru (Off-Target):</strong> Hedef dışı lokus toleransı puanı</span>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-brand-side">
+                <span class="footer-logo">CRISPR<span class="brand-blue-accent">LAB</span></span>
+                <span class="footer-caption">Hesaplamalı Moleküler Genomik İstasyonu</span>
+            </div>
+            <div class="footer-copy">
+                © 2026 CRISPR-Lab Studio. Biyoinformatik Platformu.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function switchAcademyTopic(moduleId) {
+            document.querySelectorAll('.academy-menu-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            const targetEl = document.getElementById(moduleId);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    </script>
+</body>
+</html>
