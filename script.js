@@ -338,13 +338,26 @@ function renderScenarioCards() {
     grid.innerHTML = SCENARIO_DATABASE.map(scn => {
         const isCompleted = state.completedScenarios.includes(scn.id);
         
-        // Türkçe karakter duyarlılığına uygun doğrudan zorluk sınıfı eşleştirmesi
+        // Doğrudan renk haritası (Garantili Renklendirme)
+        let textColor = "#059669";   // Başlangıç: Zümrüt Yeşili
+        let bgColor = "#ecfdf5";
+        let borderColor = "#a7f3d0";
         let diffClass = "diff-baslangic";
+
         if (scn.difficulty === "Orta") {
+            textColor = "#0052cc";   // Orta: Safir Mavi
+            bgColor = "#deebff";
+            borderColor = "#b3d4ff";
             diffClass = "diff-orta";
         } else if (scn.difficulty === "İleri") {
+            textColor = "#d97706";   // İleri: Kehribar Turuncu
+            bgColor = "#fffbeb";
+            borderColor = "#fde68a";
             diffClass = "diff-ileri";
         } else if (scn.difficulty === "Uzman") {
+            textColor = "#7c3aed";   // Uzman: Derin Mor
+            bgColor = "#f5f3ff";
+            borderColor = "#ddd6fe";
             diffClass = "diff-uzman";
         }
 
@@ -352,7 +365,7 @@ function renderScenarioCards() {
             <div class="case-card ${isCompleted ? 'completed' : ''}">
                 <div class="case-top-row">
                     <span class="dict-cat-tag">${scn.category.toUpperCase()}</span>
-                    <span class="case-difficulty-tag ${diffClass}">
+                    <span class="case-difficulty-tag ${diffClass}" style="color: ${textColor} !important; background-color: ${bgColor} !important; border-color: ${borderColor} !important;">
                         ${scn.difficulty}
                     </span>
                 </div>
