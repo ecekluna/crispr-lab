@@ -70,7 +70,6 @@
 
     <main class="page-container">
         
-        <!-- Üst Panel Şeridi -->
         <section class="card-white-panel">
             <div class="panel-header-strip">
                 <div>
@@ -104,11 +103,11 @@
                 </div>
             </div>
 
-            <!-- Aktif Seviye Çalışma Masası -->
+            <!-- GELİŞMİŞ AKTİF ÇALIŞMA İSTASYONU -->
             <div id="activeTrainingRunner" class="active-runner-panel hidden">
                 <div class="runner-top-bar">
-                    <span class="runner-badge">AKTİF EĞİTİM MODÜLÜ</span>
-                    <button type="button" id="closeTrainingRunnerBtn" class="btn-icon">✕ Kapat</button>
+                    <span class="runner-badge" id="runnerHeaderBadge">AKTİF EĞİTİM MODÜLÜ</span>
+                    <button type="button" id="closeTrainingRunnerBtn" class="btn-icon" onclick="closeTrainingRunner()">✕ İstasyonu Kapat</button>
                 </div>
                 <div id="trainingRunnerContent"></div>
             </div>

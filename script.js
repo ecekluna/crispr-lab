@@ -2403,7 +2403,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 // ============================================================================
-// EĞİTİM MODU MOTORU (5 KADEME - SIFIR EMOJİ - KURUMSAL TASARIM)
+// GELİŞMİŞ EĞİTİM MODU MOTORU (İNTERAKTİF DNA, TELEMETRİ & ONARIM MODELİ)
 // ============================================================================
 const TRAINING_MODULES_DATABASE = [
     {
@@ -2417,7 +2417,9 @@ const TRAINING_MODULES_DATABASE = [
         targetDna: "ATGGTGCACCTGACTCCTGAGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAAC",
         optimalGrna: "CCUGAGGAGAAGUCUGCCGU",
         correctPam: "TGG",
-        hint: "5'-NGG-3' PAM motifini bulun ve 5' yönündeki 20 bazı seçin."
+        hint: "5'-NGG-3' PAM motifini seçtikten sonra bitişiğindeki 20 bazı protospacer olarak belirleyin.",
+        mechanism: "NHEJ (İndel ile Fonksiyon Kaybı)",
+        objective: "Hedef dizilimde PAM kuralını ve tohum bölgesi kısıtlarını doğrulayın."
     },
     {
         id: "train-02",
@@ -2430,7 +2432,9 @@ const TRAINING_MODULES_DATABASE = [
         targetDna: "ACTTCACTTCTAATGATGATTATGGGAGAACTGGAGCCTTCAGAGGGTTAAAATTCAACC",
         optimalGrna: "UAAUGAUGAUUAUGGGAGAA",
         correctPam: "CGG",
-        hint: "Timin (T) bazları yerine Urasil (U) kullanarak gRNA sekansını oluşturun."
+        hint: "Timin (T) bazları yerine Urasil (U) kullanarak 20nt gRNA sekansını oluşturun.",
+        mechanism: "HDR (Donör ssODN ile Düzeltme)",
+        objective: "Transkripsiyon dönüşümünü ve %40-60 GC aralığını sağlayın."
     },
     {
         id: "train-03",
@@ -2443,7 +2447,9 @@ const TRAINING_MODULES_DATABASE = [
         targetDna: "CCAGAAGAGCTGAGACATCCGTTCCCCTACAAGAAACTCTCCCCGGGTGGAACAAGATGG",
         optimalGrna: "CUGAGACAUCCGUUCCCCUA",
         correctPam: "AGG",
-        hint: "Seed bölgesindeki (son 8-12 nt) eşleşmenin tam olduğundan emin olun."
+        hint: "Seed bölgesindeki (PAM bitişiği son 8-12 nt) eşleşmenin kusursuzluğunu denetleyin.",
+        mechanism: "NHEJ (Reseptör Nakavtı)",
+        objective: "Off-target riskini 'DÜŞÜK' seviyeye optimize edin."
     },
     {
         id: "train-04",
@@ -2456,7 +2462,9 @@ const TRAINING_MODULES_DATABASE = [
         targetDna: "AGGCGCAGACCGGCCAGGCCCAGGCCCTCCTGGTGGGCATCGTGGGTGCCCTGCTACTGG",
         optimalGrna: "CAGACCGGCCAGGCCCAGGC",
         correctPam: "CGG",
-        hint: "Hedef ekzonda indel oluşturacak en yüksek skorlu protospacer dizisini saptayın."
+        hint: "Hedef ekzonda indel oluşturacak en kararlı protospacer dizisini saptayın.",
+        mechanism: "NHEJ (Çerçeve Kayması Mutasyonu)",
+        objective: "DSB sonrası erken stop kodonu oluşumunu modelleyin."
     },
     {
         id: "train-05",
@@ -2469,9 +2477,15 @@ const TRAINING_MODULES_DATABASE = [
         targetDna: "ATGGTGCACCTGACTCCTGTGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAAC",
         optimalGrna: "CCUGUGGAGAAGUCUGCCGU",
         correctPam: "TGG",
-        hint: "Donör şablonun mutasyon bölgesine kusursuz entegrasyonu için şablon kollarını belirleyin."
+        hint: "Donör şablonun mutasyon bölgesine kusursuz entegrasyonu için şablon kollarını belirleyin.",
+        mechanism: "HDR (Hatasız Baz Değişimi)",
+        objective: "Kritik nokta mutasyonunu şablonlu tamir mekanizmasıyla onarın."
     }
 ];
+
+let trainingSelectionMode = "target";
+let trainingSelectedTargetIndices = [];
+let trainingSelectedPamIndices = [];
 
 function renderTrainingCards() {
     const grid = document.getElementById("trainingMatrixGrid");
@@ -2525,10 +2539,27 @@ function renderTrainingCards() {
         `;
     }).join("");
 
+    const rankTitles = [
+        "Stajyer Araştırmacı",
+        "Moleküler Biyolog",
+        "Kıdemli Genetikçi",
+        "Baş Araştırmacı",
+        "Laboratuvar Direktörü",
+        "Kıdemli Genom Mimarı"
+    ];
+
+    const currentRank = rankTitles[Math.min(currentLevel - 1, rankTitles.length - 1)];
+    const nextRank = rankTitles[Math.min(currentLevel, rankTitles.length - 1)];
+
+    const rankDisp = document.getElementById("trainingRankTitle");
     const countDisp = document.getElementById("trainingProgressCount");
     const badgeDisp = document.getElementById("trainingBadgeCount");
+    const nextGoalDisp = document.getElementById("trainingNextGoal");
+
+    if (rankDisp) rankDisp.textContent = currentRank;
     if (countDisp) countDisp.textContent = `${Math.min(5, currentLevel - 1)} / 5`;
     if (badgeDisp) badgeDisp.textContent = `${Math.min(5, currentLevel - 1)}`;
+    if (nextGoalDisp) nextGoalDisp.textContent = currentLevel <= 5 ? `Seviye ${currentLevel}: ${nextRank}` : "Tüm Kademeler Tamamlandı";
 }
 
 function startTrainingLevel(modId) {
@@ -2536,52 +2567,289 @@ function startTrainingLevel(modId) {
     if (!mod) return;
 
     if (window.state) window.state.activeScenarioId = modId;
+    trainingSelectedTargetIndices = [];
+    trainingSelectedPamIndices = [];
+    trainingSelectionMode = "target";
+
     const runner = document.getElementById("activeTrainingRunner");
     const content = document.getElementById("trainingRunnerContent");
+    const headerBadge = document.getElementById("runnerHeaderBadge");
+
     if (!runner || !content) return;
+
+    if (headerBadge) {
+        headerBadge.textContent = `AKTİF EĞİTİM // KADEME 0${mod.levelNum} - ${mod.targetGene}`;
+    }
 
     runner.classList.remove("hidden");
     runner.scrollIntoView({ behavior: "smooth" });
 
     content.innerHTML = `
-        <div style="margin-bottom: 16px;">
-            <span class="system-code-tag">KADEME 0${mod.levelNum} // ${mod.targetGene}</span>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--navy-dark); margin: 6px 0 4px;">${mod.title}</h2>
-            <p style="font-size: 0.88rem; color: var(--text-secondary);">${mod.description}</p>
-        </div>
+        <div class="lab-main-layout-grid">
+            <!-- Sol Kolon: İnteraktif Çalışma İstasyonu -->
+            <div class="lab-left-viewport">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <div>
+                        <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--navy-dark); margin: 0 0 2px;">${mod.title}</h2>
+                        <span style="font-size: 0.78rem; color: var(--text-secondary);">${mod.description}</span>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" id="trainTargetModeBtn" class="tab-chip tab-dna active" onclick="setTrainingSelectionMode('target')">
+                            [ 1. gRNA (20nt) ]
+                        </button>
+                        <button type="button" id="trainPamModeBtn" class="tab-chip tab-crispr" onclick="setTrainingSelectionMode('pam')">
+                            [ 2. PAM (3nt) ]
+                        </button>
+                        <button type="button" class="tab-chip" style="color: #bf2600; border-color: #ffbdad;" onclick="resetTrainingWorkspace()">
+                            [ Sıfırla ]
+                        </button>
+                    </div>
+                </div>
 
-        <div class="lab-dna-viewport-box" style="margin-bottom: 16px;">
-            <span style="font-size: 0.72rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">
-                HEDEF GENOM SEKANSI (5' ➔ 3'):
-            </span>
-            <div style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 800; color: var(--sapphire-blue); word-break: break-all; letter-spacing: 1px;">
-                ${mod.targetDna}
-            </div>
-            <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; display: block;">
-                Bilgi: ${mod.hint}
-            </span>
-        </div>
+                <!-- DNA Görüntüleyici -->
+                <div class="lab-dna-viewport-box" style="margin-top: 8px;">
+                    <div class="ruler-line">
+                        <span>5'</span>
+                        <span class="ticks">....|....10....|....20....|....30....|....40....|....50....|....60</span>
+                        <span>3'</span>
+                    </div>
 
-        <div class="evaluator-grid-row" style="margin-bottom: 14px;">
-            <div class="input-cell flex-3">
-                <label for="trainGrnaInput">20 Bazlık Sentetik sgRNA Sekansı (RNA / Urasil Formatında):</label>
-                <input type="text" id="trainGrnaInput" class="navy-input-field" placeholder="Örn: ${mod.optimalGrna.substring(0, 10)}..." maxlength="20">
-            </div>
-            <div class="input-cell flex-1">
-                <label for="trainPamInput">PAM Motifi (3nt):</label>
-                <input type="text" id="trainPamInput" class="navy-input-field" placeholder="Örn: NGG" maxlength="3">
-            </div>
-            <button type="button" class="btn-evaluator-submit" onclick="evaluateTrainingModule('${mod.id}')">
-                Kademeyi Doğrula ➔
-            </button>
-        </div>
+                    <div id="interactiveTrainingDnaTrack" class="lab-dna-interactive-track"></div>
 
-        <div id="trainingResultBox" class="lab-feedback-box hidden"></div>
+                    <div class="ruler-line antisense">
+                        <span>3'</span>
+                        <span class="ticks">KOMPLEMANTER ANTİSENSE İPLİK</span>
+                        <span>5'</span>
+                    </div>
+                </div>
+
+                <!-- gRNA & PAM Çıktı ve Eşzamanlı Giriş Kartı -->
+                <div class="lab-readout-card">
+                    <div style="display: flex; gap: 12px; margin-bottom: 8px;">
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                            <label for="trainGrnaInput" style="font-size: 0.74rem; font-weight: 700; color: var(--text-secondary);">
+                                SENTETİK sgRNA SEKANSI (5' ➔ 3' RNA):
+                            </label>
+                            <input type="text" id="trainGrnaInput" class="navy-input-field" placeholder="Diziden seçin veya girin (Örn: ${mod.optimalGrna.substring(0, 8)}...)" maxlength="20" oninput="handleManualTrainingInput()">
+                        </div>
+                        <div style="width: 140px; display: flex; flex-direction: column; gap: 4px;">
+                            <label for="trainPamInput" style="font-size: 0.74rem; font-weight: 700; color: var(--text-secondary);">
+                                PAM (3nt):
+                            </label>
+                            <input type="text" id="trainPamInput" class="navy-input-field text-center" placeholder="NGG" maxlength="3" oninput="handleManualTrainingInput()">
+                        </div>
+                    </div>
+
+                    <button type="button" id="btnRunTrainingReaction" class="btn-primary-blue" style="width: 100%; padding: 12px; justify-content: center; font-size: 0.88rem;" onclick="evaluateTrainingModule('${mod.id}')">
+                        [ REAKSİYONU VE KADEMEYİ DOĞRULA ] ➔
+                    </button>
+
+                    <div id="trainingResultBox" class="lab-feedback-box hidden"></div>
+                </div>
+            </div>
+
+            <!-- Sağ Kolon: Telemetri & Hedef Kriterleri -->
+            <div class="lab-right-telemetry">
+                <div class="spec-tile">
+                    <span class="tile-kicker">TERMODİNAMİK ANALİZ</span>
+                    <div class="telemetry-stat-row">
+                        <span>GC İçeriği:</span>
+                        <strong id="trainGcDisplay" style="color: var(--bio-green); font-family: var(--font-mono);">%0</strong>
+                    </div>
+                    <div class="telemetry-stat-row">
+                        <span>Erime Noktası (Tm):</span>
+                        <strong id="trainTmDisplay" style="font-family: var(--font-mono);">-- °C</strong>
+                    </div>
+                    <div class="telemetry-stat-row">
+                        <span>Seed Bölgesi (8nt):</span>
+                        <strong id="trainSeedDisplay" style="font-family: var(--font-mono);">--</strong>
+                    </div>
+                    <div class="telemetry-stat-row" style="border-bottom: none;">
+                        <span>Off-Target Riski:</span>
+                        <strong id="trainOffTargetDisplay" style="color: var(--bio-green); font-family: var(--font-mono);">DÜŞÜK</strong>
+                    </div>
+                </div>
+
+                <div class="spec-tile" style="margin-top: 12px;">
+                    <span class="tile-kicker">HÜCRESEL ONARIM MODELİ</span>
+                    <strong style="font-size: 0.88rem; color: var(--navy-dark); margin-top: 2px; font-family: var(--font-mono); display: block;">
+                        ${mod.mechanism}
+                    </strong>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; margin-top: 6px;">
+                        ${mod.objective}
+                    </p>
+                </div>
+            </div>
+        </div>
     `;
 
-    document.getElementById("closeTrainingRunnerBtn")?.addEventListener("click", () => {
-        runner.classList.add("hidden");
+    renderTrainingInteractiveDna(mod);
+}
+
+function closeTrainingRunner() {
+    const runner = document.getElementById("activeTrainingRunner");
+    if (runner) runner.classList.add("hidden");
+}
+
+function setTrainingSelectionMode(mode) {
+    trainingSelectionMode = mode;
+    const targetBtn = document.getElementById("trainTargetModeBtn");
+    const pamBtn = document.getElementById("trainPamModeBtn");
+
+    if (mode === "target") {
+        if (targetBtn) targetBtn.classList.add("active");
+        if (pamBtn) pamBtn.classList.remove("active");
+    } else {
+        if (pamBtn) pamBtn.classList.add("active");
+        if (targetBtn) targetBtn.classList.remove("active");
+    }
+}
+
+function resetTrainingWorkspace() {
+    trainingSelectedTargetIndices = [];
+    trainingSelectedPamIndices = [];
+    
+    const grnaInput = document.getElementById("trainGrnaInput");
+    const pamInput = document.getElementById("trainPamInput");
+    if (grnaInput) grnaInput.value = "";
+    if (pamInput) pamInput.value = "";
+
+    updateTrainingVisuals();
+    updateTrainingTelemetry("");
+    
+    const resultBox = document.getElementById("trainingResultBox");
+    if (resultBox) {
+        resultBox.classList.add("hidden");
+        resultBox.innerHTML = "";
+    }
+}
+
+function renderTrainingInteractiveDna(mod) {
+    const track = document.getElementById("interactiveTrainingDnaTrack");
+    if (!track) return;
+
+    const dna = mod.targetDna;
+    const compMap = { 'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G' };
+
+    let html = '<div class="dna-strand sense-strand">';
+    for (let i = 0; i < dna.length; i++) {
+        const base = dna[i];
+        html += `<button type="button" class="base-btn base-${base}" data-train-idx="${i}" onclick="handleTrainingBaseClick(${i})"><span class="base-char">${base}</span><span class="base-idx">${i + 1}</span></button>`;
+    }
+    html += '</div>';
+
+    html += '<div class="dna-strand antisense-strand">';
+    for (let i = 0; i < dna.length; i++) {
+        const comp = compMap[dna[i]] || 'N';
+        html += `<span class="base-btn-comp comp-${comp}">${comp}</span>`;
+    }
+    html += '</div>';
+
+    track.innerHTML = html;
+}
+
+function handleTrainingBaseClick(index) {
+    const mod = TRAINING_MODULES_DATABASE.find(m => m.id === window.state.activeScenarioId);
+    if (!mod) return;
+
+    const dna = mod.targetDna;
+
+    if (trainingSelectionMode === "target") {
+        trainingSelectedPamIndices = trainingSelectedPamIndices.filter(i => i !== index);
+
+        if (trainingSelectedTargetIndices.includes(index)) {
+            trainingSelectedTargetIndices = trainingSelectedTargetIndices.filter(i => i !== index);
+        } else {
+            if (trainingSelectedTargetIndices.length >= 20) {
+                alert("gRNA protospacer hedefi 20 baz olmalıdır.");
+                return;
+            }
+            trainingSelectedTargetIndices.push(index);
+            trainingSelectedTargetIndices.sort((a, b) => a - b);
+        }
+    } else {
+        trainingSelectedTargetIndices = trainingSelectedTargetIndices.filter(i => i !== index);
+
+        if (trainingSelectedPamIndices.includes(index)) {
+            trainingSelectedPamIndices = trainingSelectedPamIndices.filter(i => i !== index);
+        } else {
+            if (trainingSelectedPamIndices.length >= 3) {
+                alert("PAM motifi 3 baz (5'-NGG-3') olmalıdır.");
+                return;
+            }
+            trainingSelectedPamIndices.push(index);
+            trainingSelectedPamIndices.sort((a, b) => a - b);
+        }
+    }
+
+    const selectedTarget = trainingSelectedTargetIndices.map(i => dna[i]).join("");
+    const selectedPam = trainingSelectedPamIndices.map(i => dna[i]).join("");
+
+    const grnaInput = document.getElementById("trainGrnaInput");
+    const pamInput = document.getElementById("trainPamInput");
+
+    if (grnaInput) grnaInput.value = selectedTarget.replace(/T/g, "U");
+    if (pamInput) pamInput.value = selectedPam;
+
+    updateTrainingVisuals();
+    updateTrainingTelemetry(grnaInput ? grnaInput.value : "");
+}
+
+function handleManualTrainingInput() {
+    const grnaInput = document.getElementById("trainGrnaInput");
+    if (grnaInput) {
+        grnaInput.value = grnaInput.value.toUpperCase().replace(/T/g, "U");
+        updateTrainingTelemetry(grnaInput.value);
+    }
+}
+
+function updateTrainingVisuals() {
+    const btns = document.querySelectorAll("#interactiveTrainingDnaTrack .base-btn");
+    btns.forEach(btn => {
+        const idx = parseInt(btn.getAttribute("data-train-idx"));
+        btn.classList.remove("selected-target", "selected-pam");
+        if (trainingSelectedTargetIndices.includes(idx)) btn.classList.add("selected-target");
+        if (trainingSelectedPamIndices.includes(idx)) btn.classList.add("selected-pam");
     });
+}
+
+function updateTrainingTelemetry(targetRna) {
+    const gcDisp = document.getElementById("trainGcDisplay");
+    const tmDisp = document.getElementById("trainTmDisplay");
+    const seedDisp = document.getElementById("trainSeedDisplay");
+    const offTargetDisp = document.getElementById("trainOffTargetDisplay");
+
+    if (targetRna && targetRna.length > 0) {
+        let gcCount = 0;
+        for (let b of targetRna) {
+            if (b === 'G' || b === 'C') gcCount++;
+        }
+        const gcPercent = Math.round((gcCount / targetRna.length) * 100);
+        if (gcDisp) {
+            gcDisp.textContent = `%${gcPercent}`;
+            gcDisp.style.color = (gcPercent >= 40 && gcPercent <= 60) ? "var(--bio-green)" : "var(--brand-coral)";
+        }
+
+        const tm = Math.round(64.9 + (41 * (gcCount - 16.4) / targetRna.length));
+        if (tmDisp) tmDisp.textContent = `${Math.max(30, tm)} °C`;
+
+        if (seedDisp) seedDisp.textContent = targetRna.length >= 8 ? targetRna.slice(-8) : "--";
+
+        if (offTargetDisp) {
+            if (gcPercent >= 40 && gcPercent <= 60 && targetRna.length === 20) {
+                offTargetDisp.textContent = "DÜŞÜK (Yüksek Özgüllük)";
+                offTargetDisp.style.color = "var(--bio-green)";
+            } else {
+                offTargetDisp.textContent = "ORTA / YÜKSEK";
+                offTargetDisp.style.color = "#bf2600";
+            }
+        }
+    } else {
+        if (gcDisp) { gcDisp.textContent = "%0"; gcDisp.style.color = "var(--bio-green)"; }
+        if (tmDisp) tmDisp.textContent = "-- °C";
+        if (seedDisp) seedDisp.textContent = "--";
+        if (offTargetDisp) { offTargetDisp.textContent = "DÜŞÜK"; offTargetDisp.style.color = "var(--bio-green)"; }
+    }
 }
 
 function evaluateTrainingModule(modId) {
@@ -2597,7 +2865,13 @@ function evaluateTrainingModule(modId) {
 
     if (!grnaInput || !pamInput) {
         resultBox.className = "lab-feedback-box error";
-        resultBox.textContent = "Lütfen hem 20 bazlık gRNA dizisini hem de 3 bazlık PAM motifini girin.";
+        resultBox.textContent = "Lütfen hem 20 bazlık sentetik sgRNA dizisini hem de 3 bazlık PAM motifini eksiksiz tanımlayın.";
+        return;
+    }
+
+    if (grnaInput.length !== 20) {
+        resultBox.className = "lab-feedback-box error";
+        resultBox.textContent = `sgRNA dizisi 20 nükleotit olmalıdır. (Girilen: ${grnaInput.length} nt)`;
         return;
     }
 
@@ -2617,16 +2891,19 @@ function evaluateTrainingModule(modId) {
         }
         resultBox.className = "lab-feedback-box success";
         resultBox.innerHTML = `
-            <strong>[KADEME DOĞRULANDI // REAKSİYON BAŞARILI]</strong><br>
-            SpCas9 hedef sekansa bağlandı ve kesimi gerçekleştirdi.<br>
-            Kazanılan Rozet: <strong>${mod.badge}</strong>
+            <strong>[REAKSİYON VE AKREDİTASYON DOĞRULANDI]</strong><br>
+            SpCas9 nükleazı ${mod.targetGene} lokusuna ${pamInput} PAM motifi üzerinden başarıyla kenetlendi ve çift zincir kırığı (DSB) indükledi.<br>
+            <span style="display:inline-block; margin-top:4px; color:#006644; font-size:0.8rem;">
+                Kazanılan Rozet: <strong>${mod.badge}</strong> | Onarım Yolağı: <strong>${mod.mechanism}</strong>
+            </span>
         `;
         renderTrainingCards();
     } else {
         resultBox.className = "lab-feedback-box error";
         resultBox.innerHTML = `
-            <strong>[SEKANS UYUMSUZLUĞU]</strong><br>
-            Girilen gRNA veya PAM motifi hedef lokustaki aktif kesim bölgesiyle eşleşmedi. İpucunu kontrol edin.
+            <strong>[MOLEKÜLER UYUMSUZLUK]</strong><br>
+            Girilen gRNA veya PAM motifi ${mod.targetGene} lokusundaki aktif hedefleme kısıtlarıyla eşleşmedi.<br>
+            İpucu: ${mod.hint}
         `;
     }
 }
