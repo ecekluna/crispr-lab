@@ -1228,11 +1228,18 @@ function initGuideEventListeners() {
     const categoryTabs = document.querySelectorAll(".category-tabs .tab-chip");
     const loadMoreBtn = document.getElementById("loadMoreGuideBtn");
 
-    searchInput?.addEventListener("input", function(e) {
-        state.guideSearchQuery = e.target.value;
-        state.guideVisibleCount = 6;
-        renderGuideCards();
-    });
+  document.addEventListener("DOMContentLoaded", function() {
+    if (auth) auth.onAuthStateChanged(updateNavbarUserUI); //[cite: 3]
+    renderGuideCards(); //[cite: 3]
+    initGuideEventListeners(); //[cite: 3]
+    renderScenarioCards(); //[cite: 3]
+    
+    // Laboratuvarı Başlat
+    if (typeof initLabWorkspace === "function") {
+        initLabWorkspace(); //[cite: 3]
+    }
+    // ... kalan test dinleyicileri
+});
 
     categoryTabs?.forEach(tab => {
         tab.addEventListener("click", function() {

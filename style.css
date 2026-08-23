@@ -1256,3 +1256,110 @@ body.navy-theme-body {
     color: #253858 !important;
     line-height: 1.55 !important;
 }
+/* ==========================================================================
+   LABORATUVAR KONSOLU DÜZEN STİLLERİ
+   ========================================================================== */
+.lab-main-layout-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 270px !important;
+    gap: 20px !important;
+    align-items: start !important;
+}
+
+.lab-dna-viewport-box {
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    padding: 12px;
+}
+
+.lab-dna-interactive-track {
+    overflow-x: auto;
+    padding: 6px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lab-dna-interactive-track .dna-strand {
+    display: flex;
+    gap: 3px;
+    width: max-content;
+}
+
+.lab-dna-interactive-track .base-btn {
+    width: 26px !important;
+    height: 32px !important;
+    min-width: 26px !important;
+    background: #ffffff;
+    border: 1px solid var(--border-medium);
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--navy-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+}
+
+.lab-dna-interactive-track .base-btn:hover {
+    border-color: var(--sapphire-blue);
+    background: var(--sapphire-blue-soft);
+    color: var(--sapphire-blue);
+}
+
+.lab-dna-interactive-track .base-btn.selected-target {
+    background: var(--sapphire-blue) !important;
+    border-color: var(--sapphire-blue-hover) !important;
+    color: #ffffff !important;
+}
+
+.lab-dna-interactive-track .base-btn.selected-pam {
+    background: var(--brand-coral) !important;
+    border-color: var(--brand-coral-hover) !important;
+    color: #ffffff !important;
+}
+
+.lab-dna-interactive-track .base-btn-comp {
+    width: 26px !important;
+    height: 22px !important;
+    min-width: 26px !important;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-faint);
+    background: #ffffff;
+    border: 1px dashed var(--border-light);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lab-readout-box {
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--sapphire-blue);
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    word-break: break-all;
+}
+
+.lab-readout-box.pam-text {
+    color: var(--brand-coral);
+}
+
+@media (max-width: 900px) {
+    .lab-main-layout-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
