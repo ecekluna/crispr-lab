@@ -2,7 +2,187 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <!-- KESİN MOBİL VE NAVBAR ENJEKSİYONU -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+@media screen and (max-width: 768px) {
+    /* 1. Kök Düzeyde Ekranı Kilitle ve Taşmayı Kes */
+    html, body {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: relative !important;
+    }
+    
+    *, *:before, *:after {
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+    }
+
+    .page-container {
+        width: 100% !important;
+        padding: 8px !important;
+        margin: 0 !important;
+    }
+
+    /* 2. Üst Navbar'ı Sabitle ve Yatay Kaydırmalı Buton Yap */
+    .app-navbar {
+        position: sticky !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        z-index: 9999999 !important;
+        background: #091e42 !important;
+        padding: 8px 10px !important;
+        border-bottom: 2px solid #0052cc !important;
+        display: block !important;
+    }
+
+    .navbar-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        gap: 6px !important;
+    }
+
+    .nav-brand-wrap {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+    }
+
+    .brand-anchor {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .nav-links-wrap {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        width: 100% !important;
+        gap: 6px !important;
+        padding: 2px 0 6px !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+    }
+
+    .nav-links-wrap::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .nav-link {
+        flex: 0 0 auto !important;
+        font-size: 0.74rem !important;
+        font-weight: 700 !important;
+        padding: 6px 10px !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 4px !important;
+        color: #ffffff !important;
+        white-space: nowrap !important;
+        text-decoration: none !important;
+    }
+
+    .nav-auth-wrap {
+        display: none !important;
+    }
+
+    /* 3. Kütüphane / Sözlük Arama ve Filtreleme Alanı */
+    .library-filter-strip {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 8px !important;
+    }
+
+    .search-field-box, 
+    .search-field-box input {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .category-tabs-row {
+        display: flex !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+        gap: 6px !important;
+        padding-bottom: 6px !important;
+        scrollbar-width: none !important;
+    }
+
+    .category-tabs-row::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .category-tabs-row .tab-chip {
+        flex: 0 0 auto !important;
+        font-size: 0.72rem !important;
+        padding: 6px 10px !important;
+    }
+
+    /* 4. Kütüphane Kartları Izgarası: Tam Dikey Tek Kolon */
+    .library-cards-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 10px !important;
+    }
+
+    .dict-card, 
+    .guide-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 14px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 5. Manifesto ve Paneller */
+    .card-white-panel, 
+    .platform-manifesto-card {
+        width: 100% !important;
+        padding: 14px 10px !important;
+        margin-bottom: 12px !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+
+    .manifesto-metrics-footer {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .metric-node {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* 6. Formlar ve Evaluator */
+    .evaluator-grid-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .input-cell, 
+    .btn-evaluator-submit {
+        width: 100% !important;
+    }
+}
+</style>
 <link rel="stylesheet" href="style.css?v=2026">
     <title>CRISPR-Lab Studio | Hesaplamalı Genomik & Kılavuz RNA Tasarım İstasyonu</title>
     
