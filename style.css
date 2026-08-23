@@ -1154,3 +1154,105 @@ body.navy-theme-body {
     background: #ebf1f8 !important;
     border-top: 1px solid #d8e2ee !important;
 }
+/* ==========================================================================
+   1. HESAPLAMALI MOLEKÜLER GENETİK İSTASYONU ÇERÇEVESİNİ KALDIRMA
+   ========================================================================== */
+.system-chip {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    color: var(--sapphire-blue) !important;
+}
+
+/* ==========================================================================
+   2. KÜTÜPHANE KISMINI BELİRGİN KUTUCUKLARA (GRID KARTLARA) DÖNÜŞTÜRME
+   ========================================================================== */
+#guideCardsGrid,
+.library-cards-grid,
+.dictionary-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 18px !important;
+}
+
+@media (max-width: 992px) {
+    #guideCardsGrid,
+    .library-cards-grid,
+    .dictionary-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 640px) {
+    #guideCardsGrid,
+    .library-cards-grid,
+    .dictionary-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Her Bir Terimin İçinde Bulunduğu Kutucuk */
+.clean-dict-card,
+.guide-card-modern {
+    background: #ffffff !important;
+    border: 1.5px solid #d8e2ee !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    min-height: 170px !important;
+    box-shadow: 0 2px 8px rgba(9, 30, 66, 0.04) !important;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.clean-dict-card:hover,
+.guide-card-modern:hover {
+    border-color: #0052cc !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 18px rgba(0, 82, 204, 0.12) !important;
+}
+
+.dict-card-head,
+.guide-card-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 10px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px dashed #d8e2ee !important;
+}
+
+.dict-cat-tag,
+.guide-category-tag {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.65rem !important;
+    font-weight: 800 !important;
+    color: #0052cc !important;
+    background: #deebff !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+}
+
+.dict-id-tag,
+.guide-index-tag {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    color: #8993a4 !important;
+}
+
+.dict-term-title,
+.guide-term-title {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    color: #091e42 !important;
+    margin-bottom: 8px !important;
+}
+
+.dict-term-desc,
+.guide-term-desc {
+    font-size: 0.84rem !important;
+    color: #253858 !important;
+    line-height: 1.55 !important;
+}

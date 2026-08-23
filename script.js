@@ -1194,7 +1194,6 @@ function setupFirebaseListener() {
 function renderGuideCards() {
     const grid = document.getElementById("guideCardsGrid");
     const counterBadge = document.getElementById("guideCounterBadge");
-    const loadMoreBtn = document.getElementById("loadMoreGuideBtn");
     if (!grid) return;
 
     const filtered = GUIDE_DATABASE.filter(item => {
@@ -1206,44 +1205,23 @@ function renderGuideCards() {
 
     const visibleItems = filtered.slice(0, state.guideVisibleCount);
 
-    grid.innerHTML = visibleItems.map(item => {
-        let badgeLabel = "GENOMİK";
-        let categoryClass = "cat-dna";
+    grid.innerHTML = visibleItems.map(item => `
+        <article class="clean-dict-card">
+            <div class="dict-card-head">
+                <span class="dict-cat-tag">${item.category.toUpperCase()}</span>
+                <span class="dict-id-tag">#${item.id}</span>
+            </div>
+            <h4 class="dict-term-title">${item.term}</h4>
+            <p class="dict-term-desc">${item.desc}</p>
+        </article>
+    `).join("");
 
-        if (item.category === "crispr") {
-            badgeLabel = "CRISPR-CAS";
-            categoryClass = "cat-crispr";
-        } else if (item.category === "repair") {
-            badgeLabel = "ONARIM";
-            categoryClass = "cat-repair";
-        } else if (item.category === "bioinfo") {
-            badgeLabel = "BİYOİNFORMATİK";
-            categoryClass = "cat-bioinfo";
-        }
-
-        const formattedId = item.id < 10 ? `00${item.id}` : item.id < 100 ? `0${item.id}` : `${item.id}`;
-
-        return `
-            <article class="guide-card-modern ${categoryClass}" data-id="${item.id}">
-                <div class="card-accent-bar"></div>
-                <div class="guide-card-header">
-                    <span class="guide-category-tag">${badgeLabel}</span>
-                    <span class="guide-index-tag">LOC.${formattedId}</span>
-                </div>
-                <h3 class="guide-term-title">${item.term}</h3>
-                <p class="guide-term-desc">${item.desc}</p>
-            </article>
-        `;
-    }).join("");
-
-    if (counterBadge) {
-        counterBadge.textContent = `${visibleItems.length} / ${filtered.length}`;
-    }
+    if (counterBadge) counterBadge.textContent = `${visibleItems.length} / ${filtered.length} KAVRAM`;
+}
 
     if (loadMoreBtn) {
         loadMoreBtn.style.display = (visibleItems.length >= filtered.length) ? "none" : "inline-flex";
     }
-}
 
 function initGuideEventListeners() {
     const searchInput = document.getElementById("guideSearchInput");
