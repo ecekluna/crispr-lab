@@ -1194,13 +1194,14 @@ function setupFirebaseListener() {
 function renderGuideCards() {
     const grid = document.getElementById("guideCardsGrid");
     const counterBadge = document.getElementById("guideCounterBadge");
+    const loadMoreBtn = document.getElementById("loadMoreGuideBtn");
     if (!grid) return;
 
     const filtered = GUIDE_DATABASE.filter(item => {
-        const matchesCategory = (state.guideActiveCategory === "all" || item.category === state.guideActiveCategory);
-        const query = state.guideSearchQuery.toLowerCase().trim();
-        const matchesSearch = (!query || item.term.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query));
-        return matchesCategory && matchesSearch;
+        const matchesCat = (state.guideActiveCategory === "all" || item.category === state.guideActiveCategory);
+        const query = (state.guideSearchQuery || "").toLowerCase().trim();
+        const matchesQuery = (!query || item.term.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query));
+        return matchesCat && matchesQuery;
     });
 
     const visibleItems = filtered.slice(0, state.guideVisibleCount);
@@ -1209,52 +1210,20 @@ function renderGuideCards() {
         <article class="clean-dict-card">
             <div class="dict-card-head">
                 <span class="dict-cat-tag">${item.category.toUpperCase()}</span>
-                <span class="dict-id-tag">#${item.id}</span>
+                <span class="dict-id-tag">LOC.${item.id < 10 ? '0' + item.id : item.id}</span>
             </div>
             <h4 class="dict-term-title">${item.term}</h4>
             <p class="dict-term-desc">${item.desc}</p>
         </article>
     `).join("");
 
-    if (counterBadge) counterBadge.textContent = `${visibleItems.length} / ${filtered.length} KAVRAM`;
-}
+    if (counterBadge) {
+        counterBadge.textContent = `${visibleItems.length} / ${filtered.length} KAVRAM`;
+    }
 
     if (loadMoreBtn) {
-        loadMoreBtn.style.display = (visibleItems.length >= filtered.length) ? "none" : "inline-flex";
+        loadMoreBtn.style.display = (visibleItems.length >= filtered.length) ? "none" : "inline-block";
     }
-
-function initGuideEventListeners() {
-    const searchInput = document.getElementById("guideSearchInput");
-    const categoryTabs = document.querySelectorAll(".category-tabs .tab-chip");
-    const loadMoreBtn = document.getElementById("loadMoreGuideBtn");
-
-  document.addEventListener("DOMContentLoaded", function() {
-    if (auth) auth.onAuthStateChanged(updateNavbarUserUI); //[cite: 3]
-    renderGuideCards(); //[cite: 3]
-    initGuideEventListeners(); //[cite: 3]
-    renderScenarioCards(); //[cite: 3]
-    
-    // Laboratuvarı Başlat
-    if (typeof initLabWorkspace === "function") {
-        initLabWorkspace(); //[cite: 3]
-    }
-    // ... kalan test dinleyicileri
-});
-
-    categoryTabs?.forEach(tab => {
-        tab.addEventListener("click", function() {
-            categoryTabs.forEach(t => t.classList.remove("active"));
-            this.classList.add("active");
-            state.guideActiveCategory = this.getAttribute("data-category") || "all";
-            state.guideVisibleCount = 6;
-            renderGuideCards();
-        });
-    });
-
-    loadMoreBtn?.addEventListener("click", function() {
-        state.guideVisibleCount += 6;
-        renderGuideCards();
-    });
 }
 
 // ============================================================================
@@ -2189,8 +2158,11 @@ function scrollToSection(e, targetId) {
 }
 window.scrollToSection = scrollToSection;
 document.addEventListener("DOMContentLoaded", function() {
-    const searchInput = document.getElementById("dictSearchInput") || document.querySelector(".dict-search-input");
-    if (searchInput) {
-        searchInput.value = ""; // Sayfa açılışında içeriği kesin olarak temizle
+    renderGuideCards();
+    initGuideEventListeners();
+    
+    // Laboratuvar Konsolunu Başlat
+    if (typeof initLabWorkspace === "function") {
+        initLabWorkspace();
     }
 });
