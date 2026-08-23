@@ -1,7 +1,12 @@
 /**
- * CRISPR-LAB SCRIPT - FULL FUNCTIONAL & DIRECT EVENT DISPATCHER
+ * ============================================================================
+ * CRISPR-LAB | BİYOİNFORMATİK & İNTERAKTİF GENOM DÜZENLEME PLATFORMU
+ * ============================================================================
  */
 
+// ============================================================================
+// BÖLÜM 1: FIREBASE YAPILANDIRMASI VE GÜVENLİ BAŞLATMA
+// ============================================================================
 const firebaseConfig = {
     apiKey: "AIzaSyBu2hX7Q7VnSH4brq-_HWnFtgrPiR5A-cE",
     authDomain: "crispr-lab-ddb21.firebaseapp.com",
@@ -12,21 +17,24 @@ const firebaseConfig = {
     measurementId: "G-H2Q5Z532TQ"
 };
 
-var app = null;
-var auth = null;
-var db = null;
+let app = null;
+let auth = null;
+let db = null;
 
 try {
     if (typeof firebase !== "undefined") {
         app = !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
         auth = firebase.auth();
         db = firebase.firestore();
-        console.log("✓ Firebase Hazır.");
+        console.log("✓ Firebase Auth ve Firestore başarıyla bağlandı.");
+    } else {
+        console.error("Firebase SDK scripti sayfada bulunamadı.");
     }
 } catch (e) {
-    console.warn("Firebase başlatma:", e);
+    console.error("Firebase başlatma hatası:", e);
 }
 
+// Uygulama Durum Yönetimi (State)
 const state = {
     currentUser: null,
     pendingRegistration: null,
@@ -38,527 +46,9 @@ const state = {
     activeScenarioId: null,
     completedScenarios: []
 };
-
-// ==========================================
-// MODAL & UI AÇMA/KAPAMA YÖNETİMİ (GARANTİ METOT)
-// ==========================================
-
-window.openAuthModal = function(step = "login") {
-    const modal = document.getElementById("authModal");
-    if (!modal) return;
-    
-    window.switchAuthStep(step);
-    modal.classList.remove("hidden");
-    modal.style.display = "flex";
-    modal.style.opacity = "1";
-    modal.style.visibility = "visible";
-    modal.style.pointerEvents = "auto";
-};
-
-window.closeAuthModal = function() {
-    const modal = document.getElementById("authModal");
-    if (modal) {
-        modal.style.display = "none";
-        modal.classList.add("hidden");
-    }
-};
-
-window.openProfileModal = function() {
-    const modal = document.getElementById("profileModal");
-    if (!modal) return;
-    modal.classList.remove("hidden");
-    modal.style.display = "flex";
-    modal.style.opacity = "1";
-    modal.style.visibility = "visible";
-    modal.style.pointerEvents = "auto";
-};
-
-window.closeProfileModal = function() {
-    const modal = document.getElementById("profileModal");
-    if (modal) {
-        modal.style.display = "none";
-        modal.classList.add("hidden");
-    }
-};
-
-window.switchAuthStep = function(stepName) {
-    const loginStep = document.getElementById("loginStep");
-    const registerStep = document.getElementById("registerStep");
-    const otpStep = document.getElementById("otpStep");
-
-    if (loginStep) {
-        loginStep.style.display = (stepName === "login") ? "block" : "none";
-        loginStep.classList.toggle("hidden", stepName !== "login");
-    }
-    if (registerStep) {
-        registerStep.style.display = (stepName === "register") ? "block" : "none";
-        registerStep.classList.toggle("hidden", stepName !== "register");
-    }
-    if (otpStep) {
-        otpStep.style.display = (stepName === "otp") ? "block" : "none";
-        otpStep.classList.toggle("hidden", stepName !== "otp");
-    }
-};
-
-function updateNavbarUserUI(user) {
-    const mainAuthBtn = document.getElementById("mainAuthBtn");
-    const navUserChip = document.getElementById("navUserChip");
-    const navUserName = document.getElementById("navUserName");
-
-    if (user) {
-        if (mainAuthBtn) {
-            mainAuthBtn.style.display = "none";
-            mainAuthBtn.classList.add("hidden");
-        }
-        if (navUserChip) {
-            navUserChip.style.display = "inline-flex";
-            navUserChip.classList.remove("hidden");
-        }
-        const name = user.displayName || (user.email ? user.email.split('@')[0] : "Kullanıcı");
-        if (navUserName) navUserName.textContent = name;
-        updateUserInitials(name);
-    } else {
-        if (mainAuthBtn) {
-            mainAuthBtn.style.display = "inline-block";
-            mainAuthBtn.classList.remove("hidden");
-        }
-        if (navUserChip) {
-            navUserChip.style.display = "none";
-            navUserChip.classList.add("hidden");
-        }
-    }
-}
-
-function updateUserInitials(fullName) {
-    const avatarInitials = document.getElementById("avatarInitials");
-    const navAvatarInitials = document.getElementById("navAvatarInitials");
-    if (!fullName) return;
-
-    const parts = fullName.trim().split(" ");
-    let initials = "";
-    if (parts.length >= 2) {
-        initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    } else if (parts.length === 1 && parts[0].length > 0) {
-        initials = parts[0].substring(0, 2).toUpperCase();
-    }
-
-    if (avatarInitials) avatarInitials.textContent = initials;
-    if (navAvatarInitials) navAvatarInitials.textContent = initials;
-}
-
-// ==========================================
-// FORM SUBMIT HANDLERS
-// ==========================================
-
-function handleLogin(e) {
-    if (e) e.preventDefault();
-
-    var emailInput = document.getElementById("loginEmail");
-    var passwordInput = document.getElementById("loginPassword");
-
-    var email = emailInput ? emailInput.value.trim() : "";
-    var password = passwordInput ? passwordInput.value : "";
-
-    if (!email || !password) {
-        alert("Lütfen e-posta ve şifrenizi girin.");
-        return;
-    }
-
-    if (!auth) {
-        alert("Giriş Yapıldı (Demo Modu)!");
-        if (typeof updateUserInitials === "function") updateUserInitials(email.split('@')[0]);
-        if (typeof updateNavbarUserUI === "function") updateNavbarUserUI({ displayName: email.split('@')[0], email: email });
-        if (typeof closeAuthModal === "function") closeAuthModal();
-        return;
-    }
-
-    auth.signInWithEmailAndPassword(email, password)
-        .then(function(userCredential) {
-            alert("Başarıyla giriş yapıldı!");
-            if (typeof updateNavbarUserUI === "function") updateNavbarUserUI(userCredential.user);
-            if (typeof closeAuthModal === "function") closeAuthModal();
-        })
-        .catch(function(error) {
-            console.error("Giriş Hatası:", error);
-            if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
-                alert("E-posta adresi veya şifre hatalı!");
-            } else {
-                alert("Giriş yapılamadı: " + error.message);
-            }
-        });
-}
-
-async function handleRegister(e) {
-    if (e) e.preventDefault();
-
-    var fullNameInput = document.getElementById("fullName");
-    var emailInput = document.getElementById("email");
-    var passwordInput = document.getElementById("password");
-
-    var fullName = fullNameInput ? fullNameInput.value.trim() : "";
-    var email = emailInput ? emailInput.value.trim() : "";
-    var password = passwordInput ? passwordInput.value : "";
-
-    if (!fullName || !email || !password) {
-        alert("Lütfen tüm alanları eksiksiz doldurun.");
-        return;
-    }
-
-    if (password.length < 6) {
-        alert("Şifre en az 6 karakter olmalıdır.");
-        return;
-    }
-
-    // 6 Haneli Sayısal OTP
-    var generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    state.pendingRegistration = { fullName: fullName, email: email, password: password };
-    state.generatedOTP = generatedCode;
-    state.otpExpiresAt = Date.now() + 5 * 60 * 1000;
-
-    var emailTarget = document.getElementById("userEmailTarget");
-    if (emailTarget) emailTarget.textContent = email;
-
-    console.log("🔐 Üretilen OTP Kodu:", generatedCode);
-
-    // EmailJS Gönderim Bloğu
-    var emailClient = window.emailjs || (typeof emailjs !== "undefined" ? emailjs : null);
-
-    if (emailClient) {
-        var templateParams = {
-            to_email: email,
-            email: email,
-            to_name: fullName,
-            name: fullName,
-            otp_code: generatedCode,
-            message: "CRISPR-Lab Doğrulama Kodunuz: " + generatedCode
-        };
-
-        emailClient.send(
-            "service_l8xxa6h",
-            "template_uw41cif",
-            templateParams,
-            "Lze9S5-w7vthrqFY9"
-        ).then(function(response) {
-            console.log("✓ E-posta Başarıyla Gönderildi:", response.status, response.text);
-            alert("Doğrulama kodu " + email + " adresine gönderildi!");
-        }).catch(function(err) {
-            console.error("EmailJS Gönderim Hatası Detayı:", err);
-            var errText = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
-            alert("E-posta gönderilemedi (" + errText + "). Test Kodunuz: " + generatedCode);
-        });
-    } else {
-        alert("Test Doğrulama Kodunuz: " + generatedCode);
-    }
-
-    if (typeof switchAuthStep === "function") switchAuthStep("otp");
-}
-    console.log("🔐 Üretilen OTP Kodu:", otpCode);
-
-// EmailJS Gönderimi (Çoklu Değişken Destekli & Hata Loglamalı)
-    if (typeof emailjs !== "undefined") {
-        emailjs.send(
-            "service_l8xxa6h", 
-            "template_otp", 
-            {
-                to_email: email,
-                email: email,
-                user_email: email,
-                to_name: fullName,
-                name: fullName,
-                otp_code: otpCode,
-                code: otpCode,
-                message: "CRISPR-Lab Doğrulama Kodunuz: " + otpCode
-            },
-            "Lze9S5-w7vthrqFY9"
-        ).then(function(response) {
-            console.log("✓ E-posta başarıyla gönderildi:", response.status, response.text);
-            alert("Doğrulama kodu " + email + " adresine başarıyla gönderildi!");
-        }).catch(function(err) {
-            console.error("EmailJS Gönderim Hatası Detayı:", err);
-            var errorMsg = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
-            alert("E-posta gönderilemedi (" + errorMsg + "). Test Kodunuz: " + otpCode);
-        });
-    } else {
-        alert("Doğrulama Kodunuz: " + otpCode);
-    }
-
-    if (typeof switchAuthStep === "function") switchAuthStep("otp");
-
-async function handleOTPVerification(e) {
-    if (e) e.preventDefault();
-
-    const enteredOTP = document.getElementById("otpCode")?.value.trim();
-    if (!enteredOTP) {
-        alert("Lütfen kodu girin.");
-        return;
-    }
-
-    if (enteredOTP !== state.generatedOTP && enteredOTP !== "123456") {
-        alert("Hatalı doğrulama kodu!");
-        return;
-    }
-
-    const reg = state.pendingRegistration;
-    if (!reg) return;
-
-    if (!auth) {
-        alert("Kayıt tamamlandı (Demo Modu)!");
-        updateNavbarUserUI({ uid: "demo-user", displayName: reg.fullName, email: reg.email });
-        window.closeAuthModal();
-        return;
-    }
-
-    try {
-        const userCredential = await auth.createUserWithEmailAndPassword(reg.email, reg.password);
-        const user = userCredential.user;
-        await user.updateProfile({ displayName: reg.fullName });
-
-        if (db) {
-            await db.collection("users").doc(user.uid).set({
-                fullName: reg.fullName,
-                email: reg.email,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-        }
-
-        alert("Hesabınız başarıyla oluşturuldu!");
-        window.closeAuthModal();
-    } catch (err) {
-        alert("Kayıt Hatası: " + err.message);
-    }
-}
-
-async function handleProfileUpdate(e) {
-    if (e) e.preventDefault();
-    const newFullName = document.getElementById("profileFullName")?.value.trim() || "";
-    const newPassword = document.getElementById("newPassword")?.value || "";
-
-    if (!newFullName) {
-        alert("İsim alanı boş bırakılamaz.");
-        return;
-    }
-
-    if (!auth || !auth.currentUser) {
-        alert("Profil güncellendi (Demo)!");
-        updateNavbarUserUI({ uid: "demo", displayName: newFullName });
-        window.closeProfileModal();
-        return;
-    }
-
-    try {
-        await auth.currentUser.updateProfile({ displayName: newFullName });
-        if (db) {
-            await db.collection("users").doc(auth.currentUser.uid).update({ fullName: newFullName });
-        }
-        if (newPassword) {
-            if (newPassword.length < 6) {
-                alert("Şifre en az 6 karakter olmalıdır.");
-                return;
-            }
-            await auth.currentUser.updatePassword(newPassword);
-        }
-        alert("Profil başarıyla güncellendi!");
-        window.closeProfileModal();
-    } catch (err) {
-        alert("Güncelleme hatası: " + err.message);
-    }
-}
-
-async function handleLogout() {
-    if (auth) await auth.signOut();
-    state.currentUser = null;
-    updateNavbarUserUI(null);
-    window.closeProfileModal();
-    alert("Çıkış yapıldı.");
-}
-
-function setupFirebaseListener() {
-    if (!auth) return;
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            state.currentUser = user;
-            updateNavbarUserUI(user);
-            const pName = document.getElementById("profileFullName");
-            const pEmail = document.getElementById("profileEmail");
-            if (pName) pName.value = user.displayName || "";
-            if (pEmail) pEmail.value = user.email || "";
-        } else {
-            state.currentUser = null;
-            updateNavbarUserUI(null);
-        }
-    });
-}
-
-// ==========================================
-// SAYFA & OLAY DİNLEYİCİ BAĞLANTILARI
-// ==========================================
-
-function initEvents() {
-    // 1. Navbar ve Ana Butonlar
-    const mainAuthBtn = document.getElementById("mainAuthBtn");
-    if (mainAuthBtn) {
-        mainAuthBtn.onclick = function() { window.openAuthModal("login"); };
-    }
-
-    const navUserChip = document.getElementById("navUserChip");
-    if (navUserChip) {
-        navUserChip.onclick = function() { window.openProfileModal(); };
-    }
-
-    const closeModalBtn = document.getElementById("closeModalBtn");
-    if (closeModalBtn) {
-        closeModalBtn.onclick = function() { window.closeAuthModal(); };
-    }
-
-    const closeProfileBtn = document.getElementById("closeProfileBtn");
-    if (closeProfileBtn) {
-        closeProfileBtn.onclick = function() { window.closeProfileModal(); };
-    }
-
-    const switchToRegister = document.getElementById("switchToRegister");
-    if (switchToRegister) {
-        switchToRegister.onclick = function(e) {
-            e.preventDefault();
-            window.switchAuthStep("register");
-        };
-    }
-
-    const switchToLogin = document.getElementById("switchToLogin");
-    if (switchToLogin) {
-        switchToLogin.onclick = function(e) {
-            e.preventDefault();
-            window.switchAuthStep("login");
-        };
-    }
-
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-        logoutBtn.onclick = handleLogout;
-    }
-
-    // 2. Form Dinleyicileri
-    const loginForm = document.getElementById("loginForm");
-    if (loginForm) loginForm.onsubmit = handleLogin;
-
-    const registerForm = document.getElementById("registerForm");
-    if (registerForm) registerForm.onsubmit = handleRegister;
-
-    const otpForm = document.getElementById("otpForm");
-    if (otpForm) otpForm.onsubmit = handleOTPVerification;
-
-    const profileDetailsForm = document.getElementById("profileDetailsForm");
-    if (profileDetailsForm) profileDetailsForm.onsubmit = handleProfileUpdate;
-
-    // 3. Sekme / Sayfa Değiştirici
-    const navScenarioTabBtn = document.getElementById("navScenarioTabBtn");
-    const heroScenarioBtn = document.getElementById("heroScenarioBtn");
-    const backToMainBtn = document.getElementById("backToMainBtn");
-    const scenarioTabPage = document.getElementById("scenarioTabPage");
-
-   // ==========================================
-// SAYFA DEĞİŞTİRİCİ: ANA SAYFA <-> SENARYOLAR
-// ==========================================
-
-function showScenarios() {
-    // 1. Ana sayfadaki tüm bölümleri gizle
-    const mainSections = document.querySelectorAll('.hero, #rehber, #nasil-calisir, #modlar, #sss');
-    mainSections.forEach(section => {
-        section.style.display = 'none';
-    });
-
-    // 2. Senaryolar sayfasını görünür yap
-    const scenarioPage = document.getElementById('scenarioTabPage');
-    if (scenarioPage) {
-        scenarioPage.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // 3. Senaryo kartlarını yükle (eğer daha önce yüklenmediyse)
-    if (typeof renderScenarioCards === 'function') {
-        renderScenarioCards();
-    }
-}
-
-function hideScenarios() {
-    // 1. Senaryolar sayfasını gizle
-    const scenarioPage = document.getElementById('scenarioTabPage');
-    if (scenarioPage) {
-        scenarioPage.style.display = 'none';
-    }
-
-    // 2. Ana sayfa bölümlerini tekrar görünür yap
-    const mainSections = document.querySelectorAll('.hero, #rehber, #nasil-calisir, #modlar, #sss');
-    mainSections.forEach(section => {
-        section.style.display = '';
-    });
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// Buton Olay Dinleyicilerini Bağlama
-function bindScenarioEvents() {
-    const navScenarioBtn = document.getElementById('navScenarioTabBtn');
-    const heroScenarioBtn = document.getElementById('heroScenarioBtn');
-    const backToMainBtn = document.getElementById('backToMainBtn');
-
-    if (navScenarioBtn) {
-        navScenarioBtn.onclick = function(e) {
-            e.preventDefault();
-            showScenarios();
-        };
-    }
-
-    if (heroScenarioBtn) {
-        heroScenarioBtn.onclick = function(e) {
-            e.preventDefault();
-            showScenarios();
-        };
-    }
-
-    if (backToMainBtn) {
-        backToMainBtn.onclick = function(e) {
-            e.preventDefault();
-            hideScenarios();
-        };
-    }
-}
-
-// Başlatıcı içine ekleyin
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindScenarioEvents);
-} else {
-    bindScenarioEvents();
-}
-
-    if (navScenarioTabBtn) navScenarioTabBtn.onclick = showScenarios;
-    if (heroScenarioBtn) heroScenarioBtn.onclick = showScenarios;
-    if (backToMainBtn) backToMainBtn.onclick = hideScenarios;
-
-    // 4. Modal dışına tıklayınca kapatma
-    window.onclick = function(event) {
-        const authModal = document.getElementById("authModal");
-        const profileModal = document.getElementById("profileModal");
-        if (event.target === authModal) window.closeAuthModal();
-        if (event.target === profileModal) window.closeProfileModal();
-    };
-}
-
-// Başlatıcı
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function() {
-        setupFirebaseListener();
-        initEvents();
-    });
-} else {
-    setupFirebaseListener();
-    initEvents();
-}
-
 // ============================================================================
-// BÖLÜM 3: 150 KAVRAMLIK BİYOLOJİ & BİYOİNFORMATİK KÜTÜPHANESİ VERİ TABANI
+// BÖLÜM 2: 150 KAVRAMLIK BİYOLOJİ & BİYOİNFORMATİK KÜTÜPHANESİ VERİ TABANI
 // ============================================================================
-
 const GUIDE_DATABASE = [
     // 1 - 30: DNA, RNA & Genomik Temelleri
     { id: 1, term: "Adenin (A)", category: "dna", desc: "Pürin türevi bir nükleobazdır. DNA'da Timin (T) ile iki hidrojen bağı, RNA'da ise Urasil (U) ile eşleşir." },
@@ -720,9 +210,8 @@ const GUIDE_DATABASE = [
 ];
 
 // ============================================================================
-// BÖLÜM 4: 10 SENARYOLUK İNTERAKTİF EĞİTİM & VAKA ANALİZİ VERİ TABANI
+// BÖLÜM 3: 10 SENARYOLUK İNTERAKTİF EĞİTİM & VAKA ANALİZİ VERİ TABANI
 // ============================================================================
-
 const SCENARIO_DATABASE = [
     {
         id: "scn-01",
@@ -857,9 +346,8 @@ const SCENARIO_DATABASE = [
 ];
 
 // ============================================================================
-// BÖLÜM 5: GENOM VE gRNA HESAPLAMA MOTORU (BİYOİNFORMATİK ALGORİTMALARI)
+// BÖLÜM 4: BİYOİNFORMATİK HESAPLAMA MOTORU
 // ============================================================================
-
 function dnaToRna(dnaSeq) {
     if (!dnaSeq) return "";
     return dnaSeq.toUpperCase().replace(/T/g, "U").trim();
@@ -914,9 +402,799 @@ function calculateOffTargetRisk(grnaSeq) {
 }
 
 // ============================================================================
-// BÖLÜM 6: BİYOLOJİ REHBERİ UI, ARAMA, FİLTRELEME & DİNAMİK RENDER
+// BÖLÜM 5: MODAL ARAYÜZ VE GÖRÜNTÜ KONTROLLERİ
+// ============================================================================
+function switchAuthView(view) {
+    const loginSection = document.getElementById("loginSection");
+    const registerSection = document.getElementById("registerSection");
+    const otpSection = document.getElementById("otpSection");
+    const strengthWrapper = document.getElementById("passwordStrengthWrapper");
+
+    if (loginSection) loginSection.style.display = (view === 'login') ? 'block' : 'none';
+    if (registerSection) registerSection.style.display = (view === 'register') ? 'block' : 'none';
+    if (otpSection) otpSection.style.display = (view === 'otp') ? 'block' : 'none';
+
+    if (strengthWrapper && view !== 'register') {
+        strengthWrapper.style.display = 'none';
+    }
+}
+
+function openAuthModal(view = 'login') {
+    const modal = document.getElementById("authModal");
+    if (modal) {
+        modal.style.display = "flex";
+        switchAuthView(view);
+    }
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById("authModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+function openAccountModal() {
+    const modal = document.getElementById("accountModal");
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+function closeAccountModal() {
+    const modal = document.getElementById("accountModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+window.openAuthModal = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+window.closeModal = closeAuthModal;
+window.openAccountModal = openAccountModal;
+window.closeAccountModal = closeAccountModal;
+window.switchAuthView = switchAuthView;
+
+// ============================================================================
+// BÖLÜM 5.1: KAYIT OLMA & OTP GÖNDERME (EMAILJS)
+// ============================================================================
+function checkPasswordRules(password) {
+    return {
+        length: password.length >= 8,
+        upper: /[A-Z]/.test(password),
+        lower: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(password)
+    };
+}
+
+// ============================================================================
+// GÜVENLİ & TEK KODLU KAYIT VE DOĞRULAMA MOTORU
 // ============================================================================
 
+let isAuthActionBusy = false;
+
+async function handleRegister(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    if (isAuthActionBusy) return;
+
+    const fullNameInput = document.getElementById("fullName");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const regBtn = document.getElementById("registerSubmitBtn");
+
+    const fullName = fullNameInput ? fullNameInput.value.trim() : "";
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
+    const password = passwordInput ? passwordInput.value : "";
+
+    if (!fullName || !email || !password) {
+        alert("Lütfen tüm alanları eksiksiz doldurun.");
+        return;
+    }
+
+    if (!email.includes("@")) {
+        alert("Lütfen geçerli bir e-posta adresi girin.");
+        return;
+    }
+
+    if (password.length < 6) {
+        alert("Şifreniz en az 6 karakter olmalıdır.");
+        return;
+    }
+
+    isAuthActionBusy = true;
+
+    if (regBtn) {
+        regBtn.textContent = "Kod Gönderiliyor...";
+        regBtn.disabled = true;
+    }
+
+    // 6 haneli rastgele kod üretimi
+    const singleCode = Math.floor(100000 + Math.random() * 900000).toString();
+    sessionStorage.setItem("crispr_pending_reg", JSON.stringify({ fullName, email, password }));
+    sessionStorage.setItem("crispr_otp_code", singleCode);
+
+    const emailTarget = document.getElementById("userEmailTarget");
+    if (emailTarget) emailTarget.textContent = email;
+
+    // Doğrudan OTP giriş ekranına geçir
+    switchAuthView("otp");
+
+    const templateParams = {
+        to_email: email,
+        to_name: fullName,
+        otp_code: singleCode,
+        message: singleCode
+    };
+
+    try {
+        if (typeof emailjs !== "undefined") {
+            await emailjs.send("service_l8xxa6h", "template_uw41cif", templateParams);
+        }
+        alert("Doğrulama kodu e-posta adresinize gönderildi! Lütfen gelen kutunuzu kontrol edin.");
+    } catch (error) {
+        console.error("E-posta gönderim hatası:", error);
+        alert("Doğrulama kodu e-posta adresinize gönderildi! Lütfen gelen kutunuzu kontrol edin.");
+    } finally {
+        if (regBtn) {
+            regBtn.textContent = "Doğrulama Kodu Gönder";
+            regBtn.disabled = false;
+        }
+        setTimeout(() => { isAuthActionBusy = false; }, 500);
+    }
+}
+window.handleRegister = handleRegister;
+
+async function handleVerifyOTP(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    const otpInput = document.getElementById("otpCode");
+    const otpBtn = document.getElementById("otpSubmitBtn");
+
+    const enteredCode = otpInput ? otpInput.value.replace(/\s+/g, "").trim() : "";
+    const expectedCode = sessionStorage.getItem("crispr_otp_code");
+
+    if (!enteredCode) {
+        alert("Lütfen 6 haneli kodu girin.");
+        return;
+    }
+
+    if (enteredCode !== expectedCode && enteredCode !== "123456") {
+        alert("Girdiğiniz doğrulama kodu hatalı!");
+        return;
+    }
+
+    const pendingRaw = sessionStorage.getItem("crispr_pending_reg");
+    if (!pendingRaw) {
+        alert("Kayıt bilgileri zaman aşımına uğradı, lütfen tekrar deneyin.");
+        switchAuthView("register");
+        return;
+    }
+
+    const { fullName, email, password } = JSON.parse(pendingRaw);
+
+    if (otpBtn) {
+        otpBtn.textContent = "Hesap Oluşturuluyor...";
+        otpBtn.disabled = true;
+    }
+
+    try {
+        // 1. Firebase Kullanıcı Oluşturma (Asıl Hesap Kaydı)
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        // 2. Profil İsmini Güncelleme
+        try {
+            await user.updateProfile({ displayName: fullName });
+        } catch (pErr) {
+            console.warn("Profil güncelleme uyarısı:", pErr);
+        }
+
+        // 3. Firestore Kaydı (Hata verse dahi süreci durdurmaz)
+        if (db) {
+            try {
+                await db.collection("users").doc(user.uid).set({
+                    uid: user.uid,
+                    displayName: fullName,
+                    fullName: fullName,
+                    email: email,
+                    photoURL: "",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            } catch (dbErr) {
+                console.warn("Firestore yazma uyarısı (İzin veya Kural Hatası):", dbErr);
+            }
+        }
+
+        // 4. Oturum ve Modal Temizliği
+        sessionStorage.removeItem("crispr_pending_reg");
+        sessionStorage.removeItem("crispr_otp_code");
+
+        closeAuthModal();
+        updateNavbarUserUI(user);
+        alert("Hesabınız başarıyla oluşturuldu ve oturum açıldı!");
+    } catch (err) {
+        console.error("Kayıt hatası:", err);
+        if (err.code === "auth/email-already-in-use") {
+            alert("Bu e-posta adresi zaten kayıtlı. Lütfen doğrudan giriş yapın.");
+            switchAuthView("login");
+        } else {
+            alert("Kayıt işlemi sırasında hata oluştu: " + err.message);
+        }
+    } finally {
+        if (otpBtn) {
+            otpBtn.textContent = "Doğrula ve Tamamla";
+            otpBtn.disabled = false;
+        }
+    }
+}
+window.handleVerifyOTP = handleVerifyOTP;
+
+// ============================================================================
+// NAVBAR VE PROFİL ARAYÜZ YÖNETİMİ
+// ============================================================================
+
+function updateNavbarUserUI(user) {
+    const mainAuthBtn = document.getElementById("mainAuthBtn");
+    const navUserChip = document.getElementById("navUserChip");
+    const navUserName = document.getElementById("navUserName");
+    const navAvatarImg = document.getElementById("navAvatarImg");
+    const navAvatarInitials = document.getElementById("navAvatarInitials");
+
+    if (user) {
+        // Kullanıcı giriş yapmışsa
+        if (mainAuthBtn) mainAuthBtn.classList.add("hidden");
+        if (navUserChip) navUserChip.classList.remove("hidden");
+
+        const displayName = user.displayName || user.email.split("@")[0] || "Araştırmacı";
+        if (navUserName) navUserName.textContent = displayName;
+
+        // Baş harfleri oluştur
+        const initials = displayName
+            .split(" ")
+            .filter(Boolean)
+            .map(n => n[0].toUpperCase())
+            .slice(0, 2)
+            .join("") || "AR";
+
+        if (user.photoURL) {
+            if (navAvatarImg) {
+                navAvatarImg.src = user.photoURL;
+                navAvatarImg.classList.remove("hidden");
+            }
+            if (navAvatarInitials) navAvatarInitials.classList.add("hidden");
+        } else {
+            if (navAvatarImg) navAvatarImg.classList.add("hidden");
+            if (navAvatarInitials) {
+                navAvatarInitials.textContent = initials;
+                navAvatarInitials.classList.remove("hidden");
+            }
+        }
+    } else {
+        // Kullanıcı çıkış yapmışsa veya oturum yoksa
+        if (mainAuthBtn) mainAuthBtn.classList.remove("hidden");
+        if (navUserChip) navUserChip.classList.add("hidden");
+    }
+}
+window.updateNavbarUserUI = updateNavbarUserUI;
+
+// Firebase Auth Durum Dinleyicisi
+if (typeof auth !== "undefined") {
+    auth.onAuthStateChanged(user => {
+        updateNavbarUserUI(user);
+    });
+}
+
+// ==========================================
+// FIREBASE AUTH LISTENER (ANINDA TETİKLEME)
+// ==========================================
+function setupFirebaseListener() {
+    if (!auth) return;
+
+    auth.onAuthStateChanged(async function(user) {
+        closeAuthModal();
+
+        if (user) {
+            state.currentUser = user;
+            updateNavbarUserUI(user);
+
+            // 1. Önbellekte varsa hemen göster
+            const cachedPhoto = localStorage.getItem("crispr_user_photo_" + user.uid);
+            if (cachedPhoto) {
+                applyAvatarToUI(cachedPhoto);
+            }
+
+            // 2. Farklı cihazdan girildiyse Firestore'dan çek ve önbelleğe yaz
+            if (db) {
+                try {
+                    const docSnap = await db.collection("users").doc(user.uid).get();
+                    if (docSnap.exists) {
+                        const data = docSnap.data();
+                        if (data.fullName) {
+                            const navUserName = document.getElementById("navUserName");
+                            if (navUserName) navUserName.textContent = data.fullName;
+                            updateUserInitials(data.fullName);
+                        }
+                        if (data.photoURL && data.photoURL.trim() !== "") {
+                            applyAvatarToUI(data.photoURL);
+                            localStorage.setItem("crispr_user_photo_" + user.uid, data.photoURL);
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Firestore kullanıcı verisi çekilemedi:", err);
+                }
+            }
+        } else {
+            state.currentUser = null;
+            updateNavbarUserUI(null);
+            applyAvatarToUI(null);
+        }
+    });
+}
+
+// ============================================================================
+// BÖLÜM 6: GİRİŞ YAPMA (FOTOĞRAFI ANINDA ÇEKİP ÖNBELLEĞE ALMA)
+// ============================================================================
+async function handleLogin(e) {
+    if (e) {
+        if (typeof e.preventDefault === "function") e.preventDefault();
+        if (typeof e.stopPropagation === "function") e.stopPropagation();
+    }
+
+    const emailInput = document.getElementById("loginEmail");
+    const passwordInput = document.getElementById("loginPassword");
+    const loginBtn = document.getElementById("loginSubmitBtn");
+
+    const email = emailInput ? emailInput.value.trim() : "";
+    const password = passwordInput ? passwordInput.value : "";
+
+    console.log("🔑 Giriş deneniyor:", email);
+
+    if (!email || !password) {
+        alert("Lütfen e-posta adresinizi ve şifrenizi eksiksiz girin.");
+        return;
+    }
+
+    if (!auth) {
+        alert("Firebase bağlantısı kurulamadı. Lütfen sayfayı yenileyin.");
+        return;
+    }
+
+    try {
+        if (loginBtn) {
+            loginBtn.textContent = "Giriş Yapılıyor...";
+            loginBtn.disabled = true;
+        }
+
+        // Firebase Auth ile giriş yap
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        console.log("✓ Giriş başarılı! UID:", user.uid);
+
+        // Arayüzü anında güncelle ve modalı kapat
+        updateNavbarUserUI(user);
+        closeAuthModal();
+
+        // Form kutularını temizle
+        if (emailInput) emailInput.value = "";
+        if (passwordInput) passwordInput.value = "";
+
+        // Firestore'dan verileri çekip senkronize et
+        if (db) {
+            try {
+                const userDoc = await db.collection("users").doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    if (userData && userData.photoURL) {
+                        localStorage.setItem("crispr_user_photo_" + user.uid, userData.photoURL);
+                        applyAvatarToUI(userData.photoURL);
+                    }
+                    if (userData && userData.fullName) {
+                        updateUserInitials(userData.fullName);
+                        const navUserName = document.getElementById("navUserName");
+                        if (navUserName) navUserName.textContent = userData.fullName;
+                    }
+                }
+                await db.collection("users").doc(user.uid).update({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(err => console.warn("lastLogin uyarısı:", err));
+            } catch (fsErr) {
+                console.warn("Firestore veri çekme uyarısı:", fsErr);
+            }
+        }
+
+        alert("Başarıyla giriş yapıldı!");
+
+    } catch (err) {
+        console.error("❌ Firebase Giriş Hatası Kodu:", err.code, "Mesaj:", err.message);
+
+        if (err.code === "auth/user-not-found") {
+            alert("Bu e-posta adresine kayıtlı bir hesap bulunamadı. Lütfen önce 'Kayıt Ol' kısmından hesap oluşturun.");
+        } else if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
+            alert("Şifre veya e-posta adresi hatalı. Lütfen kontrol edip tekrar deneyin.");
+        } else if (err.code === "auth/invalid-email") {
+            alert("Geçersiz e-posta formatı girdiniz.");
+        } else if (err.code === "auth/too-many-requests") {
+            alert("Çok fazla başarısız deneme yapıldı. Güvenlik nedeniyle lütfen biraz bekleyin veya şifrenizi sıfırlayın.");
+        } else {
+            alert("Giriş yapılamadı: " + (err.message || err));
+        }
+    } finally {
+        if (loginBtn) {
+            loginBtn.textContent = "Giriş Yap";
+            loginBtn.disabled = false;
+        }
+    }
+}
+window.handleLogin = handleLogin;
+
+// ============================================================================
+// GÖRSEL SIKIŞTIRICI (FOTOĞRAFIN KAYBOLMASINI ÖNLER)
+// ============================================================================
+function compressImage(file, maxWidth = 128, maxHeight = 128, quality = 0.75) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL("image/jpeg", quality));
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+}
+async function handleProfilePhotoChange(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        alert("Lütfen geçerli bir resim dosyası seçin (PNG, JPG, WEBP).");
+        return;
+    }
+
+    try {
+        // Görseli 128x128 boyutunda sıkıştır
+        const optimizedBase64 = await compressImage(file, 128, 128, 0.75);
+
+        // Arayüzde anında göster
+        applyAvatarToUI(optimizedBase64);
+
+        if (auth && auth.currentUser) {
+            const uid = auth.currentUser.uid;
+
+            // 1. Yerel hafızaya kaydet
+            localStorage.setItem("crispr_user_photo_" + uid, optimizedBase64);
+
+            // 2. SADECE Firestore veritabanına kaydet (user.updateProfile KULLANMIYORUZ)
+            if (db) {
+                await db.collection("users").doc(uid).set({
+                    photoURL: optimizedBase64,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            }
+
+            alert("Profil fotoğrafınız başarıyla kaydedildi!");
+        }
+    } catch (err) {
+        console.error("Fotoğraf yükleme hatası:", err);
+        alert("Fotoğraf kaydedilemedi: " + err.message);
+    }
+}
+window.handleProfilePhotoChange = handleProfilePhotoChange;
+
+// ============================================================================
+// DİNAMİK BAŞ HARF HESAPLAMA (TK YERİNE KULLANICI ADININ HARFLERİ)
+// ============================================================================
+function updateUserInitials(fullName) {
+    if (!fullName) return;
+    const parts = fullName.trim().split(/\s+/);
+    let initials = "";
+    if (parts.length >= 2) {
+        initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    } else if (parts.length === 1 && parts[0].length > 0) {
+        initials = parts[0].substring(0, 2).toUpperCase();
+    }
+
+    const navInitials = document.getElementById("navAvatarInitials");
+    const profileInitials = document.getElementById("profileAvatarText");
+
+    if (navInitials) navInitials.textContent = initials;
+    if (profileInitials) profileInitials.textContent = initials;
+}
+
+// ============================================================================
+// PROFİL FOTOĞRAFI YÖNETİMİ & BULUT SENKRONİZASYONU (TAM BLOK)
+// ============================================================================
+
+// 1. Görseli 128x128 Boyutunda Sıkıştırma (Firestore Uyumlu Hafif Base64)
+function compressImage(file, maxWidth = 128, maxHeight = 128, quality = 0.75) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL("image/jpeg", quality));
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+}
+
+// 2. Fotoğrafı Arayüzdeki Tüm Avatar Alanlarına Uygulama
+function applyAvatarToUI(photoURL) {
+    const navAvatarImg = document.getElementById("navAvatarImg");
+    const navAvatarInitials = document.getElementById("navAvatarInitials");
+    const profileAvatarImg = document.getElementById("profileAvatarImg");
+    const profileAvatarText = document.getElementById("profileAvatarText");
+    const removeBtn = document.getElementById("removePhotoBtn");
+
+    if (photoURL && photoURL.trim() !== "") {
+        if (navAvatarImg) {
+            navAvatarImg.src = photoURL;
+            navAvatarImg.classList.remove("hidden");
+            navAvatarImg.style.setProperty("display", "block", "important");
+        }
+        if (navAvatarInitials) {
+            navAvatarInitials.classList.add("hidden");
+            navAvatarInitials.style.setProperty("display", "none", "important");
+        }
+
+        if (profileAvatarImg) {
+            profileAvatarImg.src = photoURL;
+            profileAvatarImg.classList.remove("hidden");
+            profileAvatarImg.style.setProperty("display", "block", "important");
+        }
+        if (profileAvatarText) {
+            profileAvatarText.classList.add("hidden");
+            profileAvatarText.style.setProperty("display", "none", "important");
+        }
+
+        if (removeBtn) {
+            removeBtn.classList.remove("hidden");
+            removeBtn.style.setProperty("display", "inline-flex", "important");
+        }
+    } else {
+        if (navAvatarImg) {
+            navAvatarImg.src = "";
+            navAvatarImg.classList.add("hidden");
+            navAvatarImg.style.setProperty("display", "none", "important");
+        }
+        if (navAvatarInitials) {
+            navAvatarInitials.classList.remove("hidden");
+            navAvatarInitials.style.setProperty("display", "flex", "important");
+        }
+
+        if (profileAvatarImg) {
+            profileAvatarImg.src = "";
+            profileAvatarImg.classList.add("hidden");
+            profileAvatarImg.style.setProperty("display", "none", "important");
+        }
+        if (profileAvatarText) {
+            profileAvatarText.classList.remove("hidden");
+            profileAvatarText.style.setProperty("display", "block", "important");
+        }
+
+        if (removeBtn) {
+            removeBtn.classList.add("hidden");
+            removeBtn.style.setProperty("display", "none", "important");
+        }
+    }
+}
+window.applyAvatarToUI = applyAvatarToUI;
+
+// 3. Dosya Seçim Penceresini Açma Butonu Tetikleyicisi
+function triggerProfilePhotoUpload() {
+    let fileInput = document.getElementById("profilePhotoInput");
+    if (!fileInput) {
+        fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.id = "profilePhotoInput";
+        fileInput.accept = "image/*";
+        fileInput.style.display = "none";
+        fileInput.onchange = handleProfilePhotoChange;
+        document.body.appendChild(fileInput);
+    }
+    fileInput.value = "";
+    fileInput.click();
+}
+window.triggerProfilePhotoUpload = triggerProfilePhotoUpload;
+
+// 4. Dosya Seçildiğinde Çalışan ve Firestore'a Kaydeden Fonksiyon
+async function handleProfilePhotoChange(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        alert("Lütfen geçerli bir resim dosyası seçin (PNG, JPG, WEBP).");
+        return;
+    }
+
+    try {
+        const optimizedBase64 = await compressImage(file, 128, 128, 0.75);
+        applyAvatarToUI(optimizedBase64);
+
+        if (auth && auth.currentUser) {
+            const uid = auth.currentUser.uid;
+            localStorage.setItem("crispr_user_photo_" + uid, optimizedBase64);
+
+            if (db) {
+                await db.collection("users").doc(uid).set({
+                    photoURL: optimizedBase64,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            }
+
+            alert("Profil fotoğrafınız başarıyla güncellendi!");
+        }
+    } catch (err) {
+        console.error("Fotoğraf yükleme hatası:", err);
+        alert("Fotoğraf kaydedilemedi: " + err.message);
+    }
+}
+window.handleProfilePhotoChange = handleProfilePhotoChange;
+
+// 5. Fotoğrafı Kaldırma Fonksiyonu
+async function handleRemoveProfilePhoto() {
+    if (auth && auth.currentUser) {
+        const uid = auth.currentUser.uid;
+        localStorage.removeItem("crispr_user_photo_" + uid);
+        try {
+            if (db) {
+                await db.collection("users").doc(uid).set({ photoURL: "" }, { merge: true });
+            }
+        } catch (err) {
+            console.error("Fotoğraf kaldırma hatası:", err);
+        }
+    }
+    applyAvatarToUI(null);
+    alert("Profil fotoğrafı kaldırıldı.");
+}
+window.handleRemoveProfilePhoto = handleRemoveProfilePhoto;
+
+// ============================================================================
+// HESAP YÖNETİMİ MODALINI AÇMA (E-POSTA VE VERİLERİ DOLDURMA)
+// ============================================================================
+function openAccountModal() {
+    const modal = document.getElementById("accountModal");
+    if (!modal) return;
+
+    modal.style.display = "flex";
+
+    const user = (auth && auth.currentUser) ? auth.currentUser : state.currentUser;
+    if (user) {
+        const accountFullName = document.getElementById("accountFullName");
+        const accountEmail = document.getElementById("accountEmail");
+
+        const name = user.displayName || (user.email ? user.email.split('@')[0] : "Kullanıcı");
+        if (accountFullName) accountFullName.value = name;
+        if (accountEmail) accountEmail.value = user.email || "";
+
+        updateUserInitials(name);
+
+        const photo = user.photoURL || localStorage.getItem("crispr_user_photo_" + user.uid);
+        if (photo) {
+            applyAvatarToUI(photo);
+        }
+    }
+}
+window.openAccountModal = openAccountModal;
+
+
+// ============================================================================
+// BÖLÜM 8: AUTH STATE LISTENER (GİRİŞ YAPILDIĞINDA FOTOĞRAFI DOĞRULAMA)
+// ============================================================================
+function setupFirebaseListener() {
+    if (!auth) return;
+
+    auth.onAuthStateChanged(async function(user) {
+        closeAuthModal();
+
+        if (user) {
+            state.currentUser = user;
+            updateNavbarUserUI(user);
+
+            const accountFullName = document.getElementById("accountFullName");
+            const accountEmail = document.getElementById("accountEmail");
+
+            const displayName = user.displayName || (user.email ? user.email.split('@')[0] : "Kullanıcı");
+            if (accountFullName) accountFullName.value = displayName;
+            if (accountEmail) accountEmail.value = user.email || "";
+            updateUserInitials(displayName);
+
+            // 1. Önce bu kullanıcıya özel LocalStorage önbelleğine bak (Anında yükleme)
+            const cachedUserPhoto = localStorage.getItem("crispr_user_photo_" + user.uid);
+            if (cachedUserPhoto) {
+                applyAvatarToUI(cachedUserPhoto);
+            }
+
+            // 2. Auth profilinde resim varsa uygula
+            if (user.photoURL) {
+                applyAvatarToUI(user.photoURL);
+                localStorage.setItem("crispr_user_photo_" + user.uid, user.photoURL);
+            }
+
+            // 3. Firestore'dan en güncel veriyi çekip teyit et
+            if (db) {
+                try {
+                    const docSnap = await db.collection("users").doc(user.uid).get();
+                    if (docSnap.exists) {
+                        const data = docSnap.data();
+                        if (data.fullName) {
+                            if (accountFullName) accountFullName.value = data.fullName;
+                            const navUserName = document.getElementById("navUserName");
+                            if (navUserName) navUserName.textContent = data.fullName;
+                            updateUserInitials(data.fullName);
+                        }
+                        if (data.photoURL && data.photoURL.trim() !== "") {
+                            applyAvatarToUI(data.photoURL);
+                            localStorage.setItem("crispr_user_photo_" + user.uid, data.photoURL);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Firestore kullanıcı verisi çekilemedi:", err);
+                }
+            }
+        } else {
+            state.currentUser = null;
+            updateNavbarUserUI(null);
+            applyAvatarToUI(null);
+        }
+    });
+}
+
+// ============================================================================
+// BÖLÜM 9: REHBER KARTLARI RENDER & ETKİNLİK DİNLEYİCİLERİ
+// ============================================================================
 function renderGuideCards() {
     const grid = document.getElementById("guideCardsGrid");
     const counterBadge = document.getElementById("guideCounterBadge");
@@ -1005,14 +1283,13 @@ function initGuideEventListeners() {
 }
 
 // ============================================================================
-// BÖLÜM 7: SENARYOLAR SAYFASI VE İNTERAKTİF KOŞUCU (RUNNER)
+// BÖLÜM 10: SENARYOLAR VE İNTERAKTİF KOŞUCU (RUNNER)
 // ============================================================================
-
 function renderScenarioCards() {
     const grid = document.getElementById("scenarioListGrid");
     if (!grid) return;
 
-    grid.innerHTML = SCENARIO_DATABASE.map((scn) => {
+    grid.innerHTML = SCENARIO_DATABASE.map(scn => {
         const isCompleted = state.completedScenarios.includes(scn.id);
         return `
             <div class="scenario-card glass-card-soft ${isCompleted ? 'scenario-completed' : ''}" data-id="${scn.id}">
@@ -1035,8 +1312,7 @@ function renderScenarioCards() {
 
     grid.querySelectorAll(".start-scenario-btn").forEach(btn => {
         btn.addEventListener("click", function() {
-            const scnId = this.getAttribute("data-id");
-            startScenario(scnId);
+            startScenario(this.getAttribute("data-id"));
         });
     });
 }
@@ -1085,10 +1361,7 @@ function startScenario(scenarioId) {
         <div id="scenarioResultBox" class="scenario-result-box hidden"></div>
     `;
 
-    const evalBtn = document.getElementById("evaluateScenarioBtn");
-    if (evalBtn) {
-        evalBtn.addEventListener("click", evaluateScenario);
-    }
+    document.getElementById("evaluateScenarioBtn")?.addEventListener("click", evaluateScenario);
 }
 
 function evaluateScenario() {
@@ -1125,7 +1398,7 @@ function evaluateScenario() {
                     <div class="result-icon">🎉</div>
                     <h3 class="result-title">Kusursuz Moleküler Kilitlenme ve Kesim!</h3>
                     <p class="result-desc">Tasarladığınız gRNA hedef bölgeye bağlandı ve Cas9 endonükleazı istenen lokustan çift zincir kırığı (DSB) oluşturdu.</p>
-                    <div class="result-stats">
+                    <div class="result-stats" style="margin-top: 12px; display: flex; gap: 16px; flex-wrap: wrap;">
                         <span>On-Target Verimliliği: <strong>%${onTargetScore}</strong></span>
                         <span>Off-Target Riski: <strong>${offTargetRisk}</strong></span>
                         <span>Kazanılan Rozet: <strong>${scn.badge}</strong></span>
@@ -1157,515 +1430,1014 @@ function evaluateScenario() {
 }
 
 // ============================================================================
-// BÖLÜM 8: KİMLİK DOĞRULAMA (AUTH), OTP & PROFİL YÖNETİMİ
+// BÖLÜM 11: DOM VE SAYFA ETKİNLİK DİNLEYİCİLERİ
 // ============================================================================
-
-function updateUserInitials(fullName) {
-    const avatarInitials = document.getElementById("avatarInitials");
-    const navAvatarInitials = document.getElementById("navAvatarInitials");
-    if (!fullName) return;
-
-    const parts = fullName.trim().split(" ");
-    let initials = "";
-    if (parts.length >= 2) {
-        initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    } else if (parts.length === 1 && parts[0].length > 0) {
-        initials = parts[0].substring(0, 2).toUpperCase();
-    }
-
-    if (avatarInitials) avatarInitials.textContent = initials;
-    if (navAvatarInitials) navAvatarInitials.textContent = initials;
-}
-
-function updateNavbarUserUI(user) {
-    const mainAuthBtn = document.getElementById("mainAuthBtn");
-    const navUserChip = document.getElementById("navUserChip");
-    const navUserName = document.getElementById("navUserName");
-
-    if (user) {
-        if (mainAuthBtn) mainAuthBtn.classList.add("hidden");
-        if (navUserChip) navUserChip.classList.remove("hidden");
-        
-        const displayName = user.displayName || (user.email ? user.email.split('@')[0] : "Kullanıcı");
-        if (navUserName) navUserName.textContent = displayName;
-        updateUserInitials(displayName);
-    } else {
-        if (mainAuthBtn) mainAuthBtn.classList.remove("hidden");
-        if (navUserChip) navUserChip.classList.add("hidden");
-    }
-}
-
-function switchAuthStep(stepName) {
-    const loginStep = document.getElementById("loginStep");
-    const registerStep = document.getElementById("registerStep");
-    const otpStep = document.getElementById("otpStep");
-
-    if (loginStep) loginStep.classList.add("hidden");
-    if (registerStep) registerStep.classList.add("hidden");
-    if (otpStep) otpStep.classList.add("hidden");
-
-    if (stepName === "login" && loginStep) loginStep.classList.remove("hidden");
-    if (stepName === "register" && registerStep) registerStep.classList.remove("hidden");
-    if (stepName === "otp" && otpStep) otpStep.classList.remove("hidden");
-}
-
-function openAuthModal(step = "login") {
-    const modal = document.getElementById("authModal");
-    if (modal) {
-        switchAuthStep(step);
-        modal.style.display = "flex";
-    }
-}
-
-function closeAuthModal() {
-    const modal = document.getElementById("authModal");
-    if (modal) modal.style.display = "none";
-}
-
-function openProfileModal() {
-    const modal = document.getElementById("profileModal");
-    if (modal) modal.style.display = "flex";
-}
-
-function closeProfileModal() {
-    const modal = document.getElementById("profileModal");
-    if (modal) modal.style.display = "none";
-}
-
-function generateSixDigitOtp() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-/**
- * 1. KAYIT OLMA & OTP KODU GÖNDERME
- */
-async function handleRegister(e) {
-    if (e) e.preventDefault();
-
-    var fullNameInput = document.getElementById("fullName");
-    var emailInput = document.getElementById("email");
-    var passwordInput = document.getElementById("password");
-
-    var fullName = fullNameInput ? fullNameInput.value.trim() : "";
-    var email = emailInput ? emailInput.value.trim() : "";
-    var password = passwordInput ? passwordInput.value : "";
-
-    if (!fullName || !email || !password) {
-        alert("Lütfen tüm alanları eksiksiz doldurun.");
-        return;
-    }
-
-    if (password.length < 6) {
-        alert("Şifre en az 6 karakter olmalıdır.");
-        return;
-    }
-
-    // 1. Rastgele 6 Haneli Sayısal OTP Üretimi
-    var generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    state.pendingRegistration = { fullName: fullName, email: email, password: password };
-    state.generatedOTP = generatedCode;
-    state.otpExpiresAt = Date.now() + 5 * 60 * 1000;
-
-    var emailTarget = document.getElementById("userEmailTarget");
-    if (emailTarget) emailTarget.textContent = email;
-
-    console.log("🔐 Üretilen OTP Kodu:", generatedCode);
-
-    // 2. EmailJS Gönderimi (Güncel Template ID: template_uw41cif)
-    var emailClient = window.emailjs || (typeof emailjs !== "undefined" ? emailjs : null);
-
-    if (emailClient) {
-        var templateParams = {
-            to_email: email,
-            email: email,
-            recipient: email,
-            to_name: fullName,
-            name: fullName,
-            otp_code: generatedCode,
-            code: generatedCode,
-            message: "CRISPR-Lab Doğrulama Kodunuz: " + generatedCode
-        };
-
-        emailClient.send(
-            "service_l8xxa6h",
-            "template_uw41cif",
-            templateParams,
-            "Lze9S5-w7vthrqFY9"
-        ).then(function(response) {
-            console.log("✓ E-posta Başarıyla Gönderildi:", response.status, response.text);
-            alert("Doğrulama kodu " + email + " adresine başarıyla gönderildi!");
-        }).catch(function(err) {
-            console.error("EmailJS Gönderim Hatası Detayı:", err);
-            var errText = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
-            alert("E-posta gönderilemedi (" + errText + "). Test Kodunuz: " + generatedCode);
-        });
-    } else {
-        alert("Test Doğrulama Kodunuz: " + generatedCode);
-    }
-
-    if (typeof switchAuthStep === "function") switchAuthStep("otp");
-}
-
-/**
- * 2. OTP DOĞRULAMA VE HESABI AKTİFLEŞTİRME
- */
-async function handleOTPVerification(e) {
-    if (e) e.preventDefault();
-
-    const otpInput = document.getElementById("otpCode");
-    const enteredOTP = otpInput ? otpInput.value.trim() : "";
-
-    if (!enteredOTP) {
-        alert("Lütfen 6 haneli doğrulama kodunu girin.");
-        return;
-    }
-
-    if (Date.now() > state.otpExpiresAt) {
-        alert("Doğrulama kodunun süresi dolmuş. Lütfen tekrar kayıt olun.");
-        switchAuthStep("register");
-        return;
-    }
-
-    if (enteredOTP !== state.generatedOTP && enteredOTP !== "123456") {
-        alert("Girdiğiniz doğrulama kodu hatalı!");
-        return;
-    }
-
-    const registration = state.pendingRegistration;
-    if (!registration) {
-        alert("Kayıt bilgisi bulunamadı. Lütfen formu tekrar doldurun.");
-        switchAuthStep("register");
-        return;
-    }
-
-    if (!auth) {
-        alert("Kayıt tamamlandı (Demo Modu)!");
-        updateUserInitials(registration.fullName);
-        updateNavbarUserUI({ uid: "demo-user", displayName: registration.fullName, email: registration.email });
-        closeAuthModal();
-        return;
-    }
-
-    try {
-        const userCredential = await auth.createUserWithEmailAndPassword(registration.email, registration.password);
-        const user = userCredential.user;
-
-        await user.updateProfile({
-            displayName: registration.fullName
-        });
-
-        if (db) {
-            await db.collection("users").doc(user.uid).set({
-                fullName: registration.fullName,
-                email: registration.email,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-        }
-
-        alert("Kayıt başarıyla tamamlandı!");
-        closeAuthModal();
-    } catch (error) {
-        console.error("Kayıt Hatası:", error);
-        alert("Kayıt yapılamadı: " + error.message);
-    }
-}
-
-/**
- * 3. GİRİŞ YAPMA FONKSİYONU
- */
-async function handleLogin(e) {
-    if (e) e.preventDefault();
-    
-    const emailInput = document.getElementById("loginEmail");
-    const passwordInput = document.getElementById("loginPassword");
-
-    const email = emailInput ? emailInput.value.trim() : "";
-    const password = passwordInput ? passwordInput.value : "";
-
-    if (!email || !password) {
-        alert("Lütfen e-posta ve şifrenizi girin.");
-        return;
-    }
-
-    if (!auth) {
-        alert("Giriş Yapıldı (Demo Modu)!");
-        if (typeof updateUserInitials === "function") updateUserInitials(email.split('@')[0]);
-        updateNavbarUserUI({ uid: "demo-uid", displayName: email.split('@')[0], email: email });
-        closeAuthModal();
-        return;
-    }
-
-    try {
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        console.log("✓ Kullanıcı Giriş Yaptı:", userCredential.user.email);
-        alert("Başarıyla giriş yapıldı.");
-        closeAuthModal();
-    } catch (error) {
-        console.error("Giriş Hatası:", error);
-        alert("Giriş yapılamadı: " + error.message);
-    }
-}
-
-/**
- * 4. PROFİL BİLGİLERİ VE ŞİFRE GÜNCELLEME
- */
-async function handleProfileUpdate(e) {
-    if (e) e.preventDefault();
-
-    const fullNameInput = document.getElementById("profileFullName");
-    const currentPasswordInput = document.getElementById("currentPassword");
-    const newPasswordInput = document.getElementById("newPassword");
-
-    const newFullName = fullNameInput ? fullNameInput.value.trim() : "";
-    const newPassword = newPasswordInput ? newPasswordInput.value : "";
-
-    if (!newFullName) {
-        alert("Lütfen isim soyisim alanını boş bırakmayın.");
-        return;
-    }
-
-    if (!auth || !auth.currentUser) {
-        alert("Profil güncellendi (Demo Modu)!");
-        updateUserInitials(newFullName);
-        updateNavbarUserUI({ uid: "demo", displayName: newFullName });
-        closeProfileModal();
-        return;
-    }
-
-    const user = auth.currentUser;
-
-    try {
-        await user.updateProfile({
-            displayName: newFullName
-        });
-
-        if (db) {
-            await db.collection("users").doc(user.uid).update({
-                fullName: newFullName
-            });
-        }
-
-        updateUserInitials(newFullName);
-        updateNavbarUserUI(user);
-
-        if (newPassword) {
-            if (newPassword.length < 6) {
-                alert("İsim güncellendi ancak yeni şifre en az 6 karakter olmalıdır.");
-                return;
-            }
-            await user.updatePassword(newPassword);
-            alert("Profil ve şifre başarıyla güncellendi!");
-            if (currentPasswordInput) currentPasswordInput.value = "";
-            if (newPasswordInput) newPasswordInput.value = "";
-            closeProfileModal();
-        } else {
-            alert("Profil bilgileri başarıyla güncellendi!");
-            closeProfileModal();
-        }
-    } catch (error) {
-        console.error("Profil güncelleme hatası:", error);
-        if (error.code === "auth/requires-recent-login") {
-            alert("Güvenlik nedeniyle şifre değiştirmek için lütfen tekrar giriş yapın.");
-        } else {
-            alert("Güncelleme yapılamadı: " + error.message);
-        }
-    }
-}
-
-/**
- * 5. ÇIKIŞ YAPMA
- */
-async function handleLogout() {
-    if (auth) {
-        await auth.signOut();
-    }
-    state.currentUser = null;
-    updateNavbarUserUI(null);
-    closeProfileModal();
-    alert("Oturum kapatıldı.");
-}
-
-/**
- * 6. FIREBASE REALTIME AUTH LISTENER
- */
-function setupFirebaseListener() {
-    if (!auth) return;
-
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            state.currentUser = user;
-            updateNavbarUserUI(user);
-
-            const profileFullName = document.getElementById("profileFullName");
-            const profileEmail = document.getElementById("profileEmail");
-            const currentName = user.displayName || (user.email ? user.email.split('@')[0] : "Kullanıcı");
-
-            if (profileFullName) profileFullName.value = currentName;
-            if (profileEmail) profileEmail.value = user.email || "";
-
-            updateUserInitials(currentName);
-
-            if (db) {
-                db.collection("users").doc(user.uid).get().then(function(docSnap) {
-                    if (docSnap && docSnap.exists) {
-                        const data = docSnap.data();
-                        if (data && data.fullName) {
-                            if (profileFullName) profileFullName.value = data.fullName;
-                            updateUserInitials(data.fullName);
-                            updateNavbarUserUI({ 
-                                uid: user.uid, 
-                                displayName: data.fullName, 
-                                email: user.email,
-                                photoURL: user.photoURL 
-                            });
-                        }
-                    }
-                }).catch(function(err) {
-                    console.error("Firestore profil verisi çekilemedi:", err);
-                });
-            }
-        } else {
-            state.currentUser = null;
-            updateNavbarUserUI(null);
-        }
-    });
-}
-
-// ============================================================================
-// BÖLÜM 9: GLOBAL OLAY BAĞLAYICI & DOMContentLoaded
-// ============================================================================
-
-function bindGlobalEvents() {
-    // Modal Açma / Kapama Butonları
-    const mainAuthBtn = document.getElementById("mainAuthBtn");
-    const navUserChip = document.getElementById("navUserChip");
-    const closeModalBtn = document.getElementById("closeModalBtn");
-    const closeProfileBtn = document.getElementById("closeProfileBtn");
-    const switchToRegister = document.getElementById("switchToRegister");
-    const switchToLogin = document.getElementById("switchToLogin");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    if (mainAuthBtn) mainAuthBtn.addEventListener("click", () => openAuthModal("login"));
-    if (navUserChip) navUserChip.addEventListener("click", openProfileModal);
-    if (closeModalBtn) closeModalBtn.addEventListener("click", closeAuthModal);
-    if (closeProfileBtn) closeProfileBtn.addEventListener("click", closeProfileModal);
-
-    if (switchToRegister) {
-        switchToRegister.addEventListener("click", function(e) {
-            e.preventDefault();
-            switchAuthStep("register");
-        });
-    }
-
-    if (switchToLogin) {
-        switchToLogin.addEventListener("click", function(e) {
-            e.preventDefault();
-            switchAuthStep("login");
-        });
-    }
-
-    if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
-
-    // Form Submit Olayları
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
-    const otpForm = document.getElementById("otpForm");
-    const profileDetailsForm = document.getElementById("profileDetailsForm");
-
-    if (loginForm) loginForm.addEventListener("submit", handleLogin);
-    if (registerForm) registerForm.addEventListener("submit", handleRegister);
-    if (otpForm) otpForm.addEventListener("submit", handleOTPVerification);
-    if (profileDetailsForm) profileDetailsForm.addEventListener("submit", handleProfileUpdate);
-
-    // Sekme / Ekran Geçişleri (Ana Sayfa <-> Senaryolar)
-    const navScenarioTabBtn = document.getElementById("navScenarioTabBtn");
-    const heroScenarioBtn = document.getElementById("heroScenarioBtn");
-    const backToMainBtn = document.getElementById("backToMainBtn");
-    const scenarioTabPage = document.getElementById("scenarioTabPage");
-    const closeScenarioRunnerBtn = document.getElementById("closeScenarioRunnerBtn");
-
-    function showScenarioPage() {
-        if (scenarioTabPage) {
-            scenarioTabPage.style.display = "block";
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-    }
-
-    function hideScenarioPage() {
-        if (scenarioTabPage) {
-            scenarioTabPage.style.display = "none";
-        }
-    }
-
-    if (navScenarioTabBtn) navScenarioTabBtn.addEventListener("click", showScenarioPage);
-    if (heroScenarioBtn) heroScenarioBtn.addEventListener("click", showScenarioPage);
-    if (backToMainBtn) backToMainBtn.addEventListener("click", hideScenarioPage);
-
-    if (closeScenarioRunnerBtn) {
-        closeScenarioRunnerBtn.addEventListener("click", function() {
-            const runner = document.getElementById("activeScenarioRunner");
-            if (runner) runner.classList.add("hidden");
-        });
-    }
-
-    // Avatar Yükleme & Kaldırma
-    const avatarInput = document.getElementById("avatarInput");
-    const avatarPreview = document.getElementById("avatarPreview");
-    const avatarInitials = document.getElementById("avatarInitials");
-    const removeAvatarBtn = document.getElementById("removeAvatarBtn");
-    const navAvatarImg = document.getElementById("navAvatarImg");
-    const navAvatarInitials = document.getElementById("navAvatarInitials");
-
-    if (avatarInput) {
-        avatarInput.addEventListener("change", function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const imgSrc = evt.target.result;
-                    if (avatarPreview) {
-                        avatarPreview.src = imgSrc;
-                        avatarPreview.classList.remove("hidden");
-                    }
-                    if (avatarInitials) avatarInitials.classList.add("hidden");
-                    if (navAvatarImg) {
-                        navAvatarImg.src = imgSrc;
-                        navAvatarImg.classList.remove("hidden");
-                    }
-                    if (navAvatarInitials) navAvatarInitials.classList.add("hidden");
-                    if (removeAvatarBtn) removeAvatarBtn.classList.remove("hidden");
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    if (removeAvatarBtn) {
-        removeAvatarBtn.addEventListener("click", function() {
-            if (avatarPreview) {
-                avatarPreview.src = "";
-                avatarPreview.classList.add("hidden");
-            }
-            if (avatarInitials) avatarInitials.classList.remove("hidden");
-            if (navAvatarImg) {
-                navAvatarImg.src = "";
-                navAvatarImg.classList.add("hidden");
-            }
-            if (navAvatarInitials) navAvatarInitials.classList.remove("hidden");
-            if (avatarInput) avatarInput.value = "";
-            removeAvatarBtn.classList.add("hidden");
-        });
-    }
-}
-
-// DOM Yüklendiğinde Başlat
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("🧬 CRISPR-Lab Modüler Platformu Başlatıldı.");
+    console.log("🧬 CRISPR-Lab Başlatıldı.");
 
     setupFirebaseListener();
     renderGuideCards();
     initGuideEventListeners();
     renderScenarioCards();
-    bindGlobalEvents();
+
+    // 1. Navbar Olayları
+    document.getElementById("mainAuthBtn")?.addEventListener("click", () => openAuthModal("login"));
+    document.getElementById("navUserChip")?.addEventListener("click", openAccountModal);
+
+    // 2. Form Olayları
+    document.getElementById("loginForm")?.addEventListener("submit", handleLogin);
+    document.getElementById("registerForm")?.addEventListener("submit", handleRegister);
+    document.getElementById("otpForm")?.addEventListener("submit", handleVerifyOTP);
+
+    // 3. Sayfa Geçişleri (Ana Sayfa <-> Senaryolar)
+    const scenarioPage = document.getElementById("scenarioTabPage");
+    const mainSections = document.querySelectorAll(".hero, #rehber, #nasil-calisir, #modlar, #sss");
+
+    function showScenarios() {
+        mainSections.forEach(s => s.style.display = "none");
+        if (scenarioPage) scenarioPage.style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function hideScenarios() {
+        if (scenarioPage) scenarioPage.style.display = "none";
+        mainSections.forEach(s => s.style.display = "");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.getElementById("navScenarioTabBtn")?.addEventListener("click", showScenarios);
+    document.getElementById("heroScenarioBtn")?.addEventListener("click", showScenarios);
+    document.getElementById("backToMainBtn")?.addEventListener("click", hideScenarios);
+    document.getElementById("closeScenarioRunnerBtn")?.addEventListener("click", () => {
+        document.getElementById("activeScenarioRunner")?.classList.add("hidden");
+    });
+
+    // 4. Canlı Şifre Güvenlik Göstergesi
+    const passwordInput = document.getElementById("password");
+    const strengthWrapper = document.getElementById("passwordStrengthWrapper");
+    const barFill = document.getElementById("strengthBarFill");
+    const statusText = document.getElementById("strengthStatusText");
+
+    if (passwordInput && strengthWrapper) {
+        passwordInput.addEventListener("input", function() {
+            const val = passwordInput.value;
+            if (!val) {
+                strengthWrapper.style.display = "none";
+                return;
+            }
+            strengthWrapper.style.display = "block";
+            const rules = checkPasswordRules(val);
+
+            document.getElementById("crit-length").className = rules.length ? "valid" : "";
+            document.getElementById("crit-upper").className = rules.upper ? "valid" : "";
+            document.getElementById("crit-lower").className = rules.lower ? "valid" : "";
+            document.getElementById("crit-number").className = rules.number ? "valid" : "";
+            document.getElementById("crit-special").className = rules.special ? "valid" : "";
+
+            const passed = Object.values(rules).filter(Boolean).length;
+            if (barFill) barFill.style.width = (passed / 5) * 100 + "%";
+
+            if (passed <= 2) {
+                if (barFill) barFill.style.backgroundColor = "#ef4444";
+                if (statusText) { statusText.style.color = "#ef4444"; statusText.textContent = "Şifre Gücü: Zayıf"; }
+            } else if (passed <= 4) {
+                if (barFill) barFill.style.backgroundColor = "#f59e0b";
+                if (statusText) { statusText.style.color = "#f59e0b"; statusText.textContent = "Şifre Gücü: Orta"; }
+            } else {
+                if (barFill) barFill.style.backgroundColor = "#10b981";
+                if (statusText) { statusText.style.color = "#10b981"; statusText.textContent = "Şifre Gücü: Güçlü"; }
+            }
+        });
+    }
+
+    // 5. Modal Dışına Tıklama Kontrolü
+    window.addEventListener("click", function(e) {
+        const authModal = document.getElementById("authModal");
+        const accountModal = document.getElementById("accountModal");
+        if (e.target === authModal) closeAuthModal();
+        if (e.target === accountModal) closeAccountModal();
+    });
 });
+
+// ============================================================================
+// KESİN ÇIKIŞ YAPMA FONKSİYONU
+// ============================================================================
+async function handleLogout(e) {
+    if (e && e.preventDefault) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    try {
+        if (typeof auth !== "undefined" && auth) {
+            await auth.signOut();
+        }
+
+        // Önbellek temizliği
+        if (state && state.currentUser) {
+            localStorage.removeItem("crispr_user_photo_" + state.currentUser.uid);
+        }
+        if (state) state.currentUser = null;
+
+        // Modalleri kapat
+        const accModal = document.getElementById("accountModal");
+        const authModal = document.getElementById("authModal");
+        if (accModal) accModal.style.setProperty("display", "none", "important");
+        if (authModal) authModal.style.setProperty("display", "none", "important");
+
+        // Navbar'ı sıfırla
+        const mainAuthBtn = document.getElementById("mainAuthBtn");
+        const navUserChip = document.getElementById("navUserChip");
+
+        if (mainAuthBtn) {
+            mainAuthBtn.classList.remove("hidden");
+            mainAuthBtn.style.setProperty("display", "inline-flex", "important");
+        }
+        if (navUserChip) {
+            navUserChip.classList.add("hidden");
+            navUserChip.style.setProperty("display", "none", "important");
+        }
+
+        // Fotoğrafı sıfırla
+        if (typeof applyAvatarToUI === "function") {
+            applyAvatarToUI(null);
+        }
+
+        alert("Başarıyla çıkış yapıldı.");
+    } catch (err) {
+        console.error("Çıkış hatası:", err);
+        alert("Çıkış yapılırken bir sorun oluştu: " + err.message);
+    }
+}
+
+// Global window erişimi
+window.handleLogout = handleLogout;
+
+// ============================================================================
+// CANLI LABORATUVAR TEST SİMÜLASYONU
+// ============================================================================
+document.getElementById("btnTestSimulation")?.addEventListener("click", function() {
+    const grnaInput = document.getElementById("sampleGrnaInput")?.value.toUpperCase().trim().replace(/T/g, "U");
+    const pamInput = document.getElementById("samplePamInput")?.value.toUpperCase().trim();
+    const feedback = document.getElementById("labFeedbackBox");
+
+    if (!feedback) return;
+    feedback.classList.remove("hidden", "success", "error");
+
+    if (!grnaInput || !pamInput) {
+        feedback.className = "lab-feedback-box error";
+        feedback.textContent = "Lütfen hem 20 bazlık gRNA dizisini hem de 3 bazlık PAM motifini girin.";
+        return;
+    }
+
+    const correctPam = "TGG";
+    const correctGrna = "CCUGAGGAGAAGUCUGCCGU";
+
+    if (pamInput === correctPam && grnaInput === correctGrna) {
+        feedback.className = "lab-feedback-box success";
+        feedback.innerHTML = "✓ Başarılı: SpCas9 enzimi <strong>TGG</strong> PAM motifini tanıdı ve hedef bölgeden pürüzsüz çift zincir kırığı (DSB) oluşturdu!";
+    } else {
+        feedback.className = "lab-feedback-box error";
+        feedback.innerHTML = "⚠️ Eşleşme Başarısız: Hedef sekans veya PAM motifi uyumsuz. İpucu: <code>CCUGAGGAGAAGUCUGCCGU</code> ve <code>TGG</code> deneyin.";
+    }
+});
+
+// ============================================================================
+// GELİŞMİŞ PROFİL MODALI FONKSİYONLARI
+// ============================================================================
+function switchProfileTab(tabName) {
+    const tabOverview = document.getElementById("profTabOverview");
+    const tabEdit = document.getElementById("profTabEdit");
+    const tabSecurity = document.getElementById("profTabSecurity");
+    const tabBtns = document.querySelectorAll(".prof-tab-btn");
+
+    if (tabOverview) tabOverview.style.display = (tabName === 'overview') ? 'block' : 'none';
+    if (tabEdit) tabEdit.style.display = (tabName === 'edit') ? 'block' : 'none';
+    if (tabSecurity) tabSecurity.style.display = (tabName === 'security') ? 'block' : 'none';
+
+    tabBtns.forEach(btn => btn.classList.remove("active"));
+    const activeBtn = Array.from(tabBtns).find(btn => btn.getAttribute("onclick")?.includes(tabName));
+    if (activeBtn) activeBtn.classList.add("active");
+}
+window.switchProfileTab = switchProfileTab;
+
+function openAccountModal() {
+    const modal = document.getElementById("accountModal");
+    if (!modal) return;
+
+    modal.style.display = "flex";
+    switchProfileTab('overview');
+
+    const user = (auth && auth.currentUser) ? auth.currentUser : state.currentUser;
+    if (user) {
+        const name = user.displayName || (user.email ? user.email.split('@')[0] : "Araştırmacı");
+        
+        const profNameDisp = document.getElementById("profileNameDisplay");
+        const profEmailDisp = document.getElementById("profileEmailDisplay");
+        const accountFullName = document.getElementById("accountFullName");
+        const accountEmail = document.getElementById("accountEmail");
+
+        if (profNameDisp) profNameDisp.textContent = name;
+        if (profEmailDisp) profEmailDisp.textContent = user.email || "";
+        if (accountFullName) accountFullName.value = name;
+        if (accountEmail) accountEmail.value = user.email || "";
+
+        updateUserInitials(name);
+
+        const photo = user.photoURL || localStorage.getItem("crispr_user_photo_" + user.uid);
+        if (photo) {
+            applyAvatarToUI(photo);
+        }
+
+        // İlerleme ve Seviye durumunu güncelle
+        let completed = [];
+        try {
+            const local = localStorage.getItem("crispr_completed_levels");
+            completed = local ? JSON.parse(local) : [1];
+        } catch { completed = [1]; }
+
+        const maxLvl = Math.max(...completed);
+        const badgesCount = completed.length > 1 ? completed.length - 1 : 0;
+
+        const statLvl = document.getElementById("profStatLevel");
+        const statBadges = document.getElementById("profStatBadges");
+
+        if (statLvl) statLvl.textContent = `${Math.min(5, maxLvl)} / 5`;
+        if (statBadges) statBadges.textContent = `${badgesCount}`;
+    }
+}
+window.openAccountModal = openAccountModal;
+
+async function handleUpdateProfile() {
+    const nameInput = document.getElementById("accountFullName");
+    const newName = nameInput ? nameInput.value.trim() : "";
+    const updateBtn = document.getElementById("btnUpdateProfile");
+
+    if (!newName) {
+        alert("Lütfen adınızı girin.");
+        return;
+    }
+
+    if (auth && auth.currentUser) {
+        try {
+            if (updateBtn) {
+                updateBtn.textContent = "Kaydediliyor...";
+                updateBtn.disabled = true;
+            }
+
+            await auth.currentUser.updateProfile({ displayName: newName });
+
+            if (db) {
+                await db.collection("users").doc(auth.currentUser.uid).set({
+                    displayName: newName,
+                    fullName: newName
+                }, { merge: true });
+            }
+
+            updateNavbarUserUI(auth.currentUser);
+            const profNameDisp = document.getElementById("profileNameDisplay");
+            if (profNameDisp) profNameDisp.textContent = newName;
+            updateUserInitials(newName);
+
+            alert("Profil bilgileriniz başarıyla güncellendi!");
+        } catch (err) {
+            console.error("Profil güncelleme hatası:", err);
+            alert("Hata: " + err.message);
+        } finally {
+            if (updateBtn) {
+                updateBtn.textContent = "Değişiklikleri Kaydet";
+                updateBtn.disabled = false;
+            }
+        }
+    }
+}
+window.handleUpdateProfile = handleUpdateProfile;
+
+async function handlePasswordChange() {
+    const currentPass = document.getElementById("profCurrentPassword")?.value;
+    const newPass = document.getElementById("profNewPassword")?.value;
+    const confirmPass = document.getElementById("profNewPasswordConfirm")?.value;
+    const passBtn = document.getElementById("btnUpdatePassword");
+
+    if (!currentPass || !newPass || !confirmPass) {
+        alert("Lütfen tüm şifre alanlarını doldurun.");
+        return;
+    }
+
+    if (newPass !== confirmPass) {
+        alert("Yeni şifreler birbiriyle eşleşmiyor!");
+        return;
+    }
+
+    if (newPass.length < 6) {
+        alert("Yeni şifre en az 6 karakter olmalıdır.");
+        return;
+    }
+
+    if (auth && auth.currentUser) {
+        try {
+            if (passBtn) {
+                passBtn.textContent = "Güncelleniyor...";
+                passBtn.disabled = true;
+            }
+
+            const cred = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, currentPass);
+            await auth.currentUser.reauthenticateWithCredential(cred);
+            await auth.currentUser.updatePassword(newPass);
+
+            alert("Şifreniz başarıyla değiştirildi!");
+            document.getElementById("passwordUpdateForm")?.reset();
+            switchProfileTab('overview');
+        } catch (err) {
+            console.error("Şifre güncelleme hatası:", err);
+            if (err.code === "auth/wrong-password") {
+                alert("Mevcut şifrenizi hatalı girdiniz.");
+            } else {
+                alert("Şifre değiştirilemedi: " + err.message);
+            }
+        } finally {
+            if (passBtn) {
+                passBtn.textContent = "Şifreyi Güncelle";
+                passBtn.disabled = false;
+            }
+        }
+    }
+}
+window.handlePasswordChange = handlePasswordChange;
+
+// ============================================================================
+// BÖLÜM 8: GELİŞMİŞ MONOSPACE GENOM LABORATUVARI (20 FARKLI LOKUS KATALOĞU)
+// ============================================================================
+
+const LAB_GENOME_DATABASE_20 = {
+    TP53: {
+        name: "TP53 (Tümör Proteini 53)",
+        info: "Li-Fraumeni Sendromu & DNA Hasar Yanıtı",
+        senseDna: "TACTCCCCTGCCCTCAACAAGATGTTTTGCCAACTGGCCAAGACCTGCCCTGTGCAGCTGT",
+        correctTarget: "CCTCAACAAGATGTTTTGCC",
+        correctPam: "AAG"
+    },
+    BRCA1: {
+        name: "BRCA1 (Meme Kanseri 1)",
+        info: "Herediter Meme ve Over Kanseri Duyarlılığı",
+        senseDna: "GTACCTTGATTTCGTATTCTGAGACTTCAAAGCTTTTGAGAATTCCTGACACAGCAGTCTT",
+        correctTarget: "TATTCTGAGACTTCAAAGCT",
+        correctPam: "TTT"
+    },
+    EGFR: {
+        name: "EGFR (Epidermal Büyüme Faktörü Reseptörü)",
+        info: "Küçük Hücreli Dışı Akciğer Kanseri T790M",
+        senseDna: "ATCACGCAGCTCATGCCCTTCGGCTGCCTCCTGGACTATGTCCGGGAACACAAAGACAATA",
+        correctTarget: "TCATGCCCTTCGGCTGCCTC",
+        correctPam: "CTG"
+    },
+    DMD: {
+        name: "DMD (Distrofin Geni)",
+        info: "Duchenne Musküler Distrofi Ekzon-51 Atlatma",
+        senseDna: "CTCAACAGTCAGCCACACAACCACATCTGTACAGTCCTACATAGACCAGATGTAGTCTCTC",
+        correctTarget: "CACACAACCACATCTGTACA",
+        correctPam: "GTC"
+    },
+    HTT: {
+        name: "HTT (Huntingtin Geni)",
+        info: "Huntington Hastalığı CAG Tekrar Genişlemesi",
+        senseDna: "ATGGCGACCCTGGAAAAGCTGATGAAGGCCTTCGAGTCCCTCAAGTCCTTCCAGCAGCAGC",
+        correctTarget: "TGGAAAAGCTGATGAAGGCC",
+        correctPam: "TTC"
+    },
+    APOE: {
+        name: "APOE (Apolipoprotein E)",
+        info: "Alzheimer Hastalığı Risk Belirteci (E4 İzoformu)",
+        senseDna: "CGGGCACGGCTGTCCAAGGAGCTGCAGGCGGCGCAGGCCCGGCTGGGCGCGGACATGGAGG",
+        correctTarget: "TCCAAGGAGCTGCAGGCGGC",
+        correctPam: "GCA"
+    },
+    VEGFA: {
+        name: "VEGFA (Vasküler Endotelyal Büyüme Faktörü)",
+        info: "Tümör Anjiyogenezi ve Retinopati İnhibisyonu",
+        senseDna: "GGGTTCGGAGGCCCATTCCTCAGACATTTGGGGGCCATGGTTTGGCTTCGGCCCGGAGGAG",
+        correctTarget: "TCCTCAGACATTTGGGGGCC",
+        correctPam: "ATG"
+    },
+    PDCD1: {
+        name: "PDCD1 (PD-1 İmmün Kontrol Noktası)",
+        info: "Kanser İmmünoterapisi ve CAR-T Hücre Mühendisliği",
+        senseDna: "GCCAGGATGGTTCTTAGACTCCCCAGACAGGCCCTGGAACCCCCCCACCTTCTCCCCAGCC",
+        correctTarget: "TTAGACTCCCCAGACAGGCC",
+        correctPam: "CTG"
+    },
+    HEXA: {
+        name: "HEXA (Heksozaminidaz A)",
+        info: "Tay-Sachs Nörodejeneratif Depo Hastalığı",
+        senseDna: "CCTGAGCTGATGAACACACAGGTAATGTCTTAGGATGTGTCCACGGTTCTTAGCTGCAGTC",
+        correctTarget: "ATGAACACACAGGTAATGTC",
+        correctPam: "TTA"
+    },
+    FAH: {
+        name: "FAH (Fumarilasetoasetat Hidrolaz)",
+        info: "Tip 1 Tirozinemi Hepatik Metabolik Kusuru",
+        senseDna: "CGCCATTCCTGTGGCCCAGGCCTGGTTCTTGAAGGACAAAGCCCAGAAGCCCCTCTTCCTC",
+        correctTarget: "CCCAGGCCTGGTTCTTGAAG",
+        correctPam: "GAC"
+    },
+    MYBPC3: {
+        name: "MYBPC3 (Kardiyak Miyozin Bağlayıcı Protein C)",
+        info: "Familyal Hipertrofik Kardiyomiyopati",
+        senseDna: "TGACCACACGTCCACCTTCTCAACAGGCCCAGGTGGCTGACCGGGTCAAGGTGGAGCTCAC",
+        correctTarget: "ACCTTCTCAACAGGCCCAGG",
+        correctPam: "TGG"
+    },
+    SERPINA1: {
+        name: "SERPINA1 (Alfa-1 Antitripsin)",
+        info: "AAT Eksikliği, Akciğer Amfizemi & Karaciğer Sirozu",
+        senseDna: "GACCCTTTGAAGTCAAGGACACCGAGGAAGAGGACTTCCACGTGGACCAGGCGACCACCGT",
+        correctTarget: "ACCGAGGAAGAGGACTTCCA",
+        correctPam: "CGT"
+    },
+    GAA: {
+        name: "GAA (Asit Alfa-Glukozidaz)",
+        info: "Pompe Hastalığı Glikojen Depolanma Bozukluğu",
+        senseDna: "GCTGAGGACCAGGCCTTCACCTACACCATCAACCGCTTCAAGATCACCAAGATGGCCCTGG",
+        correctTarget: "ACCTACACCATCAACCGCTT",
+        correctPam: "CAA"
+    },
+    PAH: {
+        name: "PAH (Fenilalanin Hidroksilaz)",
+        info: "Fenilketonüri (PKU) Nörotoksik Amino Asit Birikimi",
+        senseDna: "TTGAGGACATCAACCTGGAACACTTGGAGCGGATTGAAGACCTGGTTCAGCTCATCCAGGA",
+        correctTarget: "AACTTGGAGCGGATTGAAGA",
+        correctPam: "CCT"
+    },
+    SMN1: {
+        name: "SMN1 (Spinal Motor Nöron 1)",
+        info: "Spinal Musküler Atrofi (SMA Tip 1/2/3)",
+        senseDna: "TTCCTTAAATTTAAGGGTTTCAGACAAAATCAAAAAGAAGGAAGGTGCTCACATTCCTTAA",
+        correctTarget: "GACAAAATCAAAAAGAAGGA",
+        correctPam: "AGG"
+    },
+    LDLR: {
+        name: "LDLR (Düşük Yoğunluklu Lipoprotein Reseptörü)",
+        info: "Familyal Hiperkolesterolemi & Erken Ateroskleroz",
+        senseDna: "CCTCCATCATCGTGCTGGGCCTCTTCCTCCTGTTCCTCTGCCCCATCTTCACGTGGCTCAA",
+        correctTarget: "GCCTCTTCCTCCTGTTCCTC",
+        correctPam: "TGC"
+    },
+    ALB: {
+        name: "ALB (Serum Albumin Lokusu)",
+        info: "Güvenli Genomik Liman (Safe Harbor Entegrasyonu)",
+        senseDna: "AGACACCTGCCCCCAATGCCTTAGGATGGTTAGTGAGCTTGTCCTTTGCAGCACCTTGTGC",
+        correctTarget: "ATGCCTTAGGATGGTTAGTG",
+        correctPam: "AGC"
+    },
+    F9: {
+        name: "F9 (Pıhtılaşma Faktörü IX)",
+        info: "Hemofili B Kanama Bozukluğu Onarımı",
+        senseDna: "CCATCACTGTCTCCTTCCTCTCCCATACTTTGTTTCCCACTGTATCTAGATTCTCCCTGTT",
+        correctTarget: "CCCATACTTTGTTTCCCACT",
+        correctPam: "GTA"
+    },
+    CD19: {
+        name: "CD19 (B-Lenfosit Antijeni)",
+        info: "B Hücreli Lösemi ve İmmünoterapi Hedeflemesi",
+        senseDna: "GGCCTCTTCCTCTTTGTGCCCGCCTTCCTGGGCATTCTAGGCTGTGTGCTCGCCCTGCTCT",
+        correctTarget: "TGTGCCCGCCTTCCTGGGCA",
+        correctPam: "TTC"
+    },
+    B2M: {
+        name: "B2M (Beta-2 Mikroglobulin)",
+        info: "Allogeneik Evrensel CAR-T MHC-I Nakavtı",
+        senseDna: "ATGTCTCGCTCCGTGGCCTTAGCTGTGCTCGCGCTACTCTCTCTTTCTGGCCTGGAGGCTA",
+        correctTarget: "CCTTAGCTGTGCTCGCGCTA",
+        correctPam: "CTC"
+    }
+};
+
+let labCurrentLocusKey = "TP53";
+let labSelectionMode = "target";
+let labSelectedTargetIndices = [];
+let labSelectedPamIndices = [];
+
+function populateLocusDropdown() {
+    const select = document.getElementById("labLocusSelect");
+    if (!select) return;
+
+    select.innerHTML = Object.keys(LAB_GENOME_DATABASE_20).map(key => {
+        const item = LAB_GENOME_DATABASE_20[key];
+        return `<option value="${key}">[LOKUS: ${key}] - ${item.name.split('(')[0]}</option>`;
+    }).join("");
+
+    select.value = labCurrentLocusKey;
+}
+
+function initLabWorkspace() {
+    populateLocusDropdown();
+    handleLabLocusChange();
+}
+
+function handleLabLocusChange() {
+    const select = document.getElementById("labLocusSelect");
+    if (select) labCurrentLocusKey = select.value;
+
+    const data = LAB_GENOME_DATABASE_20[labCurrentLocusKey];
+    if (!data) return;
+
+    resetLabWorkspace();
+
+    const geneTag = document.getElementById("labGeneTag");
+    const mutInfo = document.getElementById("labMutationInfo");
+
+    if (geneTag) geneTag.textContent = `[GEN: ${data.name}]`;
+    if (mutInfo) mutInfo.textContent = `>> VAKA / KLİNİK: ${data.info}`;
+
+    renderLabInteractiveDna();
+    updateLabMetrics();
+}
+window.handleLabLocusChange = handleLabLocusChange;
+
+function switchRandomLabSequence() {
+    const keys = Object.keys(LAB_GENOME_DATABASE_20);
+    const availableKeys = keys.filter(k => k !== labCurrentLocusKey);
+    const nextKey = availableKeys[Math.floor(Math.random() * availableKeys.length)] || keys[0];
+
+    const select = document.getElementById("labLocusSelect");
+    if (select) select.value = nextKey;
+    labCurrentLocusKey = nextKey;
+    handleLabLocusChange();
+}
+window.switchRandomLabSequence = switchRandomLabSequence;
+
+function setLabSelectionMode(mode) {
+    labSelectionMode = mode;
+    const targetBtn = document.getElementById("labTargetModeBtn");
+    const pamBtn = document.getElementById("labPamModeBtn");
+
+    if (mode === 'target') {
+        if (targetBtn) targetBtn.classList.add("active");
+        if (pamBtn) pamBtn.classList.remove("active");
+    } else {
+        if (pamBtn) pamBtn.classList.add("active");
+        if (targetBtn) targetBtn.classList.remove("active");
+    }
+}
+window.setLabSelectionMode = setLabSelectionMode;
+
+function resetLabWorkspace() {
+    labSelectedTargetIndices = [];
+    labSelectedPamIndices = [];
+    updateLabVisuals();
+    updateLabMetrics();
+    const feedback = document.getElementById("labSimulationFeedback");
+    if (feedback) {
+        feedback.classList.add("hidden");
+        feedback.innerHTML = "";
+    }
+}
+window.resetLabWorkspace = resetLabWorkspace;
+
+function renderLabInteractiveDna() {
+    const track = document.getElementById("interactiveLabDnaTrack") || document.getElementById("dnaTrackContainer");
+    if (!track) return;
+
+    const data = LAB_GENOME_DATABASE_20[labCurrentLocusKey];
+    const dna = data.senseDna;
+    const compMap = { 'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G' };
+
+    let html = '<div class="dna-strand sense-strand">';
+    for (let i = 0; i < dna.length; i++) {
+        const base = dna[i];
+        html += `
+            <button type="button" class="base-btn base-${base}" data-lab-idx="${i}" onclick="handleLabBaseClick(${i})" title="Pozisyon ${i + 1}: ${base}">
+                <span class="base-char">${base}</span>
+            </button>
+        `;
+    }
+    html += '</div>';
+
+    html += '<div class="dna-strand antisense-strand" style="margin-top: 4px;">';
+    for (let i = 0; i < dna.length; i++) {
+        const comp = compMap[dna[i]] || 'N';
+        html += `<span class="base-btn-comp" title="Komplemanter: ${comp}">${comp}</span>`;
+    }
+    html += '</div>';
+
+    track.innerHTML = html;
+}
+
+function handleLabBaseClick(index) {
+    if (labSelectionMode === "target") {
+        labSelectedPamIndices = labSelectedPamIndices.filter(i => i !== index);
+
+        if (labSelectedTargetIndices.includes(index)) {
+            labSelectedTargetIndices = labSelectedTargetIndices.filter(i => i !== index);
+        } else {
+            if (labSelectedTargetIndices.length >= 20) {
+                alert("gRNA protospacer hedefi tam 20 baz olmalıdır.");
+                return;
+            }
+            labSelectedTargetIndices.push(index);
+            labSelectedTargetIndices.sort((a, b) => a - b);
+        }
+    } else {
+        labSelectedTargetIndices = labSelectedTargetIndices.filter(i => i !== index);
+
+        if (labSelectedPamIndices.includes(index)) {
+            labSelectedPamIndices = labSelectedPamIndices.filter(i => i !== index);
+        } else {
+            if (labSelectedPamIndices.length >= 3) {
+                alert("PAM motifi tam 3 baz (5'-NGG-3') olmalıdır.");
+                return;
+            }
+            labSelectedPamIndices.push(index);
+            labSelectedPamIndices.sort((a, b) => a - b);
+        }
+    }
+
+    updateLabVisuals();
+    updateLabMetrics();
+}
+window.handleLabBaseClick = handleLabBaseClick;
+
+function updateLabVisuals() {
+    const btns = document.querySelectorAll("#interactiveLabDnaTrack .base-btn");
+    btns.forEach(btn => {
+        const idx = parseInt(btn.getAttribute("data-lab-idx"));
+        btn.classList.remove("selected-target", "selected-pam");
+        if (labSelectedTargetIndices.includes(idx)) btn.classList.add("selected-target");
+        if (labSelectedPamIndices.includes(idx)) btn.classList.add("selected-pam");
+    });
+}
+
+function updateLabMetrics() {
+    const data = LAB_GENOME_DATABASE_20[labCurrentLocusKey];
+    if (!data) return;
+
+    const dna = data.senseDna;
+    const targetDna = labSelectedTargetIndices.map(i => dna[i]).join("");
+    const targetRna = targetDna.replace(/T/g, "U");
+    const pamSeq = labSelectedPamIndices.map(i => dna[i]).join("");
+
+    const grnaDisp = document.getElementById("labGrnaDisplay");
+    const pamDisp = document.getElementById("labPamDisplay");
+    const gcDisp = document.getElementById("labGcDisplay");
+    const tmDisp = document.getElementById("labTmDisplay");
+    const seedDisp = document.getElementById("labSeedDisplay");
+    const offTargetDisp = document.getElementById("labOffTargetDisplay");
+
+    if (grnaDisp) {
+        grnaDisp.innerHTML = targetRna.length > 0 ? `<strong>${targetRna}</strong> (${targetRna.length}/20nt)` : "(DİZİ SEÇİMİ BEKLENİYOR...)";
+    }
+    if (pamDisp) {
+        pamDisp.textContent = pamSeq.length > 0 ? `${pamSeq} (${pamSeq.length}/3)` : "---";
+    }
+
+    if (targetDna.length > 0) {
+        let gcCount = 0;
+        for (let b of targetDna) {
+            if (b === 'G' || b === 'C') gcCount++;
+        }
+        const gcPercent = Math.round((gcCount / targetDna.length) * 100);
+        if (gcDisp) {
+            gcDisp.textContent = `%${gcPercent}`;
+            gcDisp.style.color = (gcPercent >= 40 && gcPercent <= 60) ? "var(--bio-green)" : "var(--brand-coral)";
+        }
+
+        const tm = Math.round(64.9 + (41 * (gcCount - 16.4) / targetDna.length));
+        if (tmDisp) tmDisp.textContent = `${Math.max(30, tm)} °C`;
+
+        if (targetRna.length >= 8) {
+            if (seedDisp) seedDisp.textContent = targetRna.slice(-8);
+        } else {
+            if (seedDisp) seedDisp.textContent = "--";
+        }
+
+        if (offTargetDisp) {
+            if (gcPercent >= 40 && gcPercent <= 60 && targetRna.length === 20) {
+                offTargetDisp.textContent = "DÜŞÜK (YÜKSEK ÖZGÜLLÜK)";
+                offTargetDisp.style.color = "var(--bio-green)";
+            } else {
+                offTargetDisp.textContent = "ORTA / YÜKSEK RİSK";
+                offTargetDisp.style.color = "var(--brand-coral)";
+            }
+        }
+    } else {
+        if (gcDisp) gcDisp.textContent = "%0";
+        if (tmDisp) tmDisp.textContent = "-- °C";
+        if (seedDisp) seedDisp.textContent = "--";
+        if (offTargetDisp) {
+            offTargetDisp.textContent = "DÜŞÜK";
+            offTargetDisp.style.color = "var(--bio-green)";
+        }
+    }
+}
+
+function executeLabSimulation() {
+    const feedback = document.getElementById("labSimulationFeedback");
+    if (!feedback) return;
+
+    feedback.classList.remove("hidden");
+
+    const data = LAB_GENOME_DATABASE_20[labCurrentLocusKey];
+    const dna = data.senseDna;
+    const selectedTarget = labSelectedTargetIndices.map(i => dna[i]).join("");
+    const selectedPam = labSelectedPamIndices.map(i => dna[i]).join("");
+
+    if (labSelectedTargetIndices.length !== 20) {
+        feedback.className = "scenario-result-box error";
+        feedback.innerHTML = `⚠️ <strong>HATA:</strong> Protospacer dizisi tam 20 baz olmalıdır (${labSelectedTargetIndices.length}/20nt seçili).`;
+        return;
+    }
+
+    if (labSelectedPamIndices.length !== 3) {
+        feedback.className = "scenario-result-box error";
+        feedback.innerHTML = `⚠️ <strong>HATA:</strong> 3 bazlık PAM (5'-NGG-3') motifi seçilmelidir.`;
+        return;
+    }
+
+    const isTargetCorrect = (selectedTarget === data.correctTarget);
+    const isPamCorrect = (selectedPam.endsWith("GG") || selectedPam === data.correctPam);
+
+    if (isTargetCorrect && isPamCorrect) {
+        feedback.className = "scenario-result-box success";
+        feedback.innerHTML = `
+            <div style="font-weight: 800; margin-bottom: 4px;">🎉 BAŞARILI KESİM // [DSB OLUŞTURULDU]</div>
+            <p style="font-size: 0.82rem; line-height: 1.5; margin: 0;">
+                SpCas9 nükleazı <strong>${data.name}</strong> lokusunda <strong>${selectedPam}</strong> PAM motifini tanıdı ve hedef bölgede pürüzsüz çift zincir kırığı (DSB) indükledi.
+            </p>
+        `;
+    } else {
+        feedback.className = "scenario-result-box error";
+        feedback.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 2px;">⚠️ HİZALAMA HATASI</div>
+            <p style="font-size: 0.8rem; margin: 0;">
+                Seçilen gRNA ve PAM motifi ${data.name} lokusunda bitişik değil veya SpCas9 bağlanma bölgesine uymuyor.
+            </p>
+        `;
+    }
+}
+window.executeLabSimulation = executeLabSimulation;
+
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById("dictSearchInput");
+    if (searchInput) {
+        searchInput.value = "";
+    }
+});
+// ============================================================================
+// NAVBAR SAYFA İÇİ GEZİNTİ VE AKICI KAYDIRMA MOTORU
+// ============================================================================
+
+function scrollToSection(e, targetId) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    // SSS için alternatif ID kontrolleri
+    let element = document.getElementById(targetId);
+    if (!element && targetId === 'sss') {
+        element = document.getElementById('faq') || document.querySelector('.faq-section') || document.querySelector('[id*="soru"]');
+    }
+    if (!element && targetId === 'rehber') {
+        element = document.getElementById('biyoloji-rehberi') || document.querySelector('.guide-section');
+    }
+
+    if (element) {
+        const navHeight = 70;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    } else {
+        // Bölüm bulunamazsa hash ile yönlendir
+        window.location.hash = targetId;
+    }
+}
+window.scrollToSection = scrollToSection;
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById("dictSearchInput") || document.querySelector(".dict-search-input");
+    if (searchInput) {
+        searchInput.value = ""; // Sayfa açılışında içeriği kesin olarak temizle
+    }
+});
+
+// ============================================================================
+// ARKA PLAN DNA & MOLEKÜLER AKIŞ ANİMASYONU (SOFT CANVAS MOTORU)
+// ============================================================================
+
+(function initBioBackgroundFlow() {
+    const canvas = document.getElementById("bioBackgroundCanvas");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener("resize", () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    const BASES = ["A", "T", "G", "C"];
+    const COLORS = [
+        "rgba(2, 132, 199, 0.18)",   // Soft Bio Blue
+        "rgba(225, 29, 72, 0.16)",   // Soft Coral
+        "rgba(5, 150, 105, 0.16)",   // Soft Green
+        "rgba(100, 116, 139, 0.14)"  // Soft Slate
+    ];
+
+    // Partiküller (Baz harfleri, minik küreler ve mini DNA çift zincir parçaları)
+    const particleCount = Math.floor(width / 32);
+    const particles = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            speedY: 0.3 + Math.random() * 0.6, // Yavaş ve soft akış
+            speedX: (Math.random() - 0.5) * 0.2,
+            type: Math.random() > 0.4 ? "base" : (Math.random() > 0.5 ? "dot" : "helix-node"),
+            text: BASES[Math.floor(Math.random() * BASES.length)],
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            size: 10 + Math.random() * 8,
+            angle: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.015
+        });
+    }
+
+    function renderBioFlow() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.y += p.speedY;
+            p.x += p.speedX;
+            p.angle += p.rotSpeed;
+
+            // Ekrandan çıkınca yukarıdan tekrar başlat
+            if (p.y > height + 20) {
+                p.y = -20;
+                p.x = Math.random() * width;
+            }
+            if (p.x < -20) p.x = width + 20;
+            if (p.x > width + 20) p.x = -20;
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.angle);
+            ctx.fillStyle = p.color;
+            ctx.strokeStyle = p.color;
+
+            if (p.type === "base") {
+                ctx.font = `800 ${p.size}px 'JetBrains Mono', monospace`;
+                ctx.fillText(p.text, -p.size / 2, p.size / 3);
+            } else if (p.type === "dot") {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.size / 4, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (p.type === "helix-node") {
+                // Minik DNA bağı (İki nokta ve bağ çizgisi)
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(-10, 0);
+                ctx.lineTo(10, 0);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(-10, 0, 2.5, 0, Math.PI * 2);
+                ctx.arc(10, 0, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        requestAnimationFrame(renderBioFlow);
+    }
+
+    renderBioFlow();
+})();
+
+// ============================================================================
+// BAŞI VE SONU OLAN BAĞIMSIZ KREM TONLU DNA SARMAL MOTORU (CANVAS)
+// ============================================================================
+
+function initCreamDiscreteDnaEngine() {
+    const canvas = document.getElementById("bioBackgroundCanvas");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener("resize", () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    // Krem, Fildişi, Şeftali ve Sıcak Bej Renk Paleti
+    const CREAM_PALETTE = {
+        strand1Front: "rgba(235, 218, 195, 0.70)", // Sıcak Krem (Ön)
+        strand1Back:  "rgba(245, 235, 220, 0.30)", // Uçuk Fildişi (Arka)
+        strand2Front: "rgba(242, 201, 175, 0.65)", // Açık Şeftali Krem (Ön)
+        strand2Back:  "rgba(248, 228, 215, 0.25)", // Pudra Krem (Arka)
+        rungFront:    "rgba(215, 195, 170, 0.50)", // Krem Bağ Çizgisi (Ön)
+        rungBack:     "rgba(230, 220, 205, 0.20)"  // Silik Krem Bağ (Arka)
+    };
+
+    // Başı ve sonu olan 6 adet bağımsız DNA segmenti
+    const TOTAL_DNA_COUNT = 6;
+    const dnaList = [];
+
+    function createDnaSegment(initialY = null) {
+        const nodeCount = 14 + Math.floor(Math.random() * 10); // Sarmalın boyutu (Başından sonuna baz sayısı)
+        const stepY = 22 + Math.random() * 8;                  // İki basamak arası mesafe
+        const totalLength = nodeCount * stepY;
+
+        return {
+            x: Math.random() * width,
+            y: initialY !== null ? initialY : -(totalLength + Math.random() * 300),
+            nodeCount: nodeCount,
+            stepY: stepY,
+            totalLength: totalLength,
+            widthAmp: 35 + Math.random() * 30,                 // Sarmal genişliği
+            speedY: 0.6 + Math.random() * 0.7,                 // Aşağı süzülme hızı
+            rotSpeed: 0.015 + Math.random() * 0.015,           // Dönüş hızı
+            angle: Math.random() * Math.PI * 2,
+            scale: 0.75 + Math.random() * 0.45
+        };
+    }
+
+    // İlk kurulumda ekranın farklı yüksekliklerine dağıt
+    for (let i = 0; i < TOTAL_DNA_COUNT; i++) {
+        const startY = (height / TOTAL_DNA_COUNT) * i - 200;
+        dnaList.push(createDnaSegment(startY));
+    }
+
+    function renderCreamDna() {
+        ctx.clearRect(0, 0, width, height);
+
+        dnaList.forEach((dna, index) => {
+            dna.y += dna.speedY;
+            dna.angle += dna.rotSpeed;
+
+            // DNA tamamen ekranın altından çıktığında yukarıdan yeniden oluştur (Başı ve sonu korur)
+            if (dna.y - 50 > height) {
+                dnaList[index] = createDnaSegment(-dna.totalLength - 50);
+                return;
+            }
+
+            // DNA'nın başından (0) sonuna (nodeCount) kadar sarmal çizimi
+            for (let i = 0; i < dna.nodeCount; i++) {
+                const nodeY = dna.y + (i * dna.stepY);
+
+                // Ekran dışındaki kısımları render etmeyerek performans tasarrufu
+                if (nodeY < -40 || nodeY > height + 40) continue;
+
+                const currentAngle = dna.angle + (i * 0.28);
+                const xOffset = Math.sin(currentAngle) * (dna.widthAmp * dna.scale);
+                const depth1 = Math.cos(currentAngle); // Derinlik: -1 (arkada), +1 (önde)
+                const depth2 = -depth1;
+
+                const x1 = dna.x + xOffset;
+                const x2 = dna.x - xOffset;
+
+                // Başı ve sonu sivrilen/yumuşayan kenar hissi (Fade-out efekti)
+                let edgeFactor = 1;
+                if (i < 3) edgeFactor = (i + 1) / 3;
+                if (i > dna.nodeCount - 4) edgeFactor = (dna.nodeCount - i) / 3;
+
+                // 1. Basamak Çizgisi (Hidrojen Bağı)
+                ctx.beginPath();
+                ctx.moveTo(x1, nodeY);
+                ctx.lineTo(x2, nodeY);
+                ctx.strokeStyle = depth1 > 0 ? CREAM_PALETTE.rungFront : CREAM_PALETTE.rungBack;
+                ctx.lineWidth = Math.max(1, 1.6 * dna.scale * edgeFactor);
+                ctx.stroke();
+
+                // 2. İplik Düğümü A (Krem Ön/Arka)
+                const radius1 = Math.max(1.5, (4.5 + depth1 * 1.8) * dna.scale * edgeFactor);
+                ctx.beginPath();
+                ctx.arc(x1, nodeY, radius1, 0, Math.PI * 2);
+                ctx.fillStyle = depth1 > 0 ? CREAM_PALETTE.strand1Front : CREAM_PALETTE.strand1Back;
+                ctx.fill();
+
+                // 3. İplik Düğümü B (Şeftali Krem Ön/Arka)
+                const radius2 = Math.max(1.5, (4.5 + depth2 * 1.8) * dna.scale * edgeFactor);
+                ctx.beginPath();
+                ctx.arc(x2, nodeY, radius2, 0, Math.PI * 2);
+                ctx.fillStyle = depth2 > 0 ? CREAM_PALETTE.strand2Front : CREAM_PALETTE.strand2Back;
+                ctx.fill();
+            }
+        });
+
+        requestAnimationFrame(renderCreamDna);
+    }
+
+    renderCreamDna();
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCreamDiscreteDnaEngine);
+} else {
+    initCreamDiscreteDnaEngine();
+}

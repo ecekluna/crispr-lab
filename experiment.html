@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRISPR-Lab | Seviye 1 Simülasyonu</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="experiment-body">
+
+    <!-- ÜST ÇALIŞMA BARI -->
+    <header class="app-navbar">
+        <div class="nav-brand" onclick="window.close()">
+            <span class="brand-icon">🧬</span>
+            <span class="brand-title">CRISPR<span class="coral-txt">LAB</span></span>
+            <span class="badge-tag">SİMÜLASYON</span>
+        </div>
+        <div id="expLevelBadge" class="story-current-rank">🔬 Seviye 1: Stajyer Araştırmacı</div>
+        <div class="nav-auth-area">
+            <button class="btn-secondary btn-sm-pad" onclick="window.close()" type="button">✕ Laboratuvardan Çık</button>
+        </div>
+    </header>
+
+    <main class="page-container" style="max-width: 1040px;">
+        
+        <!-- GÖREV BRİFİNGİ -->
+        <section class="card-panel" style="padding: 24px 28px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 10px; flex-wrap: wrap;">
+                <span class="pill-badge">
+                    <span class="dot-green"></span>
+                    <span>🎯 Görev: PAM ve gRNA Hedefleme</span>
+                </span>
+                <span style="font-size: 0.85rem; color: var(--brand-coral); font-weight: 700;">
+                    Hedef Gen: HBB (Hemoglobin Alt Birimi)
+                </span>
+            </div>
+
+            <h1 class="panel-title" style="font-size: 1.5rem; margin-bottom: 8px;">
+                SpCas9 Enzimini Hedefe Kilitleyin
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6;">
+                Aşağıdaki DNA çift sarmalını tarayın. SpCas9'un bağlanabilmesi için <strong>5'-NGG-3'</strong> PAM motifini ve bu motifin hemen 5' (sol) tarafındaki <strong>20 bazlık hedef protospacer dizisini</strong> seçin.
+            </p>
+        </section>
+
+        <!-- İNTERAKTİF MOLEKÜLER ÇALIŞMA MASASI -->
+        <section class="card-panel" style="padding: 28px;">
+            
+            <!-- Seçim Modu Butonları -->
+            <div style="display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center;">
+                <button type="button" id="selectTargetModeBtn" class="btn-primary" style="padding: 8px 16px; font-size: 0.85rem;">
+                    1. Hedef Diziyi Seç (20 Baz)
+                </button>
+                <button type="button" id="selectPamModeBtn" class="btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">
+                    2. PAM Motifini Seç (3 Baz - NGG)
+                </button>
+                <button type="button" id="resetSelectionBtn" class="btn-secondary" style="padding: 8px 14px; font-size: 0.82rem; margin-left: auto;">
+                    ↺ Seçimi Sıfırla
+                </button>
+            </div>
+
+            <!-- İnteraktif Nükleotit Şeridi -->
+            <div class="exp-dna-viewer-box">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-faint); margin-bottom: 6px; font-weight: 700; font-family: var(--font-code);">
+                    <span>5' YÖNÜ (Sense İplik)</span>
+                    <span>3' YÖNÜ</span>
+                </div>
+                
+                <div id="interactiveDnaTrack" class="exp-dna-track-container"></div>
+                
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-faint); margin-top: 6px; font-weight: 700; font-family: var(--font-code);">
+                    <span>3' YÖNÜ (Antisense İplik)</span>
+                    <span>5' YÖNÜ</span>
+                </div>
+            </div>
+
+            <!-- Canlı Moleküler Analiz Kartları -->
+            <div class="exp-live-metrics-grid">
+                <div class="exp-metric-card">
+                    <div class="exp-metric-lbl">SEÇİLEN gRNA DİZİSİ (20 BAZ)</div>
+                    <div id="liveGrnaSeq" class="exp-metric-val code-font" style="color: var(--bio-blue);">
+                        (Henüz seçilmedi)
+                    </div>
+                </div>
+
+                <div class="exp-metric-card">
+                    <div class="exp-metric-lbl">SEÇİLEN PAM MOTİFİ (NGG)</div>
+                    <div id="livePamSeq" class="exp-metric-val code-font" style="color: var(--brand-coral);">
+                        ---
+                    </div>
+                </div>
+
+                <div class="exp-metric-card">
+                    <div class="exp-metric-lbl">GC ORANI & KARARLILIK</div>
+                    <div id="liveGcContent" class="exp-metric-val code-font" style="color: var(--bio-green);">
+                        %0
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kesim Butonu -->
+            <button type="button" id="executeCutBtn" class="btn-primary full-width" style="padding: 13px; font-size: 1rem; font-weight: 700;">
+                ✂️ Cas9 Endonükleaz Kesimini Başlat
+            </button>
+
+            <!-- Sonuç Kutusu -->
+            <div id="expResultBox" class="scenario-result-box hidden" style="margin-top: 18px;"></div>
+        </section>
+    </main>
+
+    <script src="experiment.js"></script>
+</body>
+</html>
