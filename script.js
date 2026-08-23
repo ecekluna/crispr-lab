@@ -2403,7 +2403,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 // ============================================================================
-// EĞİTİM MODU VERİ SETİ (5 AŞAMA - SIFIR EMOJİ - MOLEKÜLER STANDART)
+// EĞİTİM MODU MOTORU (5 KADEME - SIFIR EMOJİ - KURUMSAL TASARIM)
 // ============================================================================
 const TRAINING_MODULES_DATABASE = [
     {
@@ -2477,7 +2477,6 @@ function renderTrainingCards() {
     const grid = document.getElementById("trainingMatrixGrid");
     if (!grid) return;
 
-    // Kullanıcı ilerleme seviyesini al (Varsayılan: 1)
     let currentLevel = 1;
     if (window.state && window.state.currentUser && window.state.currentUser.level) {
         currentLevel = window.state.currentUser.level;
@@ -2509,7 +2508,7 @@ function renderTrainingCards() {
                     </div>
                 </div>
                 <h3 class="case-title">${mod.title}</h3>
-                <div style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--sapphire-blue); font-weight: 700; margin-bottom: 6px;">
+                <div style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--sapphire-blue); font-weight: 700; margin-bottom: 6px;">
                     Hedef Gen: ${mod.targetGene}
                 </div>
                 <p class="case-desc">${mod.description}</p>
@@ -2526,7 +2525,6 @@ function renderTrainingCards() {
         `;
     }).join("");
 
-    // Sayaçları güncelle
     const countDisp = document.getElementById("trainingProgressCount");
     const badgeDisp = document.getElementById("trainingBadgeCount");
     if (countDisp) countDisp.textContent = `${Math.min(5, currentLevel - 1)} / 5`;
