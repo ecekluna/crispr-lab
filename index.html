@@ -20,7 +20,7 @@
 </head>
 <body class="navy-theme-body">
 
-    <!-- 1. ÜST KURUMSAL NAVİGASYON -->
+    <!-- 1. ÜST KURUMSAL NAVİGASYON (TEMİZ VE DÜZENLİ) -->
     <header class="app-navbar">
         <div class="navbar-container">
             <div class="nav-brand-wrap">
@@ -33,10 +33,12 @@
                 </a>
             </div>
 
+            <!-- Tüm Menü Linkleri Tek Bir Hatta -->
             <nav class="nav-links-wrap">
                 <a href="#tanitim" class="nav-link" onclick="scrollToSection(event, 'tanitim')">Platform Genel Bakış</a>
                 <a href="lab.html" target="_blank" class="nav-link">Genom Laboratuvarı ↗</a>
                 <a href="campaign.html" target="_blank" class="nav-link">Kariyer Parkuru ↗</a>
+                <a href="cases.html" target="_blank" class="nav-link">Klinik Vakalar (10) ↗</a>
                 <a href="#rehber" class="nav-link" onclick="scrollToSection(event, 'rehber')">Kütüphane (150)</a>
                 <a href="#sss" class="nav-link" onclick="scrollToSection(event, 'sss')">Teknik S.S.S. (10)</a>
             </nav>
@@ -59,7 +61,7 @@
 
     <main class="page-container">
 
-        <!-- 2. ANA SAYFA: AMACI, FONKSİYONLARI VE ETKİSİNİ ANLATAN GENİŞ VİTRİN -->
+        <!-- 2. MANİFESTO KARTI (AŞAĞIDAKİ FAZLALIK BUTONLAR KALDIRILDI) -->
         <section class="platform-manifesto-card" id="tanitim">
             <div class="manifesto-top-bar">
                 <span class="system-chip">HESAPLAMALI MOLEKÜLER GENOMİK İSTASYONU</span>
@@ -75,14 +77,14 @@
                         CRISPR-Lab; ıslak laboratuvar (wet-lab) deneyleri öncesinde SpCas9 endonükleazının insan genomundaki 20 klinik lokusa bağlanma termodinamiğini hesaplayan, PAM kısıtlarını tarayan ve DSB sonrası hücrede devreye giren tamir yolaklarını simüle eden biyoinformatik araştırma arayüzüdür.
                     </p>
 
+                    <!-- Sadece İki Temel Aksiyon Butonu -->
                     <div class="manifesto-cta-row">
-                        <!-- Navigasyon Çubuğu -->
-<a href="lab.html" target="_blank" class="nav-link">Genom Laboratuvarı ↗</a>
-
-<!-- Hero / Tanıtım Kartındaki Buton -->
-<a href="lab.html" target="_blank" class="btn-primary-blue">
-    Genom Konsoluna Gir [ 20 Lokus ] ➔
-</a>
+                        <a href="lab.html" target="_blank" class="btn-primary-blue">
+                            Genom Konsoluna Gir [ 20 Lokus ] ➔
+                        </a>
+                        <a href="cases.html" target="_blank" class="btn-secondary-white">
+                            Klinik Vakalar [ 10 Senaryo ] ➔
+                        </a>
                     </div>
                 </div>
 
@@ -107,30 +109,29 @@
                 </div>
             </div>
 
-        <!-- 3. HIZLI SEKANSLAMA DOĞRULAYICI (TEST KONSOLU) -->
-        <section class="card-white-panel" id="nasil-calisir">
-            <div class="panel-header-strip">
-                <div>
-                    <h2 class="panel-heading">Hızlı gRNA & PAM Uyumluluk Değerlendiricisi</h2>
-                    <p class="panel-subheading">Hedef 20 bazlık sekansı ve 3 bazlık PAM motifini girerek moleküler kesim reaksiyonunu test edin</p>
+            <!-- Sayısal İstatistik Şeridi -->
+            <div class="manifesto-metrics-footer">
+                <div class="metric-node">
+                    <span class="m-kicker">KATALOG GENOMU</span>
+                    <strong class="m-val">20 Lokus</strong>
+                    <span class="m-sub">TP53, BRCA1, EGFR, DMD, HTT...</span>
                 </div>
-                <span class="system-code-tag">TEST_SUITE_SpCas9</span>
+                <div class="metric-node">
+                    <span class="m-kicker">KLİNİK VAKALAR</span>
+                    <strong class="m-val">10 Senaryo</strong>
+                    <span class="m-sub">Hemoglobinopati, Onkoloji, Enfeksiyon</span>
+                </div>
+                <div class="metric-node">
+                    <span class="m-kicker">BİLGİ BANKASI</span>
+                    <strong class="m-val">150 Kavram</strong>
+                    <span class="m-sub">DNA, CRISPR, Onarım & Biyoinformatik</span>
+                </div>
+                <div class="metric-node">
+                    <span class="m-kicker">KARİYER SEVİYELERİ</span>
+                    <strong class="m-val">5 Kademe</strong>
+                    <span class="m-sub">Stajyerden Direktörlüğe</span>
+                </div>
             </div>
-
-            <div class="evaluator-grid-row">
-                <div class="input-cell flex-3">
-                    <label for="sampleGrnaInput">20 Bazlık Sentetik sgRNA Sekansı (RNA / Urasil Formatında):</label>
-                    <input type="text" id="sampleGrnaInput" class="navy-input-field" placeholder="Örn: CCUGAGGAGAAGUCUGCCGU" maxlength="20">
-                </div>
-                <div class="input-cell flex-1">
-                    <label for="samplePamInput">PAM Motifi (3nt):</label>
-                    <input type="text" id="samplePamInput" class="navy-input-field" placeholder="Örn: TGG" maxlength="3">
-                </div>
-                <button type="button" id="btnTestSimulation" class="btn-evaluator-submit">
-                    Kesim Reaksiyonunu Doğrula ➔
-                </button>
-            </div>
-            <div id="labFeedbackBox" class="lab-feedback-box hidden"></div>
         </section>
 
         <!-- 4. KLİNİK SENARYOLAR (SAYFA İÇİ GEÇİŞLİ MODÜL) -->
