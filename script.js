@@ -338,15 +338,13 @@ function renderScenarioCards() {
     grid.innerHTML = SCENARIO_DATABASE.map(scn => {
         const isCompleted = state.completedScenarios.includes(scn.id);
         
-        // Zorluk seviyesine göre dinamik CSS sınıfı belirleme
+        // Türkçe karakter duyarlılığına uygun doğrudan zorluk sınıfı eşleştirmesi
         let diffClass = "diff-baslangic";
-        const diffLower = (scn.difficulty || "").toLowerCase();
-        
-        if (diffLower.includes("orta")) {
+        if (scn.difficulty === "Orta") {
             diffClass = "diff-orta";
-        } else if (diffLower.includes("ileri")) {
+        } else if (scn.difficulty === "İleri") {
             diffClass = "diff-ileri";
-        } else if (diffLower.includes("uzman")) {
+        } else if (scn.difficulty === "Uzman") {
             diffClass = "diff-uzman";
         }
 
@@ -371,6 +369,7 @@ function renderScenarioCards() {
         `;
     }).join("");
 }
+
 function startScenario(scenarioId) {
     const scn = SCENARIO_DATABASE.find(s => s.id === scenarioId);
     if (!scn) return;

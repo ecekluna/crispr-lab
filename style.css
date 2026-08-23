@@ -2219,3 +2219,45 @@ body.navy-theme-body {
     background: #f5f3ff !important;
     border-color: #ddd6fe !important;
 }
+/* ==========================================================================
+   KLİNİK VAKALAR ZORLUK SEVİYESİ RENK PALETİ
+   ========================================================================== */
+
+.case-difficulty-tag {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    padding: 3px 10px !important;
+    border-radius: 4px !important;
+    border: 1.5px solid !important;
+    letter-spacing: 0.3px !important;
+    display: inline-block !important;
+}
+
+/* 1. BAŞLANGIÇ SEVİYESİ: Yeşili */
+.case-difficulty-tag.diff-baslangic {
+    color: #059669 !important;
+    background: #ecfdf5 !important;
+    border-color: #a7f3d0 !important;
+}
+
+/* 2. ORTA SEVİYE: Safir Mavi */
+.case-difficulty-tag.diff-orta {
+    color: #0052cc !important;
+    background: #deebff !important;
+    border-color: #b3d4ff !important;
+}
+
+/* 3. İLERİ SEVİYE: Kehribar Turuncu */
+.case-difficulty-tag.diff-ileri {
+    color: #d97706 !important;
+    background: #fffbeb !important;
+    border-color: #fde68a !important;
+}
+
+/* 4. UZMAN SEVİYESİ: Derin Mor */
+.case-difficulty-tag.diff-uzman {
+    color: #7c3aed !important;
+    background: #f5f3ff !important;
+    border-color: #ddd6fe !important;
+}
