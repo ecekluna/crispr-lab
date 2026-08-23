@@ -34,13 +34,9 @@ try {
     console.error("Firebase başlatma hatası:", e);
 }
 
-// Uygulama Durum Yönetimi (State)
 const state = {
     currentUser: null,
-    pendingRegistration: null,
-    generatedOTP: null,
-    otpExpiresAt: null,
-    guideVisibleCount: 15,
+    guideVisibleCount: 6, // 15 yerine 6 yapıldı
     guideActiveCategory: "all",
     guideSearchQuery: "",
     activeScenarioId: null,
@@ -1251,35 +1247,29 @@ function renderGuideCards() {
 
 function initGuideEventListeners() {
     const searchInput = document.getElementById("guideSearchInput");
-    const categoryTabs = document.querySelectorAll(".category-tabs .tab-btn");
+    const categoryTabs = document.querySelectorAll(".category-tabs .tab-chip");
     const loadMoreBtn = document.getElementById("loadMoreGuideBtn");
 
-    if (searchInput) {
-        searchInput.addEventListener("input", function(e) {
-            state.guideSearchQuery = e.target.value;
-            state.guideVisibleCount = 15;
+    searchInput?.addEventListener("input", function(e) {
+        state.guideSearchQuery = e.target.value;
+        state.guideVisibleCount = 6;
+        renderGuideCards();
+    });
+
+    categoryTabs?.forEach(tab => {
+        tab.addEventListener("click", function() {
+            categoryTabs.forEach(t => t.classList.remove("active"));
+            this.classList.add("active");
+            state.guideActiveCategory = this.getAttribute("data-category") || "all";
+            state.guideVisibleCount = 6;
             renderGuideCards();
         });
-    }
+    });
 
-    if (categoryTabs) {
-        categoryTabs.forEach(tab => {
-            tab.addEventListener("click", function() {
-                categoryTabs.forEach(t => t.classList.remove("active"));
-                this.classList.add("active");
-                state.guideActiveCategory = this.getAttribute("data-category") || "all";
-                state.guideVisibleCount = 15;
-                renderGuideCards();
-            });
-        });
-    }
-
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener("click", function() {
-            state.guideVisibleCount += 15;
-            renderGuideCards();
-        });
-    }
+    loadMoreBtn?.addEventListener("click", function() {
+        state.guideVisibleCount += 6;
+        renderGuideCards();
+    });
 }
 
 // ============================================================================

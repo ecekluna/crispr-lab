@@ -791,3 +791,162 @@ body.navy-theme-body {
     .manifesto-title { font-size: 1.85rem; }
     .footer-container { flex-direction: column; gap: 12px; text-align: center; }
 }
+/* ==========================================================================
+   1. PROFİL FOTOĞRAFI YUVARLAK KUSURSUZ KONUMLANDIRMA
+   ========================================================================== */
+.profile-avatar-container {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+    border-radius: 50% !important; /* Tam Yuvarlak */
+    background: var(--navy-dark);
+    color: #ffffff;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.25rem !important;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    overflow: hidden !important;
+    border: 2px solid var(--border-medium) !important;
+    position: relative;
+}
+
+.profile-avatar-container img,
+#profileAvatarImg {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    display: block;
+}
+
+/* ==========================================================================
+   2. GELİŞMİŞ VE FERAH KAVRAM KÜTÜPHANESİ KARTLARI
+   ========================================================================== */
+.library-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+    gap: 16px !important;
+}
+
+.clean-dict-card {
+    background: #ffffff !important;
+    border: 1.5px solid var(--border-light) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 20px 22px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(9, 30, 66, 0.03);
+}
+
+.clean-dict-card:hover {
+    border-color: var(--sapphire-blue) !important;
+    box-shadow: 0 4px 16px rgba(0, 82, 204, 0.08) !important;
+    transform: translateY(-2px);
+}
+
+.dict-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px !important;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border-light);
+}
+
+.dict-cat-tag {
+    font-family: var(--font-mono);
+    font-size: 0.68rem !important;
+    font-weight: 800;
+    color: var(--sapphire-blue) !important;
+    background: var(--sapphire-blue-soft);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.dict-id-tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem !important;
+    font-weight: 700;
+    color: var(--text-faint) !important;
+}
+
+.dict-term-title {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    color: var(--navy-dark) !important;
+    margin-bottom: 8px !important;
+    letter-spacing: -0.2px;
+}
+
+.dict-term-desc {
+    font-size: 0.85rem !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.55 !important;
+}
+
+/* ==========================================================================
+   3. S.S.S. BÜTÜNLÜĞÜ VE RENK EŞİTLEMESİ (TÜM SATIRLAR HOMOJEN)
+   ========================================================================== */
+.faq-stack-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px !important;
+}
+
+.faq-row {
+    background: #ffffff !important;
+    border: 1.5px solid var(--border-light) !important;
+    border-radius: var(--radius-sm) !important;
+    overflow: hidden;
+}
+
+.faq-row summary {
+    display: flex !important;
+    align-items: center !important;
+    padding: 16px 20px !important;
+    cursor: pointer !important;
+    list-style: none !important;
+    user-select: none;
+    background: #ffffff !important;
+}
+
+.faq-row summary::-webkit-details-marker { display: none !important; }
+
+.faq-index {
+    font-family: var(--font-mono) !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    color: var(--sapphire-blue) !important;
+    margin-right: 14px !important;
+}
+
+.faq-q-text {
+    font-size: 0.94rem !important;
+    font-weight: 700 !important;
+    color: var(--navy-dark) !important;
+    flex-grow: 1 !important;
+}
+
+.faq-indicator {
+    font-size: 0.85rem !important;
+    color: var(--text-muted) !important;
+    transition: transform 0.2s ease !important;
+}
+
+.faq-row[open] .faq-indicator {
+    transform: rotate(180deg) !important;
+}
+
+.faq-a-body {
+    padding: 16px 20px 18px 46px !important;
+    font-size: 0.88rem !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.65 !important;
+    background: var(--bg-subtle) !important;
+    border-top: 1px solid var(--border-light) !important;
+}
