@@ -1,193 +1,174 @@
-<!-- ==========================================================================
-     PROFESYONEL BİYOİNFORMATİK GENOM LABORATUVARI KONSOLU
-     ========================================================================== -->
-<section class="card-panel bio-station-card" id="lab-alani">
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRISPR-Lab Studio | Genom Mühendisliği İstasyonu</title>
     
-    <!-- 1. ÜST İSTASYON KONTROL PANELİ -->
-    <div class="bio-station-header">
-        <div class="station-meta-block">
-            <div class="meta-status-row">
-                <span class="status-indicator-live">
-                    <span class="pulse-dot-green"></span>
-                    ONLINE ANALYZER
-                </span>
-                <span class="locus-id-tag" id="labGeneTag">LOCUS: TP53 // EXON-4</span>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="lab-body">
+
+    <!-- Arka Plan Tuvali -->
+    <canvas id="bioBackgroundCanvas" class="bio-bg-canvas"></canvas>
+
+    <!-- Üst Konsol Çubuğu -->
+    <header class="station-nav">
+        <div class="station-nav-container">
+            <div class="brand-cluster">
+                <span class="symbol-node">🧬</span>
+                <span class="station-title">CRISPR<span class="accent-txt">LAB</span></span>
+                <span class="slash-divider">/</span>
+                <span class="sub-station-name">Genom Düzenleme Konsolu</span>
             </div>
-            <h2 class="station-locus-title" id="labMutationInfo">Vaka: Li-Fraumeni Sendromu (Tümör Baskılayıcı TP53)</h2>
-        </div>
 
-        <div class="station-actions-toolbar">
-            <div class="locus-select-wrapper">
-                <span class="select-label">LOKUS SEÇİMİ:</span>
-                <select id="labLocusSelect" class="bio-select-engine" onchange="handleLabLocusChange()">
-                    <!-- 20 Lokus JS Tarafından Yüklenecektir -->
-                </select>
+            <div class="nav-controls">
+                <span class="engine-badge">ENGINE v3.4 // SpCas9</span>
+                <button type="button" class="btn-clean" onclick="window.close()">✕ Sekmeyi Kapat</button>
             </div>
-            <button type="button" class="btn-cycle-locus" onclick="switchRandomLabSequence()" title="Katalogdan Rastgele Lokus Yükle">
-                <span class="cycle-icon">↻</span> Rastgele Dizi
-            </button>
         </div>
-    </div>
+    </header>
 
-    <!-- 2. PARAMETRE ŞERİDİ (INSTRUMENT SPECIFICATIONS) -->
-    <div class="spec-metrics-strip">
-        <div class="spec-item">
-            <span class="spec-k">HEDEF NÜKLEAZ</span>
-            <span class="spec-v">SpCas9 (Wild-Type)</span>
-        </div>
-        <div class="spec-separator"></div>
-        <div class="spec-item">
-            <span class="spec-k">PAM MOTİFİ</span>
-            <span class="spec-v highlight-pam">5'-NGG-3'</span>
-        </div>
-        <div class="spec-separator"></div>
-        <div class="spec-item">
-            <span class="spec-k">PROTOSPACER UZUNLUĞU</span>
-            <span class="spec-v">20 nt (Homoloji Bölgesi)</span>
-        </div>
-        <div class="spec-separator"></div>
-        <div class="spec-item">
-            <span class="spec-k">KESİM DÜZLEMİ</span>
-            <span class="spec-v">PAM'dan -3 nt geride (Küt Uç)</span>
-        </div>
-    </div>
+    <main class="station-viewport">
+        <div class="console-box">
 
-    <!-- 3. ANA ÇALIŞMA ALANI: 2 KOLONLU HASSAS GRID -->
-    <div class="bio-workspace-grid">
-        
-        <!-- SOL PANEL: DİZİ SEÇİCİ & TERMINAL ÇIKTI PANELİ -->
-        <div class="bio-sequence-panel">
-            
-            <div class="sequence-toolbar">
-                <div class="strand-title-group">
-                    <span class="strand-direction-badge">5' ➔ 3' (Sense İplik)</span>
-                    <span class="strand-guide-note">Hedefleme ve PAM için nükleotitlerin üzerine tıklayın</span>
+            <!-- Panel Üst Kontrolleri -->
+            <div class="console-top-strip">
+                <div class="locus-title-area">
+                    <div class="locus-tag" id="labGeneTag">[GEN: TP53]</div>
+                    <div class="locus-desc" id="labMutationInfo">Vaka: Li-Fraumeni Sendromu (Tümör Baskılayıcı)</div>
                 </div>
+
+                <div class="locus-switcher">
+                    <label for="labLocusSelect" class="switch-lbl">Hedef Lokus:</label>
+                    <select id="labLocusSelect" class="console-select" onchange="handleLabLocusChange()">
+                        <!-- JS Doldurur -->
+                    </select>
+                    <button type="button" class="btn-action-outline" onclick="switchRandomLabSequence()" title="Rastgele lokus yükle">
+                        🔀 Döngü
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sistem Şartnameleri Şeridi -->
+            <div class="specs-bar">
+                <div class="spec-col"><span class="lbl">Nükleaz:</span> <strong>SpCas9 (Tip-II)</strong></div>
+                <div class="spec-col"><span class="lbl">PAM Kriteri:</span> <strong class="pam-highlight">5'-NGG-3'</strong></div>
+                <div class="spec-col"><span class="lbl">Hedef Uzunluğu:</span> <strong>20 nt</strong></div>
+                <div class="spec-col"><span class="lbl">Kesim Noktası:</span> <strong>PAM -3. baz (Küt uç)</strong></div>
+            </div>
+
+            <!-- Çalışma Masası -->
+            <div class="console-grid">
                 
-                <div class="selection-mode-pills">
-                    <button type="button" id="labTargetModeBtn" class="mode-pill-btn active" onclick="setLabSelectionMode('target')">
-                        <span class="pill-number">1</span> gRNA (20nt)
-                    </button>
-                    <button type="button" id="labPamModeBtn" class="mode-pill-btn" onclick="setLabSelectionMode('pam')">
-                        <span class="pill-number">2</span> PAM (3nt)
-                    </button>
-                    <button type="button" class="mode-pill-btn reset-btn" onclick="resetLabWorkspace()" title="Seçimi Sıfırla">
-                        Temizle
-                    </button>
-                </div>
-            </div>
-
-            <!-- DİZİ PENCERESİ & KONSOL CETVELİ -->
-            <div class="bio-viewport-enclosure">
-                <div class="viewport-ruler">
-                    <span class="ruler-end">01</span>
-                    <span class="ruler-ticks">....|....10....|....20....|....30....|....40....|....50....|....60</span>
-                    <span class="ruler-end">60</span>
-                </div>
-
-                <div id="interactiveLabDnaTrack" class="bio-dna-track custom-scrollbar"></div>
-
-                <div class="viewport-ruler bottom">
-                    <span class="ruler-end">3'</span>
-                    <span class="ruler-ticks">KOMPLEMANTER ANTİSENSE İPLİK (3' ➔ 5')</span>
-                    <span class="ruler-end">5'</span>
-                </div>
-            </div>
-
-            <!-- CANLI DİZİ DERLEME VE ENTEGRASYON KARTI -->
-            <div class="compiled-target-card">
-                <div class="compiled-fields-row">
-                    <div class="compiled-field grna-field">
-                        <div class="field-header-row">
-                            <span class="field-title">SENTETİK sgRNA DİZİSİ (5' ➔ 3' RNA):</span>
-                            <span class="field-sub-note">Urasil dönüşümlü</span>
-                        </div>
-                        <div id="labGrnaDisplay" class="field-output-screen">
-                            <span class="placeholder-text">Çift sarmal üzerinden 20 bazlık hedef seçiniz...</span>
+                <!-- Sol Kolon: DNA Dizisi ve Seçim Ekranı -->
+                <div class="sequence-section">
+                    <div class="section-action-bar">
+                        <span class="bar-title">ÇİFT SARMAL ANALİZ PENCERESİ (5' ➔ 3')</span>
+                        <div class="selection-toggles">
+                            <button type="button" id="labTargetModeBtn" class="toggle-btn active" onclick="setLabSelectionMode('target')">
+                                1. gRNA (20nt)
+                            </button>
+                            <button type="button" id="labPamModeBtn" class="toggle-btn" onclick="setLabSelectionMode('pam')">
+                                2. PAM (3nt)
+                            </button>
+                            <button type="button" class="toggle-btn reset" onclick="resetLabWorkspace()">
+                                Sıfırla
+                            </button>
                         </div>
                     </div>
 
-                    <div class="compiled-field pam-field">
-                        <div class="field-header-row">
-                            <span class="field-title">PAM MOTİFİ:</span>
-                            <span class="field-sub-note">SpCas9 (NGG)</span>
+                    <!-- DNA Görüntüleyici -->
+                    <div class="sequence-track-box">
+                        <div class="track-ruler">
+                            <span>5'</span>
+                            <span class="ruler-middle">....|....10....|....20....|....30....|....40....|....50....|....60</span>
+                            <span>3'</span>
                         </div>
-                        <div id="labPamDisplay" class="field-output-screen pam-screen">---</div>
+
+                        <div id="interactiveLabDnaTrack" class="dna-nucleotide-viewport"></div>
+
+                        <div class="track-ruler antisense-ruler">
+                            <span>3'</span>
+                            <span class="ruler-middle">KOMPLEMANTER ANTİSENSE İPLİK</span>
+                            <span>5'</span>
+                        </div>
+                    </div>
+
+                    <!-- Canlı Seçim Çıktıları -->
+                    <div class="selection-readout-grid">
+                        <div class="readout-card">
+                            <span class="readout-label">SENTETİK sgRNA SEKANSI (5' ➔ 3' RNA):</span>
+                            <div id="labGrnaDisplay" class="readout-val mono">(Dizi seçimi bekleniyor...)</div>
+                        </div>
+                        <div class="readout-card pam-card">
+                            <span class="readout-label">PAM MOTİFİ:</span>
+                            <div id="labPamDisplay" class="readout-val mono pam-val">---</div>
+                        </div>
+                    </div>
+
+                    <!-- Kesim Butonu -->
+                    <button type="button" id="btnRunLabCut" class="btn-execute" onclick="executeLabSimulation()">
+                        ✂️ SpCas9 Kesim Reaksiyonunu Başlat
+                    </button>
+
+                    <!-- Geri Bildirim Kutusu -->
+                    <div id="labSimulationFeedback" class="feedback-box hidden"></div>
+                </div>
+
+                <!-- Sağ Kolon: Biyofiziksel Telemetri -->
+                <div class="telemetry-section">
+                    <div class="telemetry-box">
+                        <div class="box-head">BİYOFİZİKSEL PARAMETRELER</div>
+                        <div class="telemetry-row">
+                            <span>GC İçeriği:</span>
+                            <strong id="labGcDisplay">%0</strong>
+                        </div>
+                        <div class="telemetry-row">
+                            <span>Erime Noktası (Tm):</span>
+                            <strong id="labTmDisplay">-- °C</strong>
+                        </div>
+                        <div class="telemetry-row">
+                            <span>Seed Region (8nt):</span>
+                            <strong id="labSeedDisplay" class="mono">--</strong>
+                        </div>
+                        <div class="telemetry-row">
+                            <span>Off-Target Riski:</span>
+                            <strong id="labOffTargetDisplay">DÜŞÜK</strong>
+                        </div>
+                    </div>
+
+                    <div class="telemetry-box">
+                        <div class="box-head">HÜCRESEL ONARIM MODELİ</div>
+                        <p class="repair-desc">
+                            SpCas9 kesimi sonrası çift zincir kırığı (DSB) oluştuğunda tetiklenen primer yolak:
+                        </p>
+                        <div class="pathway-indicator">
+                            NHEJ (Non-Homologous End Joining)
+                        </div>
+                        <span class="pathway-sub">Fonksiyon Kaybı / Gen Nakavtı (Knock-out)</span>
                     </div>
                 </div>
 
-                <!-- ÇALIŞTIR BUTONU -->
-                <button type="button" id="btnRunLabCut" class="btn-execute-reaction" onclick="executeLabSimulation()">
-                    <span class="btn-icon">⚡</span> SpCas9 Reaksiyonunu İndükle & Kes
-                </button>
-
-                <div id="labSimulationFeedback" class="simulation-feedback-enclosure hidden"></div>
             </div>
-
         </div>
+    </main>
 
-        <!-- SAĞ PANEL: MOLEKÜLER METRİKLER & BİYOFİZİKSEL RAPOR -->
-        <div class="bio-telemetry-panel">
-            
-            <div class="telemetry-card">
-                <div class="telemetry-header">
-                    <span class="telemetry-title">BİYOFİZİKSEL ANALİZ</span>
-                    <span class="telemetry-badge">IN SILICO</span>
-                </div>
-
-                <div class="metric-gauge-group">
-                    <div class="metric-row">
-                        <span class="m-label">GC İçeriği:</span>
-                        <div class="m-val-group">
-                            <strong id="labGcDisplay" class="m-value good">%0</strong>
-                            <span class="m-sub">İdeal: %40-60</span>
-                        </div>
-                    </div>
-
-                    <div class="metric-row">
-                        <span class="m-label">Erime Derecesi (Tm):</span>
-                        <div class="m-val-group">
-                            <strong id="labTmDisplay" class="m-value">-- °C</strong>
-                            <span class="m-sub">Hibridizasyon</span>
-                        </div>
-                    </div>
-
-                    <div class="metric-row">
-                        <span class="m-label">Tohum Bölgesi (Seed):</span>
-                        <div class="m-val-group">
-                            <strong id="labSeedDisplay" class="m-value font-mono">--</strong>
-                            <span class="m-sub">Son 8nt kritik</span>
-                        </div>
-                    </div>
-
-                    <div class="metric-row">
-                        <span class="m-label">Off-Target Riski:</span>
-                        <div class="m-val-group">
-                            <strong id="labOffTargetDisplay" class="m-value good">DÜŞÜK</strong>
-                            <span class="m-sub">Genom boyu</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="telemetry-card repair-card">
-                <div class="telemetry-header">
-                    <span class="telemetry-title">HÜCRESEL ONARIM YOLAĞI</span>
-                </div>
-                <p class="repair-lead-text">
-                    SpCas9 tarafından oluşturulacak çift zincir kırığı (DSB) sonrasında baskın mekanizma:
-                </p>
-                
-                <div class="repair-pathway-box">
-                    <div class="pathway-main-title">NHEJ (Non-Homologous End Joining)</div>
-                    <div class="pathway-outcome-tag">Knock-out & İndel Mutasyonu</div>
-                </div>
-                <p class="repair-footnote">
-                    * Donör ssODN şablonu eklenmediği sürece hücre döngüsü G1/G0 fazında hata eğilimli NHEJ onarımına zorlanır.
-                </p>
-            </div>
-
-        </div>
-
-    </div>
-</section>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof initLabWorkspace === "function") {
+                initLabWorkspace();
+            }
+        });
+    </script>
+</body>
+</html>
