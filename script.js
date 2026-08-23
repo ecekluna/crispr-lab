@@ -1363,12 +1363,16 @@ function initGuideEventListeners() {
     renderGuideCards();
     initGuideEventListeners();
     
-    // Yalnızca sayfada laboratuvar alanı varsa çalıştır (lab.html için)
+    // Yalnızca cases.html sayfasındaysa vakaları çiz
+    if (document.getElementById("scenarioListGrid") && typeof renderScenarioCards === "function") {
+        renderScenarioCards();
+    }
+
+    // Yalnızca lab.html sayfasındaysa laboratuvarı başlat
     if (document.getElementById("interactiveLabDnaTrack") && typeof initLabWorkspace === "function") {
         initLabWorkspace();
     }
 });
-
     // Sekmeler (DNA, CRISPR, Onarım, Biyoinformatik)
     categoryTabs?.forEach(tab => {
         tab.addEventListener("click", function() {
