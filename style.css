@@ -2220,3 +2220,96 @@ body.navy-theme-body {
     background-color: #f5f3ff !important;
     border-color: #ddd6fe !important;
 }
+/* ==========================================================================
+   MOBİL VE KÜTÜPHANE DÜZELTMELERİ
+   ========================================================================== */
+
+/* 1. Üst Navigasyon Barını Mobilde Görünür ve Yatay Kaydırılabilir Yap */
+@media (max-width: 900px) {
+    .app-navbar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        background: #091e42 !important;
+        padding: 8px 12px !important;
+    }
+
+    .navbar-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .nav-links-wrap {
+        display: flex !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        width: 100% !important;
+        padding-bottom: 4px !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+    }
+
+    .nav-links-wrap::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .nav-links-wrap .nav-link {
+        font-size: 0.8rem !important;
+        padding: 4px 8px !important;
+        flex-shrink: 0 !important;
+    }
+}
+
+/* 2. Kütüphane Bölümündeki Taşma ve Hizalama Düzeltmeleri */
+.library-filter-strip {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
+
+.search-field-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.search-field-box input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.category-tabs-row {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+    padding-bottom: 6px !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 6px !important;
+}
+
+.category-tabs-row .tab-chip {
+    flex-shrink: 0 !important;
+}
+
+.library-cards-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 600px) {
+    .library-cards-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .card-white-panel {
+        padding: 16px !important;
+        overflow-x: hidden !important;
+    }
+}
