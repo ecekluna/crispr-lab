@@ -1197,6 +1197,7 @@ function renderGuideCards() {
     const loadMoreBtn = document.getElementById("loadMoreGuideBtn");
     if (!grid) return;
 
+    // Kategori ve Arama Filtresi
     const filtered = GUIDE_DATABASE.filter(item => {
         const matchesCat = (state.guideActiveCategory === "all" || item.category === state.guideActiveCategory);
         const query = (state.guideSearchQuery || "").toLowerCase().trim();
@@ -1206,16 +1207,33 @@ function renderGuideCards() {
 
     const visibleItems = filtered.slice(0, state.guideVisibleCount);
 
-    grid.innerHTML = visibleItems.map(item => `
-        <article class="clean-dict-card">
-            <div class="dict-card-head">
-                <span class="dict-cat-tag">${item.category.toUpperCase()}</span>
-                <span class="dict-id-tag">LOC.${item.id < 10 ? '0' + item.id : item.id}</span>
-            </div>
-            <h4 class="dict-term-title">${item.term}</h4>
-            <p class="dict-term-desc">${item.desc}</p>
-        </article>
-    `).join("");
+    // Kategoriye Göre Renk Sınıfı ve Etiket Eşleştirmesi
+    grid.innerHTML = visibleItems.map(item => {
+        let catClass = "cat-dna";
+        let catLabel = "DNA & GENOMİK";
+
+        if (item.category === "crispr") {
+            catClass = "cat-crispr";
+            catLabel = "CRISPR-CAS";
+        } else if (item.category === "repair") {
+            catClass = "cat-repair";
+            catLabel = "DNA ONARIMI";
+        } else if (item.category === "bioinfo") {
+            catClass = "cat-bioinfo";
+            catLabel = "BİYOİNFORMATİK";
+        }
+
+        return `
+            <article class="clean-dict-card ${catClass}">
+                <div class="dict-card-head">
+                    <span class="dict-cat-tag">${catLabel}</span>
+                    <span class="dict-id-tag">LOC.${item.id < 10 ? '0' + item.id : item.id}</span>
+                </div>
+                <h4 class="dict-term-title">${item.term}</h4>
+                <p class="dict-term-desc">${item.desc}</p>
+            </article>
+        `;
+    }).join("");
 
     if (counterBadge) {
         counterBadge.textContent = `${visibleItems.length} / ${filtered.length} KAVRAM`;
@@ -1223,6 +1241,38 @@ function renderGuideCards() {
 
     if (loadMoreBtn) {
         loadMoreBtn.style.display = (visibleItems.length >= filtered.length) ? "none" : "inline-block";
+    }
+}
+
+function initGuideEventListeners() {
+    const searchInput = document.getElementById("guideSearchInput");
+    const categoryTabs = document.querySelectorAll(".category-tabs .tab-chip");
+    const loadMoreBtn = document.getElementById("loadMoreGuideBtn");
+
+    // Arama Çubuğu
+    searchInput?.addEventListener("input", function(e) {
+        state.guideSearchQuery = e.target.value;
+        state.guideVisibleCount = 6;
+        renderGuideCards();
+    });
+
+    // Sekmeler (DNA, CRISPR, Onarım, Biyoinformatik)
+    categoryTabs?.forEach(tab => {
+        tab.addEventListener("click", function() {
+            categoryTabs.forEach(t => t.classList.remove("active"));
+            this.classList.add("active");
+            state.guideActiveCategory = this.getAttribute("data-category") || "all";
+            state.guideVisibleCount = 6;
+            renderGuideCards();
+        });
+    });
+
+    // Daha Fazla Göster Butonu (+6)
+    if (loadMoreBtn) {
+        loadMoreBtn.onclick = function() {
+            state.guideVisibleCount += 6;
+            renderGuideCards();
+        };
     }
 }
 
