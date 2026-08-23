@@ -1950,3 +1950,114 @@ body.navy-theme-body {
     padding: 18px !important;
     margin: 0 !important;
 }
+/* ==========================================================================
+   KLİNİK VAKALAR KONSOLU STİLLERİ
+   ========================================================================== */
+
+.scenarios-matrix-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+    gap: 18px !important;
+    margin-top: 20px !important;
+}
+
+.case-card {
+    background: #ffffff !important;
+    border: 1.5px solid var(--border-light) !important;
+    border-radius: 8px !important;
+    padding: 22px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    min-height: 230px !important;
+    box-shadow: 0 2px 8px rgba(9, 30, 66, 0.04) !important;
+    transition: all 0.15s ease !important;
+}
+
+.case-card:hover {
+    border-color: var(--sapphire-blue) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 18px rgba(0, 82, 204, 0.1) !important;
+}
+
+.case-card.completed {
+    border-color: #00875a !important;
+    background: #fcfdfc !important;
+}
+
+.case-top-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 10px !important;
+}
+
+.case-difficulty-tag {
+    font-family: var(--font-mono) !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    color: var(--text-muted) !important;
+    background: var(--bg-subtle) !important;
+    padding: 2px 8px !important;
+    border-radius: 4px !important;
+}
+
+.case-title {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    color: var(--navy-dark) !important;
+    margin-bottom: 8px !important;
+}
+
+.case-desc {
+    font-size: 0.84rem !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.5 !important;
+    margin-bottom: 16px !important;
+    flex-grow: 1 !important;
+}
+
+.case-badge-preview {
+    font-size: 0.76rem !important;
+    color: var(--text-muted) !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 12px !important;
+    border-bottom: 1px dashed var(--border-light) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+}
+
+.active-runner-panel {
+    background: var(--bg-subtle) !important;
+    border: 2px solid var(--sapphire-blue) !important;
+    border-radius: 8px !important;
+    padding: 24px !important;
+    margin: 20px 0 !important;
+}
+
+.runner-top-bar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 14px !important;
+}
+
+.runner-badge {
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    color: var(--sapphire-blue) !important;
+    background: #ffffff !important;
+    padding: 4px 10px !important;
+    border-radius: 4px !important;
+    border: 1px solid var(--border-light) !important;
+}
+
+.btn-icon {
+    background: #ffffff !important;
+    border: 1px solid var(--border-medium) !important;
+    padding: 4px 10px !important;
+    border-radius: 4px !important;
+    font-size: 0.78rem !important;
+    cursor: pointer !important;
+}

@@ -206,140 +206,249 @@ const GUIDE_DATABASE = [
 ];
 
 // ============================================================================
-// BÖLÜM 3: 10 SENARYOLUK İNTERAKTİF EĞİTİM & VAKA ANALİZİ VERİ TABANI
+// 10 KLİNİK SENARYO EKSİKSİZ VERİ SETİ
 // ============================================================================
 const SCENARIO_DATABASE = [
     {
         id: "scn-01",
         title: "Vaka 1: Orak Hücre Anemisi (HBB Geni)",
-        category: "Klinik Tedavi",
+        category: "Hematoloji",
         difficulty: "Başlangıç",
-        badge: "🩸 Hematoloji Uzmanı",
-        description: "HBB geninin 6. kodonunda meydana gelen GAG -> GTG mutasyonu anormal hemoglobin üretir. gRNA tasarlayarak bu mutant bölgeyi hedefleyin.",
+        badge: "Hematoloji Uzmanı",
+        description: "HBB geninin 6. kodonunda meydana gelen GAG -> GTG mutasyonunu hedefleyen 20 bazlık protospacer dizisini izole edin.",
         targetDna: "ATGGTGCACCTGACTCCTGAGGAGAAGTCTGCCGTTACTGCCCTGTGGGGCAAGGTGAAC",
-        targetRegion: "CCTGAGGAGAAGTCTGCCGT",
         correctPam: "TGG",
-        hint: "5'-CCTGAGGAGAAGTCTGCCGT-3' diziliminin hemen 3' ucundaki NGG motifini bulun.",
+        hint: "5'-CCTGAGGAGAAGTCTGCCGT-3' diziliminin hemen 3' ucundaki NGG motifini seçin.",
         optimalGrna: "CCUGAGGAGAAGUCUGCCGU"
     },
     {
         id: "scn-02",
         title: "Vaka 2: Kistik Fibrozis (CFTR F508del)",
-        category: "Klinik Tedavi",
+        category: "Pulmonoloji",
         difficulty: "Orta",
-        badge: "🫁 Pulmoner Genetikçi",
-        description: "CFTR geninde 3 bazlık CTT delesyonu fenilalanin amino asidinin kaybına yol açar. HDR onarımı için komşu ekzon kesimi planlayın.",
+        badge: "Pulmoner Genetikçi",
+        description: "CFTR geninde 3 bazlık CTT delesyonu fenilalanin kaybına yol açar. HDR onarımı için komşu ekzon kesimi planlayın.",
         targetDna: "ACTTCACTTCTAATGATGATTATGGGAGAACTGGAGCCTTCAGAGGGTTAAAATTCAACC",
-        targetRegion: "TAATGATGATTATGGGAGAA",
         correctPam: "CGG",
-        hint: "Homoloji kollarının verimli çalışması için kesim noktasını delesyon lokusuna en fazla 10 baz mesafede seçin.",
+        hint: "Homoloji kollarının verimli çalışması için delesyon bölgesine komşu 20 bazı seçin.",
         optimalGrna: "UAAUGAUGAUUAUGGGAGAA"
     },
     {
         id: "scn-03",
-        title: "Vaka 3: HIV Direnci (CCR5 Koreseptör Susturma)",
-        category: "Enfeksiyon Hastalıkları",
+        title: "Vaka 3: HIV Direnci (CCR5 Koreseptörü)",
+        category: "Enfeksiyon",
         difficulty: "İleri",
-        badge: "🛡️ İmmünoloji Öncüsü",
-        description: "CCR5-Delta32 mutasyonu bireyleri HIV-1 enfeksiyonuna dirençli kılar. Ekzon 1 bölgesinde NHEJ ile çerçeve kayması mutasyonu oluşturun.",
+        badge: "İmmünoloji Öncüsü",
+        description: "CCR5-Delta32 fenotipini taklit ederek Ekzon 1 bölgesinde NHEJ ile çerçeve kayması mutasyonu oluşturun.",
         targetDna: "CCAGAAGAGCTGAGACATCCGTTCCCCTACAAGAAACTCTCCCCGGGTGGAACAAGATGG",
-        targetRegion: "CTGAGACATCCGTTCCCCTA",
         correctPam: "AGG",
         hint: "SpCas9 NGG motifi için PAM arayın ve yüksek GC içerikli bölgeden kaçının.",
         optimalGrna: "CUGAGACAUCCGUUCCCCUA"
     },
     {
         id: "scn-04",
-        title: "Vaka 4: Huntington Hastalığı (HTT CAG Tekrarları)",
+        title: "Vaka 4: Huntington Hastalığı (HTT Lokusu)",
         category: "Nörogenetik",
         difficulty: "İleri",
-        badge: "🧠 Nörodejenerasyon Kaşifi",
-        description: "HTT genindeki anormal CAG trinükleotit tekrarlarını susturmak için transkripsiyonel CRISPRi baskılaması tasarlayın.",
+        badge: "Nörodejenerasyon Kaşifi",
+        description: "HTT genindeki anormal CAG trinükleotit tekrarlarını susturmak için transkripsiyonel CRISPRi hedefi belirleyin.",
         targetDna: "ATGGCGACCCTGGAAAAGCTGATGAAGGCCTTCGAGTCCCTCAAGTCCTTCCAGCAGCAG",
-        targetRegion: "AAAAGCTGATGAAGGCCTTC",
         correctPam: "GAG",
-        hint: "dCas9-KRAB kullanarak promotör bölgesine yakın kilitlenme sağlayın.",
+        hint: "Promotör bölgesine yakın kilitlenme sağlayacak 20 bazı seçin.",
         optimalGrna: "AAAAGCUGAUGAAGGCCUUC"
     },
     {
         id: "scn-05",
-        title: "Vaka 5: Duchenne Musküler Distrofi (DMD Ekzon Atlama)",
-        category: "Kassal Bozukluklar",
+        title: "Vaka 5: Duchenne Musküler Distrofi (DMD)",
+        category: "Miyoloji",
         difficulty: "Orta",
-        badge: "💪 Miyoloji Mühendisi",
-        description: "DMD genindeki stop kodonunu içeren ekzon 51'i NHEJ aracılı çift kesimle atlayarak okuma çerçevesini yeniden oluşturun.",
+        badge: "Miyoloji Mühendisi",
+        description: "DMD genindeki stop kodonunu içeren ekzon 51'i NHEJ aracılı çift kesimle atlayarak okuma çerçevesini onarın.",
         targetDna: "CTCAGACTTTACTTCCCTTTTTAGTCTTATATATGTCAGATTCCTAACAACTTTGTAGGA",
-        targetRegion: "TTTAGTCTTATATATGTCAG",
         correctPam: "AGG",
-        hint: "Ekzonun 5' ve 3' sınırlarındaki splice-acceptor bölgelerini hedefleyin.",
+        hint: "Splice-acceptor bölgesini hedefleyen 20 bazlık homoloji dizisini bulun.",
         optimalGrna: "UUUAGUCUUAUAUAUGUCAG"
     },
     {
         id: "scn-06",
-        title: "Vaka 6: Tarımsal Islah (Çeltikte Bakteriyel Yanıklık Direnci)",
-        category: "Tarımsal Biyoteknoloji",
+        title: "Vaka 6: Tarımsal Islah (OsSWEET14 Geni)",
+        category: "Tarım Biyoteknolojisi",
         difficulty: "Başlangıç",
-        badge: "🌾 Agrogenetikçi",
-        description: "OsSWEET14 geninin promotöründeki TAL efektör bağlanma bölgesini mutasyona uğratarak patojen penetrasyonunu durdurun.",
+        badge: "Agrogenetikçi",
+        description: "Çeltik bitkisinde patojen bağlanma promotörünü mutasyona uğratarak bakteriyel yanıklık direncini indükleyin.",
         targetDna: "GATCGATCGATCCTAGGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAAGGTTAACCGG",
-        targetRegion: "CTAGGCTAGCTAGCTAGCTA",
         correctPam: "TGG",
         hint: "Promotör dizisindeki NGG PAM'i bularak 20 bazlık gRNA dizilimini eşleştirin.",
         optimalGrna: "CUAGGCUAGCUAGCUAGCUA"
     },
     {
         id: "scn-07",
-        title: "Vaka 7: CAR-T Hücre Mühendisliği (PD-1 Checkpoint Nakavtı)",
-        category: "Kanser İmmünoterapisi",
+        title: "Vaka 7: CAR-T Hücre Mühendisliği (PD-1)",
+        category: "Onkoloji",
         difficulty: "Uzman",
-        badge: "🎯 Onkoloji Mimarı",
-        description: "T hücrelerinin tümör mikroçevresinde yorulmasını engellemek için PDCD1 (PD-1) genini nakavt edin.",
+        badge: "Onkoloji Mimarı",
+        description: "T hücrelerinin tümör mikroçevresinde tükenmesini önlemek için PDCD1 genini NHEJ ile nakavt edin.",
         targetDna: "AGGCGCAGACCGGCCAGGCCCAGGCCCTCCTGGTGGGCATCGTGGGTGCCCTGCTACTGG",
-        targetRegion: "CAGACCGGCCAGGCCCAGGC",
         correctPam: "CGG",
-        hint: "Yüksek on-target skoru veren ve T hücresinin canlılığını koruyan ekzon 2 lokusunu seçin.",
+        hint: "Yüksek on-target skoru veren ekzon 2 lokusundaki protospacer dizisini seçin.",
         optimalGrna: "CAGACCGGCCAGGCCCAGGC"
     },
     {
         id: "scn-08",
-        title: "Vaka 8: B-Talasemi (BCL11A Enhancer Susturma)",
-        category: "Klinik Tedavi",
+        title: "Vaka 8: B-Talasemi (BCL11A Enhancer)",
+        category: "Hematoloji",
         difficulty: "İleri",
-        badge: "🧬 Hemoglobin Araştırmacısı",
-        description: "BCL11A eritroid enhancer bölgesini susturarak gama-globin üretimini aktive edin ve yetişkin hemoglobini ikame edin.",
+        badge: "Hemoglobin Araştırmacısı",
+        description: "BCL11A eritroid enhancer bölgesini susturarak fetal hemoglobin (HbF) üretimini yeniden başlatın.",
         targetDna: "TTCCTGACCCAAGAGTGAGAGTGCCCGGAGAGGGGATGCTCCAGTGAGTGAGCGGCTAGC",
-        targetRegion: "TGACCCAAGAGTGAGAGTGC",
         correctPam: "CCG",
         hint: "+58 GATA1 bağlanma motifini doğrudan bozan PAM bölgesini tercih edin.",
         optimalGrna: "UGACCCAAGAGUGAGAGUGC"
     },
     {
         id: "scn-09",
-        title: "Vaka 9: Leber Konjenital Amarozu (CEP290 Splicing Düzeltmesi)",
+        title: "Vaka 9: Leber Konjenital Amarozu (CEP290)",
         category: "Oftalmoloji",
         difficulty: "Uzman",
-        badge: "👁️ Retinal Gen Terapisti",
-        description: "CEP290 geninin 26. intronundaki anormal kriptik ekzonu oluşturan derin intronik mutasyonu çift gRNA ile çıkarın.",
+        badge: "Retinal Terapist",
+        description: "CEP290 geninin 26. intronundaki kriptik ekzonu oluşturan derin intronik mutasyonu hedefleyin.",
         targetDna: "AAATTGCTACTTACCCTGACTTTTGTTAATGTATTCATTTTGACTAATTTTGTTGAGGCA",
-        targetRegion: "TACTTACCCTGACTTTTGTT",
         correctPam: "AGG",
-        hint: "AAV vektörü içerisine sığacak kompakt SaCas9 veya SpCas9 gRNA çiftini planlayın.",
+        hint: "Kriptik ekzon sınırındaki 20 bazı izole edin.",
         optimalGrna: "UACUUACCCUGACUUUUGUU"
     },
     {
         id: "scn-10",
-        title: "Vaka 10: Fenilketonüri (PAH Geni Baz Düzenleme)",
-        category: "Metabolik Hastalıklar",
+        title: "Vaka 10: Fenilketonüri (PAH Geni)",
+        category: "Metabolik",
         difficulty: "Uzman",
-        badge: "🧪 Biyokimya Lideri",
-        description: "PAH genindeki c.1066-11G>A mutasyonunu sitidin baz editörü (CBE) veya adenin baz editörü (ABE) kullanarak düzeltin.",
+        badge: "Biyokimya Lideri",
+        description: "PAH genindeki c.1066-11G>A mutasyonunu hedefleyen baz düzenleme penceresini belirleyin.",
         targetDna: "GCCATACCTGTCCTCTCTGTCATTCAGCTCTTCATGTTCACCGTGGGTTTCCCACTGGCC",
-        targetRegion: "CCTGTCCTCTCTGTCATTCA",
         correctPam: "AGG",
-        hint: "Düzenleme penceresinin (protospacer 4-8 baz aralığı) tam hedef adenin veya sitozin üzerinde olmasını sağlayın.",
+        hint: "Protospacer 4-8 baz aralığındaki hedef nükleotide odaklanın.",
         optimalGrna: "CCUGUCCUCUCUGUCAUUCA"
     }
 ];
+
+function renderScenarioCards() {
+    const grid = document.getElementById("scenarioListGrid");
+    if (!grid) return;
+
+    grid.innerHTML = SCENARIO_DATABASE.map(scn => {
+        const isCompleted = state.completedScenarios.includes(scn.id);
+        return `
+            <div class="case-card ${isCompleted ? 'completed' : ''}">
+                <div class="case-top-row">
+                    <span class="dict-cat-tag">${scn.category.toUpperCase()}</span>
+                    <span class="case-difficulty-tag">${scn.difficulty}</span>
+                </div>
+                <h3 class="case-title">${scn.title}</h3>
+                <p class="case-desc">${scn.description}</p>
+                <div class="case-badge-preview">
+                    <span>Rozet: <strong>${scn.badge}</strong></span>
+                    ${isCompleted ? '<span style="color: var(--bio-green); font-weight: 700;">✓ Tamamlandı</span>' : ''}
+                </div>
+                <button type="button" class="btn-primary-blue full-width" onclick="startScenario('${scn.id}')">
+                    ${isCompleted ? 'Vakayı Tekrar İncele ➔' : 'Vakayı Başlat ➔'}
+                </button>
+            </div>
+        `;
+    }).join("");
+}
+
+function startScenario(scenarioId) {
+    const scn = SCENARIO_DATABASE.find(s => s.id === scenarioId);
+    if (!scn) return;
+
+    state.activeScenarioId = scenarioId;
+    const runner = document.getElementById("activeScenarioRunner");
+    const content = document.getElementById("scenarioRunnerContent");
+    if (!runner || !content) return;
+
+    runner.classList.remove("hidden");
+    runner.scrollIntoView({ behavior: "smooth" });
+
+    content.innerHTML = `
+        <div style="margin-bottom: 16px;">
+            <span class="system-code-tag">${scn.category} // ${scn.difficulty}</span>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--navy-dark); margin: 6px 0 4px;">${scn.title}</h2>
+            <p style="font-size: 0.88rem; color: var(--text-secondary);">${scn.description}</p>
+        </div>
+
+        <div class="lab-dna-viewport-box" style="margin-bottom: 16px;">
+            <span style="font-size: 0.72rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">
+                HEDEF GENOM BÖLGESİ (5' ➔ 3'):
+            </span>
+            <div style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 800; color: var(--sapphire-blue); word-break: break-all; letter-spacing: 1px;">
+                ${scn.targetDna}
+            </div>
+            <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; display: block;">
+                💡 İpucu: ${scn.hint}
+            </span>
+        </div>
+
+        <div class="evaluator-grid-row" style="margin-bottom: 14px;">
+            <div class="input-cell flex-3">
+                <label for="runnerGrnaInput">20 Bazlık gRNA Dizisi (Urasil formatında):</label>
+                <input type="text" id="runnerGrnaInput" class="navy-input-field" placeholder="Örn: ${scn.optimalGrna.substring(0, 10)}..." maxlength="20">
+            </div>
+            <div class="input-cell flex-1">
+                <label for="runnerPamInput">PAM Motifi (3nt):</label>
+                <input type="text" id="runnerPamInput" class="navy-input-field" placeholder="Örn: NGG" maxlength="3">
+            </div>
+            <button type="button" id="evaluateScenarioBtn" class="btn-evaluator-submit" onclick="evaluateScenario()">
+                Moleküler Uyumu Doğrula ➔
+            </button>
+        </div>
+
+        <div id="scenarioResultBox" class="lab-feedback-box hidden"></div>
+    `;
+
+    document.getElementById("closeScenarioRunnerBtn")?.addEventListener("click", () => {
+        runner.classList.add("hidden");
+    });
+}
+
+function evaluateScenario() {
+    const scn = SCENARIO_DATABASE.find(s => s.id === state.activeScenarioId);
+    if (!scn) return;
+
+    const grnaInput = document.getElementById("runnerGrnaInput")?.value.toUpperCase().trim().replace(/T/g, "U");
+    const pamInput = document.getElementById("runnerPamInput")?.value.toUpperCase().trim();
+    const resultBox = document.getElementById("scenarioResultBox");
+    if (!resultBox) return;
+
+    resultBox.classList.remove("hidden");
+
+    if (!grnaInput || !pamInput) {
+        resultBox.className = "lab-feedback-box error";
+        resultBox.textContent = "Lütfen hem gRNA dizisini hem de PAM motifini eksiksiz girin.";
+        return;
+    }
+
+    const isGrnaCorrect = (grnaInput === scn.optimalGrna);
+    const isPamCorrect = (pamInput === scn.correctPam || pamInput.endsWith("GG"));
+
+    if (isGrnaCorrect && isPamCorrect) {
+        if (!state.completedScenarios.includes(scn.id)) {
+            state.completedScenarios.push(scn.id);
+        }
+        resultBox.className = "lab-feedback-box success";
+        resultBox.innerHTML = `
+            <strong>[KUSURSUZ KESİM // VAKA BAŞARIYLA TAMAMLANDI]</strong><br>
+            SpCas9 nükleazı hedef sekansa kilitlendi ve DSB oluşturdu.<br>
+            Kazanılan Rozet: <strong>${scn.badge}</strong>
+        `;
+        renderScenarioCards();
+    } else {
+        resultBox.className = "lab-feedback-box error";
+        resultBox.innerHTML = `
+            <strong>[HATA // HEDEFLEME BAŞARISIZ]</strong><br>
+            gRNA dizisi hedef mutasyon bölgesiyle tam örtüşmedi veya PAM motifi uyumsuz. İpucunu inceleyin.
+        `;
+    }
+}
 
 // ============================================================================
 // BÖLÜM 4: BİYOİNFORMATİK HESAPLAMA MOTORU

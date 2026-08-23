@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRISPR-Lab | Klinik Vaka Simülasyon İstasyonu</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="navy-theme-body">
+
+    <!-- ÜST VAKA KONSOLU NAVİGASYONU -->
+    <header class="app-navbar">
+        <div class="navbar-container">
+            <div class="nav-brand-wrap">
+                <a href="index.html" class="brand-anchor">
+                    <div class="brand-badge-square">CL</div>
+                    <div class="brand-text-block">
+                        <span class="brand-name">CRISPR<span class="brand-blue-accent">LAB</span></span>
+                        <span class="brand-subtext">KLİNİK VAKA İSTASYONU</span>
+                    </div>
+                </a>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="system-code-tag">10 KLİNİK PATOLOJİ</span>
+                <button type="button" class="btn-primary-navy" onclick="window.close(); window.location.href='index.html';">
+                    [ ✕ Sekmeyi Kapat ]
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-container">
+        
+        <!-- Vaka Başlık Şeridi -->
+        <section class="card-white-panel">
+            <div class="panel-header-strip">
+                <div>
+                    <span class="system-chip">GENOMİK HASTALIK MODELLEME</span>
+                    <h1 class="panel-heading" style="font-size: 1.4rem; margin-top: 4px;">Klinik Vaka Araştırmaları & gRNA Optimizasyonu</h1>
+                    <p class="panel-subheading">Gerçek patolojiler üzerinde SpCas9 kılavuz RNA dizilerini tasarlayın, PAM eşleşmesini doğrulayın ve moleküler rozetler kazanın.</p>
+                </div>
+            </div>
+
+            <!-- Aktif Vaka Çalışma İstasyonu (Seçildiğinde Açılır) -->
+            <div id="activeScenarioRunner" class="active-runner-panel hidden">
+                <div class="runner-top-bar">
+                    <span class="runner-badge">AKTİF ÇALIŞMA MASASI</span>
+                    <button type="button" id="closeScenarioRunnerBtn" class="btn-icon">✕ Kapat</button>
+                </div>
+                <div id="scenarioRunnerContent"></div>
+            </div>
+
+            <!-- 10 Vaka Listesi Grid -->
+            <div id="scenarioListGrid" class="scenarios-matrix-grid">
+                <!-- JS Tarafından 10 Vaka Kutusu Doldurulur -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-brand-side">
+                <span class="footer-logo">CRISPR<span class="brand-blue-accent">LAB</span></span>
+                <span class="footer-caption">Hesaplamalı Moleküler Genomik İstasyonu</span>
+            </div>
+            <div class="footer-copy">
+                © 2026 CRISPR-Lab Studio. Biyoinformatik Platformu.
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof renderScenarioCards === "function") {
+                renderScenarioCards();
+            }
+        });
+    </script>
+</body>
+</html>
