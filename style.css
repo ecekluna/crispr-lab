@@ -2061,3 +2061,161 @@ body.navy-theme-body {
     font-size: 0.78rem !important;
     cursor: pointer !important;
 }
+/* ==========================================================================
+   KLİNİK VAKALAR (CASES.HTML) KART & GRID DÜZENİ
+   ========================================================================== */
+
+.scenarios-matrix-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 18px !important;
+    margin-top: 24px !important;
+}
+
+@media (max-width: 992px) {
+    .scenarios-matrix-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .scenarios-matrix-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Kart Kutucuğu */
+.case-card {
+    background: #ffffff !important;
+    border: 1.5px solid #d8e2ee !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    min-height: 240px !important;
+    box-shadow: 0 2px 8px rgba(9, 30, 66, 0.04) !important;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.case-card:hover {
+    border-color: #0052cc !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 18px rgba(0, 82, 204, 0.12) !important;
+}
+
+.case-top-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+}
+
+.case-difficulty-tag {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+    border: 1px solid !important;
+}
+
+.case-title {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    color: #091e42 !important;
+    margin-bottom: 8px !important;
+    line-height: 1.35 !important;
+}
+
+.case-desc {
+    font-size: 0.84rem !important;
+    color: #253858 !important;
+    line-height: 1.55 !important;
+    margin-bottom: 16px !important;
+    flex-grow: 1 !important;
+}
+
+.case-badge-preview {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    font-size: 0.76rem !important;
+    padding: 10px 0 !important;
+    margin-bottom: 12px !important;
+    border-top: 1px dashed #d8e2ee !important;
+    border-bottom: 1px dashed #d8e2ee !important;
+}
+
+.badge-label {
+    color: #5e6c84 !important;
+}
+
+.badge-name {
+    color: #0052cc !important;
+    font-weight: 700 !important;
+}
+
+/* Vaka Başlat Butonu */
+.btn-case-action {
+    background: #0052cc !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 10px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    transition: background 0.15s ease !important;
+    text-align: center !important;
+}
+
+.btn-case-action:hover {
+    background: #0747a6 !important;
+}
+
+.btn-case-action.done {
+    background: #00875a !important;
+}
+/* ==========================================================================
+   KLİNİK VAKALAR ZORLUK SEVİYESİ RENK PALETİ
+   ========================================================================== */
+
+.case-difficulty-tag {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    padding: 3px 10px !important;
+    border-radius: 4px !important;
+    border: 1.5px solid !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* 1. BAŞLANGIÇ SEVİYESİ: Zümrüt Yeşili */
+.diff-baslangic {
+    color: #059669 !important;
+    background: #ecfdf5 !important;
+    border-color: #a7f3d0 !important;
+}
+
+/* 2. ORTA SEVİYE: Safir Mavi */
+.diff-orta {
+    color: #0052cc !important;
+    background: #deebff !important;
+    border-color: #b3d4ff !important;
+}
+
+/* 3. İLERİ SEVİYE: Kehribar Turuncu */
+.diff-ileri {
+    color: #d97706 !important;
+    background: #fffbeb !important;
+    border-color: #fde68a !important;
+}
+
+/* 4. UZMAN SEVİYESİ: Derin Mor */
+.diff-uzman {
+    color: #7c3aed !important;
+    background: #f5f3ff !important;
+    border-color: #ddd6fe !important;
+}

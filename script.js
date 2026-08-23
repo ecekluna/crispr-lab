@@ -337,26 +337,40 @@ function renderScenarioCards() {
 
     grid.innerHTML = SCENARIO_DATABASE.map(scn => {
         const isCompleted = state.completedScenarios.includes(scn.id);
+        
+        // Zorluk seviyesine göre dinamik CSS sınıfı belirleme
+        let diffClass = "diff-baslangic";
+        const diffLower = (scn.difficulty || "").toLowerCase();
+        
+        if (diffLower.includes("orta")) {
+            diffClass = "diff-orta";
+        } else if (diffLower.includes("ileri")) {
+            diffClass = "diff-ileri";
+        } else if (diffLower.includes("uzman")) {
+            diffClass = "diff-uzman";
+        }
+
         return `
             <div class="case-card ${isCompleted ? 'completed' : ''}">
                 <div class="case-top-row">
                     <span class="dict-cat-tag">${scn.category.toUpperCase()}</span>
-                    <span class="case-difficulty-tag">${scn.difficulty}</span>
+                    <span class="case-difficulty-tag ${diffClass}">
+                        ${scn.difficulty}
+                    </span>
                 </div>
                 <h3 class="case-title">${scn.title}</h3>
                 <p class="case-desc">${scn.description}</p>
                 <div class="case-badge-preview">
-                    <span>Rozet: <strong>${scn.badge}</strong></span>
-                    ${isCompleted ? '<span style="color: var(--bio-green); font-weight: 700;">✓ Tamamlandı</span>' : ''}
+                    <span class="badge-label">Kazanılacak Rozet:</span>
+                    <strong class="badge-name">${scn.badge}</strong>
                 </div>
-                <button type="button" class="btn-primary-blue full-width" onclick="startScenario('${scn.id}')">
+                <button type="button" class="btn-case-action ${isCompleted ? 'done' : ''}" onclick="startScenario('${scn.id}')">
                     ${isCompleted ? 'Vakayı Tekrar İncele ➔' : 'Vakayı Başlat ➔'}
                 </button>
             </div>
         `;
     }).join("");
 }
-
 function startScenario(scenarioId) {
     const scn = SCENARIO_DATABASE.find(s => s.id === scenarioId);
     if (!scn) return;
@@ -1434,32 +1448,32 @@ function renderScenarioCards() {
 
     grid.innerHTML = SCENARIO_DATABASE.map(scn => {
         const isCompleted = state.completedScenarios.includes(scn.id);
+        let diffColor = "#00875a"; // Başlangıç (Yeşil)
+        if (scn.difficulty === "Orta") diffColor = "#0052cc"; // Mavi
+        if (scn.difficulty === "İleri") diffColor = "#e11d48"; // Kırmızı
+        if (scn.difficulty === "Uzman") diffColor = "#7c3aed"; // Mor
+
         return `
-            <div class="scenario-card glass-card-soft ${isCompleted ? 'scenario-completed' : ''}" data-id="${scn.id}">
-                <div class="scenario-card-header">
-                    <span class="badge-soft">${scn.category}</span>
-                    <span class="difficulty-tag ${scn.difficulty.toLowerCase()}">${scn.difficulty}</span>
+            <div class="case-card ${isCompleted ? 'completed' : ''}">
+                <div class="case-top-row">
+                    <span class="dict-cat-tag">${scn.category.toUpperCase()}</span>
+                    <span class="case-difficulty-tag" style="color: ${diffColor}; border-color: ${diffColor}40; background: ${diffColor}10;">
+                        ${scn.difficulty}
+                    </span>
                 </div>
-                <h3 class="scenario-card-title">${scn.title}</h3>
-                <p class="scenario-card-desc">${scn.description}</p>
-                <div class="scenario-badge-reward">
-                    <span class="badge-icon">${scn.badge}</span>
-                    ${isCompleted ? '<span class="status-done">✓ Tamamlandı</span>' : ''}
+                <h3 class="case-title">${scn.title}</h3>
+                <p class="case-desc">${scn.description}</p>
+                <div class="case-badge-preview">
+                    <span class="badge-label">Kazanılacak Rozet:</span>
+                    <strong class="badge-name">${scn.badge}</strong>
                 </div>
-                <button class="btn-soft-primary full-width start-scenario-btn" data-id="${scn.id}" type="button">
-                    ${isCompleted ? 'Tekrar İncele' : 'Vakayı Başlat'}
+                <button type="button" class="btn-case-action ${isCompleted ? 'done' : ''}" onclick="startScenario('${scn.id}')">
+                    ${isCompleted ? 'Vakayı Tekrar İncele ➔' : 'Vakayı Başlat ➔'}
                 </button>
             </div>
         `;
     }).join("");
-
-    grid.querySelectorAll(".start-scenario-btn").forEach(btn => {
-        btn.addEventListener("click", function() {
-            startScenario(this.getAttribute("data-id"));
-        });
-    });
 }
-
 function startScenario(scenarioId) {
     const scn = SCENARIO_DATABASE.find(s => s.id === scenarioId);
     if (!scn) return;
