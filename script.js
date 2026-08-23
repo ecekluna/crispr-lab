@@ -1799,146 +1799,171 @@ window.handlePasswordChange = handlePasswordChange;
 // BÖLÜM 8: GELİŞMİŞ MONOSPACE GENOM LABORATUVARI (20 FARKLI LOKUS KATALOĞU)
 // ============================================================================
 
+
+
+// ============================================================================
+// 20 LOKUSLUK MOLEKÜLER GENOM KATALOĞU (EKSİKSİZ VERİ SETİ)
+// ============================================================================
 const LAB_GENOME_DATABASE_20 = {
     TP53: {
         name: "TP53 (Tümör Proteini 53)",
         info: "Li-Fraumeni Sendromu & DNA Hasar Yanıtı",
         senseDna: "TACTCCCCTGCCCTCAACAAGATGTTTTGCCAACTGGCCAAGACCTGCCCTGTGCAGCTGT",
         correctTarget: "CCTCAACAAGATGTTTTGCC",
-        correctPam: "AAG"
+        correctPam: "AAG",
+        mechanism: "NHEJ (İndel ile Fonksiyon Kaybı)"
     },
     BRCA1: {
         name: "BRCA1 (Meme Kanseri 1)",
         info: "Herediter Meme ve Over Kanseri Duyarlılığı",
         senseDna: "GTACCTTGATTTCGTATTCTGAGACTTCAAAGCTTTTGAGAATTCCTGACACAGCAGTCTT",
         correctTarget: "TATTCTGAGACTTCAAAGCT",
-        correctPam: "TTT"
+        correctPam: "TTT",
+        mechanism: "HDR (Donör ssODN ile Düzeltme)"
     },
     EGFR: {
-        name: "EGFR (Epidermal Büyüme Faktörü Reseptörü)",
+        name: "EGFR (Epidermal Büyüme Faktörü)",
         info: "Küçük Hücreli Dışı Akciğer Kanseri T790M",
         senseDna: "ATCACGCAGCTCATGCCCTTCGGCTGCCTCCTGGACTATGTCCGGGAACACAAAGACAATA",
         correctTarget: "TCATGCCCTTCGGCTGCCTC",
-        correctPam: "CTG"
+        correctPam: "CTG",
+        mechanism: "NHEJ (Ekzon Susturma)"
     },
     DMD: {
-        name: "DMD (Distrofin Geni)",
+        name: "DMD (Distrofin)",
         info: "Duchenne Musküler Distrofi Ekzon-51 Atlatma",
         senseDna: "CTCAACAGTCAGCCACACAACCACATCTGTACAGTCCTACATAGACCAGATGTAGTCTCTC",
         correctTarget: "CACACAACCACATCTGTACA",
-        correctPam: "GTC"
+        correctPam: "GTC",
+        mechanism: "NHEJ (Splice-Site Çift Kesim)"
     },
     HTT: {
-        name: "HTT (Huntingtin Geni)",
+        name: "HTT (Huntingtin)",
         info: "Huntington Hastalığı CAG Tekrar Genişlemesi",
         senseDna: "ATGGCGACCCTGGAAAAGCTGATGAAGGCCTTCGAGTCCCTCAAGTCCTTCCAGCAGCAGC",
         correctTarget: "TGGAAAAGCTGATGAAGGCC",
-        correctPam: "TTC"
+        correctPam: "TTC",
+        mechanism: "CRISPRi / NHEJ Baskılama"
     },
     APOE: {
         name: "APOE (Apolipoprotein E)",
         info: "Alzheimer Hastalığı Risk Belirteci (E4 İzoformu)",
         senseDna: "CGGGCACGGCTGTCCAAGGAGCTGCAGGCGGCGCAGGCCCGGCTGGGCGCGGACATGGAGG",
         correctTarget: "TCCAAGGAGCTGCAGGCGGC",
-        correctPam: "GCA"
+        correctPam: "GCA",
+        mechanism: "Baz Düzenleme (ABE / CBE)"
     },
     VEGFA: {
-        name: "VEGFA (Vasküler Endotelyal Büyüme Faktörü)",
-        info: "Tümör Anjiyogenezi ve Retinopati İnhibisyonu",
+        name: "VEGFA (Vasküler Büyüme Faktörü)",
+        info: "Tümör Anjiyogenezi & Retinopati İnhibisyonu",
         senseDna: "GGGTTCGGAGGCCCATTCCTCAGACATTTGGGGGCCATGGTTTGGCTTCGGCCCGGAGGAG",
         correctTarget: "TCCTCAGACATTTGGGGGCC",
-        correctPam: "ATG"
+        correctPam: "ATG",
+        mechanism: "NHEJ (Promotör Susturma)"
     },
     PDCD1: {
-        name: "PDCD1 (PD-1 İmmün Kontrol Noktası)",
-        info: "Kanser İmmünoterapisi ve CAR-T Hücre Mühendisliği",
+        name: "PDCD1 (PD-1 Kontrol Noktası)",
+        info: "Kanser İmmünoterapisi & CAR-T Hücre Mühendisliği",
         senseDna: "GCCAGGATGGTTCTTAGACTCCCCAGACAGGCCCTGGAACCCCCCCACCTTCTCCCCAGCC",
         correctTarget: "TTAGACTCCCCAGACAGGCC",
-        correctPam: "CTG"
+        correctPam: "CTG",
+        mechanism: "NHEJ (İmmün Kontrol Nakavtı)"
     },
     HEXA: {
         name: "HEXA (Heksozaminidaz A)",
         info: "Tay-Sachs Nörodejeneratif Depo Hastalığı",
         senseDna: "CCTGAGCTGATGAACACACAGGTAATGTCTTAGGATGTGTCCACGGTTCTTAGCTGCAGTC",
         correctTarget: "ATGAACACACAGGTAATGTC",
-        correctPam: "TTA"
+        correctPam: "TTA",
+        mechanism: "HDR (Ekzon Mutasyon Onarımı)"
     },
     FAH: {
         name: "FAH (Fumarilasetoasetat Hidrolaz)",
         info: "Tip 1 Tirozinemi Hepatik Metabolik Kusuru",
         senseDna: "CGCCATTCCTGTGGCCCAGGCCTGGTTCTTGAAGGACAAAGCCCAGAAGCCCCTCTTCCTC",
         correctTarget: "CCCAGGCCTGGTTCTTGAAG",
-        correctPam: "GAC"
+        correctPam: "GAC",
+        mechanism: "HDR / Prime Editing"
     },
     MYBPC3: {
-        name: "MYBPC3 (Kardiyak Miyozin Bağlayıcı Protein C)",
+        name: "MYBPC3 (Kardiyak Miyozin Proteini C)",
         info: "Familyal Hipertrofik Kardiyomiyopati",
         senseDna: "TGACCACACGTCCACCTTCTCAACAGGCCCAGGTGGCTGACCGGGTCAAGGTGGAGCTCAC",
         correctTarget: "ACCTTCTCAACAGGCCCAGG",
-        correctPam: "TGG"
+        correctPam: "TGG",
+        mechanism: "HDR (Homolog Şablon Tamiri)"
     },
     SERPINA1: {
         name: "SERPINA1 (Alfa-1 Antitripsin)",
-        info: "AAT Eksikliği, Akciğer Amfizemi & Karaciğer Sirozu",
+        info: "AAT Eksikliği & Akciğer Amfizemi",
         senseDna: "GACCCTTTGAAGTCAAGGACACCGAGGAAGAGGACTTCCACGTGGACCAGGCGACCACCGT",
         correctTarget: "ACCGAGGAAGAGGACTTCCA",
-        correctPam: "CGT"
+        correctPam: "CGT",
+        mechanism: "Baz Düzenleme (CBE)"
     },
     GAA: {
         name: "GAA (Asit Alfa-Glukozidaz)",
-        info: "Pompe Hastalığı Glikojen Depolanma Bozukluğu",
+        info: "Pompe Hastalığı Glikojen Birikimi",
         senseDna: "GCTGAGGACCAGGCCTTCACCTACACCATCAACCGCTTCAAGATCACCAAGATGGCCCTGG",
         correctTarget: "ACCTACACCATCAACCGCTT",
-        correctPam: "CAA"
+        correctPam: "CAA",
+        mechanism: "HDR (Ekzon Entegrasyonu)"
     },
     PAH: {
         name: "PAH (Fenilalanin Hidroksilaz)",
-        info: "Fenilketonüri (PKU) Nörotoksik Amino Asit Birikimi",
+        info: "Fenilketonüri (PKU) Nörotoksisite Onarımı",
         senseDna: "TTGAGGACATCAACCTGGAACACTTGGAGCGGATTGAAGACCTGGTTCAGCTCATCCAGGA",
         correctTarget: "AACTTGGAGCGGATTGAAGA",
-        correctPam: "CCT"
+        correctPam: "CCT",
+        mechanism: "Prime Editing / HDR"
     },
     SMN1: {
         name: "SMN1 (Spinal Motor Nöron 1)",
-        info: "Spinal Musküler Atrofi (SMA Tip 1/2/3)",
+        info: "Spinal Musküler Atrofi (SMA Tip 1/2)",
         senseDna: "TTCCTTAAATTTAAGGGTTTCAGACAAAATCAAAAAGAAGGAAGGTGCTCACATTCCTTAA",
         correctTarget: "GACAAAATCAAAAAGAAGGA",
-        correctPam: "AGG"
+        correctPam: "AGG",
+        mechanism: "Splicing Modülasyonu"
     },
     LDLR: {
-        name: "LDLR (Düşük Yoğunluklu Lipoprotein Reseptörü)",
-        info: "Familyal Hiperkolesterolemi & Erken Ateroskleroz",
+        name: "LDLR (LDL Reseptörü)",
+        info: "Familyal Hiperkolesterolemi & Ateroskleroz",
         senseDna: "CCTCCATCATCGTGCTGGGCCTCTTCCTCCTGTTCCTCTGCCCCATCTTCACGTGGCTCAA",
         correctTarget: "GCCTCTTCCTCCTGTTCCTC",
-        correctPam: "TGC"
+        correctPam: "TGC",
+        mechanism: "HDR (Reseptör Kurtarma)"
     },
     ALB: {
         name: "ALB (Serum Albumin Lokusu)",
-        info: "Güvenli Genomik Liman (Safe Harbor Entegrasyonu)",
+        info: "Güvenli Genomik Liman (Safe Harbor)",
         senseDna: "AGACACCTGCCCCCAATGCCTTAGGATGGTTAGTGAGCTTGTCCTTTGCAGCACCTTGTGC",
         correctTarget: "ATGCCTTAGGATGGTTAGTG",
-        correctPam: "AGC"
+        correctPam: "AGC",
+        mechanism: "HDR (Knock-in Hedefleme)"
     },
     F9: {
         name: "F9 (Pıhtılaşma Faktörü IX)",
-        info: "Hemofili B Kanama Bozukluğu Onarımı",
+        info: "Hemofili B Kanama Bozukluğu",
         senseDna: "CCATCACTGTCTCCTTCCTCTCCCATACTTTGTTTCCCACTGTATCTAGATTCTCCCTGTT",
         correctTarget: "CCCATACTTTGTTTCCCACT",
-        correctPam: "GTA"
+        correctPam: "GTA",
+        mechanism: "HDR (Faktör IX Tamiri)"
     },
     CD19: {
-        name: "CD19 (B-Lenfosit Antijeni)",
-        info: "B Hücreli Lösemi ve İmmünoterapi Hedeflemesi",
+        name: "CD19 (B-Hücre Antijeni)",
+        info: "B-Hücreli Lösemi & CAR İmmünoterapisi",
         senseDna: "GGCCTCTTCCTCTTTGTGCCCGCCTTCCTGGGCATTCTAGGCTGTGTGCTCGCCCTGCTCT",
         correctTarget: "TGTGCCCGCCTTCCTGGGCA",
-        correctPam: "TTC"
+        correctPam: "TTC",
+        mechanism: "NHEJ (Yüzey Antijen Nakavtı)"
     },
     B2M: {
         name: "B2M (Beta-2 Mikroglobulin)",
-        info: "Allogeneik Evrensel CAR-T MHC-I Nakavtı",
+        info: "Evrensel Allogeneik CAR-T MHC-I Nakavtı",
         senseDna: "ATGTCTCGCTCCGTGGCCTTAGCTGTGCTCGCGCTACTCTCTCTTTCTGGCCTGGAGGCTA",
         correctTarget: "CCTTAGCTGTGCTCGCGCTA",
-        correctPam: "CTC"
+        correctPam: "CTC",
+        mechanism: "NHEJ (MHC-I Kompleks Susturma)"
     }
 };
 
@@ -1975,9 +2000,11 @@ function handleLabLocusChange() {
 
     const geneTag = document.getElementById("labGeneTag");
     const mutInfo = document.getElementById("labMutationInfo");
+    const pathwayBadge = document.getElementById("labPathwayBadge");
 
     if (geneTag) geneTag.textContent = `[GEN: ${data.name}]`;
-    if (mutInfo) mutInfo.textContent = `>> VAKA / KLİNİK: ${data.info}`;
+    if (mutInfo) mutInfo.textContent = `Vaka: ${data.info}`;
+    if (pathwayBadge) pathwayBadge.textContent = data.mechanism || "NHEJ (İndel)";
 
     renderLabInteractiveDna();
     updateLabMetrics();
@@ -2025,7 +2052,7 @@ function resetLabWorkspace() {
 window.resetLabWorkspace = resetLabWorkspace;
 
 function renderLabInteractiveDna() {
-    const track = document.getElementById("interactiveLabDnaTrack") || document.getElementById("dnaTrackContainer");
+    const track = document.getElementById("interactiveLabDnaTrack");
     if (!track) return;
 
     const data = LAB_GENOME_DATABASE_20[labCurrentLocusKey];
@@ -2035,18 +2062,14 @@ function renderLabInteractiveDna() {
     let html = '<div class="dna-strand sense-strand">';
     for (let i = 0; i < dna.length; i++) {
         const base = dna[i];
-        html += `
-            <button type="button" class="base-btn base-${base}" data-lab-idx="${i}" onclick="handleLabBaseClick(${i})" title="Pozisyon ${i + 1}: ${base}">
-                <span class="base-char">${base}</span>
-            </button>
-        `;
+        html += `<button type="button" class="base-btn base-${base}" data-lab-idx="${i}" onclick="handleLabBaseClick(${i})"><span class="base-char">${base}</span><span class="base-idx">${i + 1}</span></button>`;
     }
     html += '</div>';
 
-    html += '<div class="dna-strand antisense-strand" style="margin-top: 4px;">';
+    html += '<div class="dna-strand antisense-strand">';
     for (let i = 0; i < dna.length; i++) {
         const comp = compMap[dna[i]] || 'N';
-        html += `<span class="base-btn-comp" title="Komplemanter: ${comp}">${comp}</span>`;
+        html += `<span class="base-btn-comp comp-${comp}">${comp}</span>`;
     }
     html += '</div>';
 
@@ -2114,10 +2137,10 @@ function updateLabMetrics() {
     const offTargetDisp = document.getElementById("labOffTargetDisplay");
 
     if (grnaDisp) {
-        grnaDisp.innerHTML = targetRna.length > 0 ? `<strong>${targetRna}</strong> (${targetRna.length}/20nt)` : "(DİZİ SEÇİMİ BEKLENİYOR...)";
+        grnaDisp.innerHTML = targetRna.length > 0 ? `<strong>${targetRna}</strong> <span class="readout-meta">(${targetRna.length}/20nt)</span>` : "<span class='placeholder-txt'>Dizi seçimi bekleniyor...</span>";
     }
     if (pamDisp) {
-        pamDisp.textContent = pamSeq.length > 0 ? `${pamSeq} (${pamSeq.length}/3)` : "---";
+        pamDisp.innerHTML = pamSeq.length > 0 ? `<strong>${pamSeq}</strong> <span class="readout-meta">(${pamSeq.length}/3)</span>` : "---";
     }
 
     if (targetDna.length > 0) {
@@ -2134,29 +2157,22 @@ function updateLabMetrics() {
         const tm = Math.round(64.9 + (41 * (gcCount - 16.4) / targetDna.length));
         if (tmDisp) tmDisp.textContent = `${Math.max(30, tm)} °C`;
 
-        if (targetRna.length >= 8) {
-            if (seedDisp) seedDisp.textContent = targetRna.slice(-8);
-        } else {
-            if (seedDisp) seedDisp.textContent = "--";
-        }
+        if (seedDisp) seedDisp.textContent = targetRna.length >= 8 ? targetRna.slice(-8) : "--";
 
         if (offTargetDisp) {
             if (gcPercent >= 40 && gcPercent <= 60 && targetRna.length === 20) {
-                offTargetDisp.textContent = "DÜŞÜK (YÜKSEK ÖZGÜLLÜK)";
+                offTargetDisp.textContent = "DÜŞÜK (Yüksek Özgüllük)";
                 offTargetDisp.style.color = "var(--bio-green)";
             } else {
-                offTargetDisp.textContent = "ORTA / YÜKSEK RİSK";
-                offTargetDisp.style.color = "var(--brand-coral)";
+                offTargetDisp.textContent = "ORTA / YÜKSEK";
+                offTargetDisp.style.color = "#bf2600";
             }
         }
     } else {
-        if (gcDisp) gcDisp.textContent = "%0";
+        if (gcDisp) { gcDisp.textContent = "%0"; gcDisp.style.color = "var(--bio-green)"; }
         if (tmDisp) tmDisp.textContent = "-- °C";
         if (seedDisp) seedDisp.textContent = "--";
-        if (offTargetDisp) {
-            offTargetDisp.textContent = "DÜŞÜK";
-            offTargetDisp.style.color = "var(--bio-green)";
-        }
+        if (offTargetDisp) { offTargetDisp.textContent = "DÜŞÜK"; offTargetDisp.style.color = "var(--bio-green)"; }
     }
 }
 
@@ -2165,21 +2181,20 @@ function executeLabSimulation() {
     if (!feedback) return;
 
     feedback.classList.remove("hidden");
-
     const data = LAB_GENOME_DATABASE_20[labCurrentLocusKey];
     const dna = data.senseDna;
     const selectedTarget = labSelectedTargetIndices.map(i => dna[i]).join("");
     const selectedPam = labSelectedPamIndices.map(i => dna[i]).join("");
 
     if (labSelectedTargetIndices.length !== 20) {
-        feedback.className = "scenario-result-box error";
-        feedback.innerHTML = `⚠️ <strong>HATA:</strong> Protospacer dizisi tam 20 baz olmalıdır (${labSelectedTargetIndices.length}/20nt seçili).`;
+        feedback.className = "lab-feedback-box error";
+        feedback.innerHTML = `[HATA] Protospacer uzunluğu 20 baz olmalıdır. (${labSelectedTargetIndices.length}/20nt seçili)`;
         return;
     }
 
     if (labSelectedPamIndices.length !== 3) {
-        feedback.className = "scenario-result-box error";
-        feedback.innerHTML = `⚠️ <strong>HATA:</strong> 3 bazlık PAM (5'-NGG-3') motifi seçilmelidir.`;
+        feedback.className = "lab-feedback-box error";
+        feedback.innerHTML = `[HATA] 3 bazlık PAM (5'-NGG-3') motifi seçilmelidir. (${labSelectedPamIndices.length}/3nt seçili)`;
         return;
     }
 
@@ -2187,25 +2202,21 @@ function executeLabSimulation() {
     const isPamCorrect = (selectedPam.endsWith("GG") || selectedPam === data.correctPam);
 
     if (isTargetCorrect && isPamCorrect) {
-        feedback.className = "scenario-result-box success";
+        feedback.className = "lab-feedback-box success";
         feedback.innerHTML = `
-            <div style="font-weight: 800; margin-bottom: 4px;">🎉 BAŞARILI KESİM // [DSB OLUŞTURULDU]</div>
-            <p style="font-size: 0.82rem; line-height: 1.5; margin: 0;">
-                SpCas9 nükleazı <strong>${data.name}</strong> lokusunda <strong>${selectedPam}</strong> PAM motifini tanıdı ve hedef bölgede pürüzsüz çift zincir kırığı (DSB) indükledi.
-            </p>
+            <strong>[REAKSİYON BAŞARILI // DSB İNDÜKLENDİ]</strong><br>
+            SpCas9 nükleazı <strong>${data.name}</strong> lokusunda <strong>${selectedPam}</strong> PAM motifini tanıdı ve hedef bölgede pürüzsüz çift zincir kırığı oluşturdu.<br>
+            <span style="font-size: 0.78rem; color: #006644; margin-top: 4px; display: inline-block;">Onarım Yolağı: <strong>${data.mechanism}</strong></span>
         `;
     } else {
-        feedback.className = "scenario-result-box error";
+        feedback.className = "lab-feedback-box error";
         feedback.innerHTML = `
-            <div style="font-weight: 700; margin-bottom: 2px;">⚠️ HİZALAMA HATASI</div>
-            <p style="font-size: 0.8rem; margin: 0;">
-                Seçilen gRNA ve PAM motifi ${data.name} lokusunda bitişik değil veya SpCas9 bağlanma bölgesine uymuyor.
-            </p>
+            <strong>[HİZALAMA UYUMSUZLUĞU]</strong><br>
+            Seçilen gRNA veya PAM motifi ${data.name} lokusundaki aktif kesim penceresiyle örtüşmüyor. PAM motifinin dizinin 3' bitişiğinde olduğunu kontrol edin.
         `;
     }
 }
 window.executeLabSimulation = executeLabSimulation;
-
 document.addEventListener("DOMContentLoaded", function() {
     const searchInput = document.getElementById("dictSearchInput");
     if (searchInput) {

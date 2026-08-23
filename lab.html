@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRISPR-Lab | Moleküler Genomik & gRNA Tasarım İstasyonu</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +17,7 @@
 </head>
 <body class="navy-theme-body">
 
-    <!-- ÜST LABORATUVAR NAVİGASYONU -->
+    <!-- ÜST LABORATUVAR KONSOL NAVİGASYONU -->
     <header class="app-navbar">
         <div class="navbar-container">
             <div class="nav-brand-wrap">
@@ -26,36 +25,38 @@
                     <div class="brand-badge-square">CL</div>
                     <div class="brand-text-block">
                         <span class="brand-name">CRISPR<span class="brand-blue-accent">LAB</span></span>
-                        <span class="brand-subtext">GENOME STUDIO // v4.8</span>
+                        <span class="brand-subtext">GENOME STUDIO // v4.9</span>
                     </div>
                 </a>
             </div>
 
             <div style="display: flex; align-items: center; gap: 12px;">
-                <span class="system-code-tag">İNTERAKTİF KONSOL // 20 LOKUS</span>
+                <span class="system-code-tag">20 LOKUS AKTİF // SpCas9</span>
                 <button type="button" class="btn-primary-navy" onclick="window.close(); window.location.href='index.html';">
-                    ✕ Sekmeyi Kapat
+                    [ ✕ Laboratuvardan Çık ]
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="page-container">
+    <main class="page-container" style="max-width: 1240px; margin-top: 24px;">
         
-        <!-- 20 LOKUSLU İNTERAKTİF ÇALIŞMA MASASI -->
+        <!-- 20 LOKUSLU GENOM ÇALIŞMA MASASI -->
         <section class="card-white-panel" id="lab-alani">
+            
+            <!-- Konsol Üst Şeridi -->
             <div class="panel-header-strip">
                 <div>
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                         <span class="system-code-tag" id="labGeneTag">[GEN: TP53]</span>
                         <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;" id="labMutationInfo">Vaka: Li-Fraumeni Sendromu</span>
                     </div>
-                    <h2 class="panel-heading">İnteraktif Genom Laboratuvarı</h2>
+                    <h1 class="panel-heading" style="font-size: 1.35rem;">İnteraktif Genom Laboratuvar Konsolu</h1>
                 </div>
                 
-                <div style="display: flex; gap: 8px; align-items: center;">
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                     <button type="button" class="btn-load-more" onclick="switchRandomLabSequence()" style="padding: 7px 14px; font-size: 0.78rem;">
-                        [ 🔀 Rastgele Lokus ]
+                        [ ↻ Rastgele Dizi ]
                     </button>
                     <select id="labLocusSelect" class="navy-input-field" style="padding: 6px 12px; font-size: 0.8rem;" onchange="handleLabLocusChange()">
                         <!-- 20 Lokus JS Tarafından Yüklenir -->
@@ -63,92 +64,109 @@
                 </div>
             </div>
 
+            <!-- Konsol Parametre Özeti -->
+            <div class="lab-param-strip">
+                <div class="param-item"><span class="pk">HEDEFLEYİCİ:</span> <span class="pv">SpCas9 Endonükleaz</span></div>
+                <div class="param-item"><span class="pk">PAM KURALI:</span> <span class="pv blue-txt">5'-NGG-3'</span></div>
+                <div class="param-item"><span class="pk">HOMOLOJİ:</span> <span class="pv">20 nt Protospacer</span></div>
+                <div class="param-item"><span class="pk">KESİM KONUMU:</span> <span class="pv">PAM -3nt (Küt Uç)</span></div>
+            </div>
+
+            <!-- Çalışma Masası Grid -->
             <div class="lab-main-layout-grid">
-                <!-- Sol Kolon: DNA Görüntüleyici ve Seçim -->
+                
+                <!-- Sol Kolon: DNA Analiz Hattı ve Kontroller -->
                 <div class="lab-left-viewport">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--text-muted);">
-                            5' ➔ 3' SENSE İPLİK
+                        <span style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 800; color: var(--text-secondary);">
+                            # ÇİFT SARMAL ANALİZ DÜZLEMİ (5' ➔ 3' SENSE)
                         </span>
                         <div style="display: flex; gap: 6px;">
-                            <button type="button" id="labTargetModeBtn" class="tab-chip active" onclick="setLabSelectionMode('target')">
-                                1. gRNA (20nt)
+                            <button type="button" id="labTargetModeBtn" class="tab-chip tab-dna active" onclick="setLabSelectionMode('target')">
+                                [ 1. gRNA (20nt) ]
                             </button>
-                            <button type="button" id="labPamModeBtn" class="tab-chip" onclick="setLabSelectionMode('pam')">
-                                2. PAM (3nt)
+                            <button type="button" id="labPamModeBtn" class="tab-chip tab-crispr" onclick="setLabSelectionMode('pam')">
+                                [ 2. PAM (3nt) ]
                             </button>
-                            <button type="button" class="tab-chip" style="color: #bf2600;" onclick="resetLabWorkspace()">
-                                Sıfırla
+                            <button type="button" class="tab-chip" style="color: #bf2600; border-color: #ffbdad;" onclick="resetLabWorkspace()">
+                                [ Sıfırla ]
                             </button>
                         </div>
                     </div>
 
-                    <!-- DNA Sarmal Hattı -->
+                    <!-- DNA Sarmal Görüntüleyici -->
                     <div class="lab-dna-viewport-box">
-                        <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-faint); margin-bottom: 4px;">
+                        <div class="ruler-line">
                             <span>5'</span>
-                            <span style="letter-spacing: 1.5px;">....|....10....|....20....|....30....|....40....|....50....|....60</span>
+                            <span class="ticks">....|....10....|....20....|....30....|....40....|....50....|....60</span>
                             <span>3'</span>
                         </div>
 
-                        <div id="interactiveLabDnaTrack" class="lab-dna-interactive-track"></div>
+                        <div id="interactiveLabDnaTrack" class="lab-dna-interactive-track custom-scrollbar"></div>
 
-                        <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-faint); margin-top: 4px;">
+                        <div class="ruler-line antisense">
                             <span>3'</span>
-                            <span>KOMPLEMANTER ANTİSENSE İPLİK</span>
+                            <span class="ticks">KOMPLEMANTER ANTİSENSE İPLİK</span>
                             <span>5'</span>
                         </div>
                     </div>
 
-                    <!-- Canlı Seçim Çıktıları -->
-                    <div style="display: flex; gap: 12px; margin-top: 12px;">
-                        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
-                            <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary);">SEÇİLEN sgRNA DİZİSİ (RNA):</span>
-                            <div id="labGrnaDisplay" class="lab-readout-box">(Dizi seçimi bekleniyor...)</div>
+                    <!-- Canlı gRNA & PAM Çıktı Kartı -->
+                    <div class="lab-readout-card">
+                        <div style="display: flex; gap: 12px;">
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary);">SENTETİK sgRNA SEKANSI (5' ➔ 3' RNA):</span>
+                                <div id="labGrnaDisplay" class="lab-readout-box">(Dizi seçimi bekleniyor...)</div>
+                            </div>
+                            <div style="width: 140px; display: flex; flex-direction: column; gap: 4px;">
+                                <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary);">PAM MOTİFİ:</span>
+                                <div id="labPamDisplay" class="lab-readout-box pam-text">---</div>
+                            </div>
                         </div>
-                        <div style="width: 140px; display: flex; flex-direction: column; gap: 4px;">
-                            <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary);">PAM MOTİFİ:</span>
-                            <div id="labPamDisplay" class="lab-readout-box pam-text">---</div>
-                        </div>
+
+                        <button type="button" id="btnRunLabCut" class="btn-primary-blue" style="width: 100%; margin-top: 12px; padding: 12px; justify-content: center; font-size: 0.9rem;" onclick="executeLabSimulation()">
+                            [ REAKSİYONU BAŞLAT: SpCas9 KESİMİ ] ➔
+                        </button>
+
+                        <div id="labSimulationFeedback" class="lab-feedback-box hidden"></div>
                     </div>
-
-                    <button type="button" id="btnRunLabCut" class="btn-primary-blue" style="width: 100%; margin-top: 12px; padding: 12px; justify-content: center; font-size: 0.88rem;" onclick="executeLabSimulation()">
-                        ✂️ SpCas9 Kesim Reaksiyonunu Başlat
-                    </button>
-
-                    <div id="labSimulationFeedback" class="lab-feedback-box hidden"></div>
                 </div>
 
-                <!-- Sağ Kolon: Metrikler & Onarım -->
+                <!-- Sağ Kolon: Termodinamik & Onarım Telemetrisi -->
                 <div class="lab-right-telemetry">
-                    <div class="spec-tile" style="margin-bottom: 12px;">
-                        <span class="tile-kicker">TERMODİNAMİK ANALİZ</span>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; padding: 4px 0; border-bottom: 1px dashed var(--border-light);">
-                            <span>GC İçeriği:</span>
+                    
+                    <div class="spec-tile">
+                        <span class="tile-kicker">TERMODİNAMİK METRİKLER</span>
+                        <div class="telemetry-stat-row">
+                            <span>GC Dengesi:</span>
                             <strong id="labGcDisplay" style="color: var(--bio-green); font-family: var(--font-mono);">%0</strong>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; padding: 4px 0; border-bottom: 1px dashed var(--border-light);">
+                        <div class="telemetry-stat-row">
                             <span>Erime Noktası (Tm):</span>
                             <strong id="labTmDisplay" style="font-family: var(--font-mono);">-- °C</strong>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; padding: 4px 0; border-bottom: 1px dashed var(--border-light);">
-                            <span>Seed Region (8nt):</span>
+                        <div class="telemetry-stat-row">
+                            <span>Seed Bölgesi (8nt):</span>
                             <strong id="labSeedDisplay" style="font-family: var(--font-mono);">--</strong>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; padding: 4px 0;">
+                        <div class="telemetry-stat-row" style="border-bottom: none;">
                             <span>Off-Target Riski:</span>
                             <strong id="labOffTargetDisplay" style="color: var(--bio-green); font-family: var(--font-mono);">DÜŞÜK</strong>
                         </div>
                     </div>
 
-                    <div class="spec-tile">
+                    <div class="spec-tile" style="margin-top: 12px;">
                         <span class="tile-kicker">HÜCRESEL ONARIM MODELİ</span>
-                        <strong style="font-size: 0.88rem; color: var(--navy-dark); margin-top: 2px;">NHEJ (Non-Homologous End Joining)</strong>
-                        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin-top: 4px;">
-                            SpCas9 küt uçlu kesimi sonrası hücre baskın olarak rastgele indel mutasyonlarıyla geni nakavt (Knock-out) eder.
+                        <strong id="labPathwayBadge" style="font-size: 0.88rem; color: var(--navy-dark); margin-top: 2px; font-family: var(--font-mono);">
+                            NHEJ (İndel ile Fonksiyon Kaybı)
+                        </strong>
+                        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; margin-top: 6px;">
+                            SpCas9 küt uçlu kesimi sonrası hücre baskın olarak rastgele insersiyon/delesyon (indel) mutasyonlarıyla erken durdurma kodonu üretir.
                         </p>
                     </div>
+
                 </div>
+
             </div>
         </section>
 
@@ -168,5 +186,12 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof initLabWorkspace === "function") {
+                initLabWorkspace();
+            }
+        });
+    </script>
 </body>
 </html>

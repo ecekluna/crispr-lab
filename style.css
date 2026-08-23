@@ -1363,3 +1363,381 @@ body.navy-theme-body {
         grid-template-columns: 1fr !important;
     }
 }
+#guideCardsGrid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+    margin: 16px 0 24px 0 !important;
+}
+
+.clean-dict-card {
+    background: #ffffff !important;
+    border: 1.5px solid #d8e2ee !important;
+    border-radius: 8px !important;
+    padding: 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 160px !important;
+    box-shadow: 0 2px 6px rgba(9, 30, 66, 0.04) !important;
+}
+/* ==========================================================================
+   KATEGORİ BAZLI KUTUCUK & ETİKET RENKLERİ
+   ========================================================================== */
+
+/* 1. DNA & GENOMİK: Safir Mavi */
+.clean-dict-card.cat-dna {
+    border-top: 3.5px solid #0052cc !important;
+}
+.clean-dict-card.cat-dna .dict-cat-tag {
+    color: #0052cc !important;
+    background: #deebff !important;
+    border: 1px solid #b3d4ff !important;
+}
+
+/* 2. CRISPR-CAS: Canlı Kırmızı/Mercan */
+.clean-dict-card.cat-crispr {
+    border-top: 3.5px solid #e11d48 !important;
+}
+.clean-dict-card.cat-crispr .dict-cat-tag {
+    color: #be123c !important;
+    background: #ffe4e6 !important;
+    border: 1px solid #fecdd3 !important;
+}
+
+/* 3. DNA ONARIMI: Zümrüt Yeşili */
+.clean-dict-card.cat-repair {
+    border-top: 3.5px solid #059669 !important;
+}
+.clean-dict-card.cat-repair .dict-cat-tag {
+    color: #047857 !important;
+    background: #d1fae5 !important;
+    border: 1px solid #a7f3d0 !important;
+}
+
+/* 4. BİYOİNFORMATİK: Derin Mor/İndigo */
+.clean-dict-card.cat-bioinfo {
+    border-top: 3.5px solid #7c3aed !important;
+}
+.clean-dict-card.cat-bioinfo .dict-cat-tag {
+    color: #6d28d9 !important;
+    background: #ede9fe !important;
+    border: 1px solid #ddd6fe !important;
+}
+/* ==========================================================================
+   KATEGORİ BAZLI KUTUCUK & ETİKET RENKLERİ
+   ========================================================================== */
+
+/* 1. DNA & GENOMİK: Safir Mavi */
+.clean-dict-card.cat-dna {
+    border-top: 3.5px solid #0052cc !important;
+}
+.clean-dict-card.cat-dna .dict-cat-tag {
+    color: #0052cc !important;
+    background: #deebff !important;
+    border: 1px solid #b3d4ff !important;
+}
+
+/* 2. CRISPR-CAS: Canlı Kırmızı/Mercan */
+.clean-dict-card.cat-crispr {
+    border-top: 3.5px solid #e11d48 !important;
+}
+.clean-dict-card.cat-crispr .dict-cat-tag {
+    color: #be123c !important;
+    background: #ffe4e6 !important;
+    border: 1px solid #fecdd3 !important;
+}
+
+/* 3. DNA ONARIMI: Zümrüt Yeşili */
+.clean-dict-card.cat-repair {
+    border-top: 3.5px solid #059669 !important;
+}
+.clean-dict-card.cat-repair .dict-cat-tag {
+    color: #047857 !important;
+    background: #d1fae5 !important;
+    border: 1px solid #a7f3d0 !important;
+}
+
+/* 4. BİYOİNFORMATİK: Derin Mor/İndigo */
+.clean-dict-card.cat-bioinfo {
+    border-top: 3.5px solid #7c3aed !important;
+}
+.clean-dict-card.cat-bioinfo .dict-cat-tag {
+    color: #6d28d9 !important;
+    background: #ede9fe !important;
+    border: 1px solid #ddd6fe !important;
+}
+/* ==========================================================================
+   KATEGORİ FİLTRE BUTONLARI RENK TEMALARI
+   ========================================================================== */
+
+.category-tabs .tab-chip {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    padding: 6px 14px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+/* 1. TÜMÜ (Lacivert) */
+.category-tabs .tab-all,
+.category-tabs .tab-chip[data-category="all"] {
+    background: #f1f5f9 !important;
+    border: 1.5px solid #cbd5e1 !important;
+    color: #334155 !important;
+}
+.category-tabs .tab-all.active,
+.category-tabs .tab-chip[data-category="all"].active {
+    background: #0a192f !important;
+    border-color: #0a192f !important;
+    color: #ffffff !important;
+}
+
+/* 2. DNA & GENOMİK (Safir Mavi) */
+.category-tabs .tab-dna,
+.category-tabs .tab-chip[data-category="dna"] {
+    background: #f0f9ff !important;
+    border: 1.5px solid #bae6fd !important;
+    color: #0284c7 !important;
+}
+.category-tabs .tab-dna.active,
+.category-tabs .tab-chip[data-category="dna"].active {
+    background: #0052cc !important;
+    border-color: #0052cc !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 82, 204, 0.3) !important;
+}
+
+/* 3. CRISPR-CAS (Canlı Kırmızı / Mercan) */
+.category-tabs .tab-crispr,
+.category-tabs .tab-chip[data-category="crispr"] {
+    background: #fff1f2 !important;
+    border: 1.5px solid #fecdd3 !important;
+    color: #e11d48 !important;
+}
+.category-tabs .tab-crispr.active,
+.category-tabs .tab-chip[data-category="crispr"].active {
+    background: #e11d48 !important;
+    border-color: #e11d48 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.3) !important;
+}
+
+/* 4. DNA ONARIMI (Zümrüt Yeşili) */
+.category-tabs .tab-repair,
+.category-tabs .tab-chip[data-category="repair"] {
+    background: #ecfdf5 !important;
+    border: 1.5px solid #a7f3d0 !important;
+    color: #059669 !important;
+}
+.category-tabs .tab-repair.active,
+.category-tabs .tab-chip[data-category="repair"].active {
+    background: #059669 !important;
+    border-color: #059669 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3) !important;
+}
+
+/* 5. BİYOİNFORMATİK (Derin Mor / İndigo) */
+.category-tabs .tab-bioinfo,
+.category-tabs .tab-chip[data-category="bioinfo"] {
+    background: #f5f3ff !important;
+    border: 1.5px solid #ddd6fe !important;
+    color: #7c3aed !important;
+}
+.category-tabs .tab-bioinfo.active,
+.category-tabs .tab-chip[data-category="bioinfo"].active {
+    background: #7c3aed !important;
+    border-color: #7c3aed !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3) !important;
+}
+/* ==========================================================================
+   LABORATUVAR KONSOLU & DNA ŞERİDİ STİLLERİ
+   ========================================================================== */
+
+.lab-param-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    padding: 8px 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.param-item {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+}
+
+.param-item .pk { color: var(--text-muted); font-weight: 700; margin-right: 4px; }
+.param-item .pv { color: var(--navy-dark); font-weight: 800; }
+.param-item .blue-txt { color: var(--sapphire-blue); }
+
+.lab-main-layout-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 280px !important;
+    gap: 20px !important;
+    align-items: start !important;
+}
+
+.lab-dna-viewport-box {
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    padding: 12px 14px;
+}
+
+.ruler-line {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-faint);
+}
+
+.ruler-line .ticks { letter-spacing: 1px; }
+
+.lab-dna-interactive-track {
+    overflow-x: auto;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lab-dna-interactive-track .dna-strand {
+    display: flex;
+    gap: 3px;
+    width: max-content;
+}
+
+/* Nükleotit Butonları */
+.lab-dna-interactive-track .base-btn {
+    width: 28px !important;
+    height: 38px !important;
+    min-width: 28px !important;
+    background: #ffffff;
+    border: 1.5px solid var(--border-medium);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    color: var(--navy-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.1s ease;
+}
+
+.lab-dna-interactive-track .base-btn .base-char {
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.lab-dna-interactive-track .base-btn .base-idx {
+    font-size: 0.52rem;
+    color: var(--text-faint);
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.lab-dna-interactive-track .base-btn:hover {
+    border-color: var(--sapphire-blue);
+    background: var(--sapphire-blue-soft);
+    color: var(--sapphire-blue);
+}
+
+.lab-dna-interactive-track .base-btn.selected-target {
+    background: var(--sapphire-blue) !important;
+    border-color: var(--sapphire-blue-hover) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(0, 82, 204, 0.35) !important;
+}
+.lab-dna-interactive-track .base-btn.selected-target .base-idx { color: #deebff; }
+
+.lab-dna-interactive-track .base-btn.selected-pam {
+    background: #e11d48 !important;
+    border-color: #be123c !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(225, 29, 72, 0.35) !important;
+}
+.lab-dna-interactive-track .base-btn.selected-pam .base-idx { color: #ffe4e6; }
+
+.lab-dna-interactive-track .base-btn-comp {
+    width: 28px !important;
+    height: 22px !important;
+    min-width: 28px !important;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: #ffffff;
+    border: 1px dashed var(--border-light);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lab-readout-card {
+    background: #ffffff;
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    padding: 14px;
+    margin-top: 14px;
+}
+
+.lab-readout-box {
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-xs);
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--sapphire-blue);
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    word-break: break-all;
+}
+
+.lab-readout-box.pam-text {
+    color: #e11d48;
+}
+
+.readout-meta {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-weight: 600;
+}
+
+.placeholder-txt {
+    color: var(--text-faint);
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+
+.telemetry-stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border-light);
+}
+
+@media (max-width: 900px) {
+    .lab-main-layout-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
