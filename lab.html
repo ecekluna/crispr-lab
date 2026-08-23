@@ -75,10 +75,10 @@
             <!-- Çalışma Masası Grid -->
             <div class="lab-main-layout-grid">
                 
-                <!-- Sol Kolon: DNA Analiz Hattı ve Kontroller -->
+             <!-- Sol Kolon: DNA Analiz Hattı ve Kontroller -->
                 <div class="lab-left-viewport">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 800; color: var(--text-secondary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-family: var(--font-mono); font-size: 0.74rem; font-weight: 800; color: var(--text-secondary);">
                             # ÇİFT SARMAL ANALİZ DÜZLEMİ (5' ➔ 3' SENSE)
                         </span>
                         <div style="display: flex; gap: 6px;">
@@ -102,7 +102,7 @@
                             <span>3'</span>
                         </div>
 
-                        <div id="interactiveLabDnaTrack" class="lab-dna-interactive-track custom-scrollbar"></div>
+                        <div id="interactiveLabDnaTrack" class="lab-dna-interactive-track"></div>
 
                         <div class="ruler-line antisense">
                             <span>3'</span>
@@ -111,66 +111,30 @@
                         </div>
                     </div>
 
-                    <!-- Canlı gRNA & PAM Çıktı Kartı -->
+                    <!-- Canlı sgRNA & PAM Çıktı Kartı -->
                     <div class="lab-readout-card">
-                        <div style="display: flex; gap: 12px;">
+                        <div style="display: flex; gap: 14px;">
                             <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
-                                <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary);">SENTETİK sgRNA SEKANSI (5' ➔ 3' RNA):</span>
+                                <span style="font-size: 0.74rem; font-weight: 700; color: var(--text-secondary);">
+                                    SENTETİK sgRNA SEKANSI (5' ➔ 3' RNA):
+                                </span>
                                 <div id="labGrnaDisplay" class="lab-readout-box">(Dizi seçimi bekleniyor...)</div>
                             </div>
                             <div style="width: 140px; display: flex; flex-direction: column; gap: 4px;">
-                                <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary);">PAM MOTİFİ:</span>
+                                <span style="font-size: 0.74rem; font-weight: 700; color: var(--text-secondary);">
+                                    PAM MOTİFİ:
+                                </span>
                                 <div id="labPamDisplay" class="lab-readout-box pam-text">---</div>
                             </div>
                         </div>
 
-                        <button type="button" id="btnRunLabCut" class="btn-primary-blue" style="width: 100%; margin-top: 12px; padding: 12px; justify-content: center; font-size: 0.9rem;" onclick="executeLabSimulation()">
+                        <button type="button" id="btnRunLabCut" onclick="executeLabSimulation()">
                             [ REAKSİYONU BAŞLAT: SpCas9 KESİMİ ] ➔
                         </button>
 
                         <div id="labSimulationFeedback" class="lab-feedback-box hidden"></div>
                     </div>
                 </div>
-
-                <!-- Sağ Kolon: Termodinamik & Onarım Telemetrisi -->
-                <div class="lab-right-telemetry">
-                    
-                    <div class="spec-tile">
-                        <span class="tile-kicker">TERMODİNAMİK METRİKLER</span>
-                        <div class="telemetry-stat-row">
-                            <span>GC Dengesi:</span>
-                            <strong id="labGcDisplay" style="color: var(--bio-green); font-family: var(--font-mono);">%0</strong>
-                        </div>
-                        <div class="telemetry-stat-row">
-                            <span>Erime Noktası (Tm):</span>
-                            <strong id="labTmDisplay" style="font-family: var(--font-mono);">-- °C</strong>
-                        </div>
-                        <div class="telemetry-stat-row">
-                            <span>Seed Bölgesi (8nt):</span>
-                            <strong id="labSeedDisplay" style="font-family: var(--font-mono);">--</strong>
-                        </div>
-                        <div class="telemetry-stat-row" style="border-bottom: none;">
-                            <span>Off-Target Riski:</span>
-                            <strong id="labOffTargetDisplay" style="color: var(--bio-green); font-family: var(--font-mono);">DÜŞÜK</strong>
-                        </div>
-                    </div>
-
-                    <div class="spec-tile" style="margin-top: 12px;">
-                        <span class="tile-kicker">HÜCRESEL ONARIM MODELİ</span>
-                        <strong id="labPathwayBadge" style="font-size: 0.88rem; color: var(--navy-dark); margin-top: 2px; font-family: var(--font-mono);">
-                            NHEJ (İndel ile Fonksiyon Kaybı)
-                        </strong>
-                        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; margin-top: 6px;">
-                            SpCas9 küt uçlu kesimi sonrası hücre baskın olarak rastgele insersiyon/delesyon (indel) mutasyonlarıyla erken durdurma kodonu üretir.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-        </section>
-
-    </main>
 
     <!-- FOOTER -->
     <footer class="app-footer">

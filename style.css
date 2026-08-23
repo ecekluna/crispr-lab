@@ -1741,3 +1741,212 @@ body.navy-theme-body {
         grid-template-columns: 1fr !important;
     }
 }
+/* ==========================================================================
+   LABORATUVAR ÇALIŞMA MASASI HASSAS HİZALAMA VE KUTULAMA
+   ========================================================================== */
+
+/* 1. Ana Grid: Sol ve Sağ Panelleri Kusursuz Hizala */
+.lab-main-layout-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 300px !important;
+    gap: 20px !important;
+    align-items: stretch !important;
+}
+
+.lab-left-viewport {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    min-width: 0 !important;
+}
+
+/* 2. DNA Viewport: Temiz, Kompakt ve Orantılı Çerçeve */
+.lab-dna-viewport-box {
+    background: #f8fafc !important;
+    border: 1.5px solid #d8e2ee !important;
+    border-radius: 8px !important;
+    padding: 16px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+}
+
+.ruler-line {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    color: #8993a4 !important;
+    user-select: none !important;
+}
+
+.ruler-line .ticks {
+    letter-spacing: 2px !important;
+}
+
+/* DNA Kaydırma Şeridi */
+.lab-dna-interactive-track {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 10px 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: #cbd5e1 transparent !important;
+}
+
+.lab-dna-interactive-track::-webkit-scrollbar {
+    height: 6px !important;
+}
+
+.lab-dna-interactive-track::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+    border-radius: 4px !important;
+}
+
+.lab-dna-interactive-track .dna-strand {
+    display: flex !important;
+    gap: 4px !important;
+    width: max-content !important;
+}
+
+/* Nükleotit Butonları (Kare, Net ve Şık) */
+.lab-dna-interactive-track .base-btn {
+    width: 28px !important;
+    height: 42px !important;
+    min-width: 28px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    color: #091e42 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    transition: all 0.1s ease !important;
+}
+
+.lab-dna-interactive-track .base-btn .base-char {
+    font-size: 0.95rem !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+}
+
+.lab-dna-interactive-track .base-btn .base-idx {
+    font-size: 0.52rem !important;
+    color: #8993a4 !important;
+    line-height: 1 !important;
+    margin-top: 2px !important;
+}
+
+.lab-dna-interactive-track .base-btn:hover {
+    border-color: #0052cc !important;
+    background: #deebff !important;
+    color: #0052cc !important;
+}
+
+.lab-dna-interactive-track .base-btn.selected-target {
+    background: #0052cc !important;
+    border-color: #0747a6 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(0, 82, 204, 0.35) !important;
+}
+.lab-dna-interactive-track .base-btn.selected-target .base-idx { color: #deebff !important; }
+
+.lab-dna-interactive-track .base-btn.selected-pam {
+    background: #e11d48 !important;
+    border-color: #be123c !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(225, 29, 72, 0.35) !important;
+}
+.lab-dna-interactive-track .base-btn.selected-pam .base-idx { color: #ffe4e6 !important; }
+
+/* Komplemanter İplik */
+.lab-dna-interactive-track .base-btn-comp {
+    width: 28px !important;
+    height: 24px !important;
+    min-width: 28px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    color: #5e6c84 !important;
+    background: #ffffff !important;
+    border: 1px dashed #cbd5e1 !important;
+    border-radius: 3px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* 3. Canlı Çıktı Kartı & Kesim Butonu Bölümü */
+.lab-readout-card {
+    background: #f8fafc !important;
+    border: 1.5px solid #d8e2ee !important;
+    border-radius: 8px !important;
+    padding: 16px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+
+.lab-readout-box {
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    padding: 9px 14px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.92rem !important;
+    font-weight: 800 !important;
+    color: #0052cc !important;
+    min-height: 42px !important;
+    display: flex !important;
+    align-items: center !important;
+    word-break: break-all !important;
+}
+
+.lab-readout-box.pam-text {
+    color: #e11d48 !important;
+    justify-content: center !important;
+}
+
+/* Aksiyon Butonu */
+#btnRunLabCut {
+    background: #0052cc !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    padding: 13px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease !important;
+    box-shadow: 0 2px 8px rgba(0, 82, 204, 0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+#btnRunLabCut:hover {
+    background: #0747a6 !important;
+}
+
+/* Sağ Panel Kartları */
+.lab-right-telemetry {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+
+.lab-right-telemetry .spec-tile {
+    background: #f8fafc !important;
+    border: 1.5px solid #d8e2ee !important;
+    border-radius: 8px !important;
+    padding: 18px !important;
+    margin: 0 !important;
+}
