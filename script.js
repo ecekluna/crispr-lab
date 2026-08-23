@@ -1250,6 +1250,42 @@ function initGuideEventListeners() {
     const loadMoreBtn = document.getElementById("loadMoreGuideBtn");
 
     // Arama Çubuğu
+ document.addEventListener("DOMContentLoaded", function() {
+    renderGuideCards();
+    initGuideEventListeners();
+    
+    // Yalnızca sayfada laboratuvar alanı varsa çalıştır (lab.html için)
+    if (document.getElementById("interactiveLabDnaTrack") && typeof initLabWorkspace === "function") {
+        initLabWorkspace();
+    }
+});
+
+    // Sekmeler (DNA, CRISPR, Onarım, Biyoinformatik)
+    categoryTabs?.forEach(tab => {
+        tab.addEventListener("click", function() {
+            categoryTabs.forEach(t => t.classList.remove("active"));
+            this.classList.add("active");
+            state.guideActiveCategory = this.getAttribute("data-category") || "all";
+            state.guideVisibleCount = 6;
+            renderGuideCards();
+        });
+    });
+
+    // Daha Fazla Göster Butonu (+6)
+    if (loadMoreBtn) {
+        loadMoreBtn.onclick = function() {
+            state.guideVisibleCount += 6;
+            renderGuideCards();
+        };
+    }
+}
+
+function initGuideEventListeners() {
+    const searchInput = document.getElementById("guideSearchInput");
+    const categoryTabs = document.querySelectorAll(".category-tabs .tab-chip");
+    const loadMoreBtn = document.getElementById("loadMoreGuideBtn");
+
+    // Arama Çubuğu
     searchInput?.addEventListener("input", function(e) {
         state.guideSearchQuery = e.target.value;
         state.guideVisibleCount = 6;
